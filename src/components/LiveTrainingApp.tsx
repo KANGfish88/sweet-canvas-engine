@@ -1250,64 +1250,77 @@ function ProfilePage({
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto pb-24 animate-[fade-in_0.3s_ease-out]">
-      <header className="px-4 py-4 sticky top-0 z-40 bg-[#0F0F0F]/90 backdrop-blur-md">
-        <h1 className="text-[20px] font-semibold text-white">我的</h1>
+    <div className="flex-1 flex flex-col overflow-y-auto pb-24 animate-[fade-in_0.3s_ease-out] relative">
+      {/* 氛围光晕 */}
+      <div className="pointer-events-none absolute -top-20 -left-16 w-72 h-72 rounded-full bg-[#FF4D6D]/10 blur-3xl animate-ambient" />
+      <div className="pointer-events-none absolute top-40 -right-20 w-72 h-72 rounded-full bg-[#4ECDC4]/10 blur-3xl animate-ambient" style={{ animationDelay: '-4s' }} />
+
+      <header className="px-5 pt-5 pb-3 sticky top-0 z-40 bg-[#0F0F0F]/85 backdrop-blur-xl">
+        <h1 className="font-display text-[22px] font-bold text-white tracking-tight">我的</h1>
+        <p className="text-[11px] text-white/40 font-body mt-0.5">Personal Archive</p>
       </header>
 
-      <main className="p-4 space-y-6">
+      <main className="px-4 pt-2 space-y-4 relative z-10">
         {/* 个人信息 */}
-        <section className="bg-[#1A1A1A] rounded-xl border border-[#333333] p-5 shadow-lg">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#FF4D6D] to-[#4ECDC4] p-[2px]">
-              <div className="w-full h-full bg-[#1A1A1A] rounded-full flex items-center justify-center font-bold text-[20px] text-white">
-                {userProfile.username.charAt(0)}
+        <section className="relative rounded-2xl p-[1px] bg-gradient-to-br from-[#FF4D6D]/40 via-white/5 to-[#4ECDC4]/40 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl p-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#FF4D6D] to-[#4ECDC4] p-[2px] shadow-[0_0_20px_rgba(255,77,109,0.3)]">
+                <div className="w-full h-full bg-[#161616] rounded-[14px] flex items-center justify-center font-display font-bold text-[18px] text-white">
+                  {userProfile.username.charAt(0)}
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                {isEditingUsername ? (
+                  <input type="text" value={tempUsername} onChange={(e) => setTempUsername(e.target.value)} onBlur={handleSaveUsername} onKeyDown={(e) => e.key === 'Enter' && handleSaveUsername()} autoFocus className="bg-[#0F0F0F] border border-white/15 text-[15px] px-2.5 py-1.5 rounded-lg text-white outline-none w-full font-body" />
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-display text-[17px] font-semibold text-white truncate">@{userProfile.username}</h2>
+                    <button onClick={() => setIsEditingUsername(true)} className="text-white/40 hover:text-white text-[12px]">✏️</button>
+                  </div>
+                )}
+                <p className="text-[11px] text-white/40 font-body mt-0.5 tracking-wide">LIVE TRAINER · LV.2</p>
               </div>
             </div>
-            <div className="flex-1">
-              {isEditingUsername ? (
-                <div className="flex items-center gap-2">
-                  <input type="text" value={tempUsername} onChange={(e) => setTempUsername(e.target.value)} onBlur={handleSaveUsername} onKeyDown={(e) => e.key === 'Enter' && handleSaveUsername()} autoFocus className="bg-[#0F0F0F] border border-[#333333] text-[14px] px-2 py-1 rounded text-white outline-none w-32" />
+            <div className="grid grid-cols-3 gap-2 pt-4 mt-4 border-t border-white/5">
+              {[
+                { val: trainSessions.length, label: '累计场次', color: '#FF4D6D' },
+                { val: userProfile.totalSkills, label: '掌握技能', color: '#4ECDC4' },
+                { val: favoriteSessions.length, label: '我的收藏', color: '#FFD166' },
+              ].map((s, i) => (
+                <div key={i} className="text-center">
+                  <p className="font-display text-[20px] font-bold tabular-nums" style={{ color: s.color }}>{s.val}</p>
+                  <p className="text-[11px] text-white/40 mt-0.5 font-body">{s.label}</p>
                 </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <h2 className="text-[16px] font-semibold text-white">@{userProfile.username}</h2>
-                  <button onClick={() => setIsEditingUsername(true)} className="text-[#6B6B6B] hover:text-white"><span className="text-[12px]">✏️</span></button>
-                </div>
-              )}
+              ))}
             </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4 pt-5 mt-5 border-t border-[#333333]">
-            <div className="text-center"><p className="text-[20px] font-mono font-semibold text-white">{trainSessions.length}</p><p className="text-[12px] text-[#6B6B6B] mt-1">累计场次</p></div>
-            <div className="text-center"><p className="text-[20px] font-mono font-semibold text-white">{userProfile.totalSkills}</p><p className="text-[12px] text-[#6B6B6B] mt-1">掌握技能</p></div>
-            <div className="text-center"><p className="text-[20px] font-mono font-semibold text-white">{favoriteSessions.length}</p><p className="text-[12px] text-[#6B6B6B] mt-1">我的收藏</p></div>
           </div>
         </section>
 
         {/* 训练日历 */}
-        <section className="bg-[#1A1A1A] rounded-xl border border-[#333333] p-5 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[16px] font-semibold text-white flex items-center gap-2">
-              <Icons.Calendar size={16} className="text-[#4ECDC4]" /> 训练日历
+        <section className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl border border-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-display text-[14px] font-semibold text-white flex items-center gap-2">
+              <Icons.Calendar size={14} className="text-[#4ECDC4]" /> 训练日历
             </h3>
-            <div className="flex items-center gap-3">
-              <button onClick={() => setCalendarOffset(p => p - 1)} className="text-[#6B6B6B] hover:text-white"><Icons.ChevronLeft size={16} /></button>
-              <span className="text-[12px] text-white font-medium min-w-[78px] text-center tabular-nums">{monthLabel}</span>
-              <button onClick={() => setCalendarOffset(p => p + 1)} className="text-[#6B6B6B] hover:text-white"><Icons.ChevronRight size={16} /></button>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setCalendarOffset(p => p - 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/60 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronLeft size={14} /></button>
+              <span className="text-[12px] text-white font-mono font-medium min-w-[72px] text-center tabular-nums">{monthLabel}</span>
+              <button onClick={() => setCalendarOffset(p => p + 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/60 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronRight size={14} /></button>
             </div>
           </div>
-          <div className="grid grid-cols-7 gap-1.5 text-center mb-2">
-            {['一', '二', '三', '四', '五', '六', '日'].map(w => <span key={w} className="text-[12px] text-[#6B6B6B] py-1">{w}</span>)}
+          <div className="grid grid-cols-7 gap-1 text-center mb-1">
+            {['一', '二', '三', '四', '五', '六', '日'].map(w => <span key={w} className="text-[10px] text-white/30 py-0.5 font-body">{w}</span>)}
           </div>
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1">
             {getCalendarDays().map((cell, idx) => {
               if (cell.blank) return <div key={idx} className="aspect-square" />;
-              let bg = 'bg-[#0F0F0F]';
-              if (cell.density === 1) bg = 'bg-[rgba(78,205,196,0.2)]';
-              else if (cell.density === 2) bg = 'bg-[rgba(78,205,196,0.45)]';
-              else if (cell.density >= 3) bg = 'bg-[rgba(78,205,196,0.75)]';
+              let bg = 'bg-white/[0.03]';
+              if (cell.density === 1) bg = 'bg-[#4ECDC4]/20';
+              else if (cell.density === 2) bg = 'bg-[#4ECDC4]/45';
+              else if (cell.density >= 3) bg = 'bg-[#4ECDC4]/75 shadow-[0_0_8px_rgba(78,205,196,0.4)]';
               return (
-                <div key={idx} className={`aspect-square rounded-md flex items-center justify-center text-[12px] font-mono transition-colors ${bg} ${cell.isToday ? 'ring-1 ring-[#FF4D6D]' : ''} ${cell.density > 0 ? 'text-white' : 'text-[#6B6B6B]'}`}>
+                <div key={idx} className={`aspect-square rounded-md flex items-center justify-center text-[11px] font-mono transition-colors ${bg} ${cell.isToday ? 'ring-1 ring-[#FF4D6D] shadow-[0_0_6px_rgba(255,77,109,0.5)]' : ''} ${cell.density > 0 ? 'text-white font-semibold' : 'text-white/30'}`}>
                   {cell.dayNum}
                 </div>
               );
@@ -1315,61 +1328,60 @@ function ProfilePage({
           </div>
         </section>
 
-        {/* 训练档案 */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-[16px] font-semibold text-white flex items-center gap-2">
-              <Icons.BookOpen size={16} className="text-[#FF4D6D]" /> 训练档案
+        {/* 训练档案 — 固定高度，内部滚动 */}
+        <section className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl border border-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-display text-[14px] font-semibold text-white flex items-center gap-2">
+              <Icons.BookOpen size={14} className="text-[#FF4D6D]" /> 训练档案
             </h3>
-            <span className="text-[12px] text-[#6B6B6B]">共 {trainSessions.length} 场</span>
+            <span className="text-[11px] text-white/40 font-mono tabular-nums">{trainSessions.length} REC</span>
           </div>
 
           {trainSessions.length === 0 ? (
-            <div className="bg-[#1A1A1A] rounded-xl border border-[#333333] p-10 text-center">
-              <p className="text-[14px] text-white font-medium mb-2">还没有训练记录</p>
-              <p className="text-[12px] text-[#6B6B6B] mb-4">去首页导入素材，开始第一场训练吧！</p>
-              <button onClick={() => setCurrentPath('/')} className="text-[#4ECDC4] text-[14px] font-medium">🎯 去首页开始</button>
+            <div className="py-8 text-center">
+              <p className="text-[13px] text-white font-medium mb-1 font-display">还没有训练记录</p>
+              <p className="text-[11px] text-white/40 mb-3 font-body">去首页导入素材，开始第一场训练</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="max-h-[260px] overflow-y-auto pr-1 space-y-2 archive-scroll">
               {trainSessions.map(session => {
                 const isExpanded = selectedArchiveId === session.id;
                 const isFav = favoriteSessions.includes(session.id);
                 return (
-                  <div key={session.id} className={`bg-[#1A1A1A] rounded-xl border overflow-hidden transition-all ${isExpanded ? 'border-[#4ECDC4]' : 'border-[#333333]'}`}>
-                    <div onClick={() => setSelectedArchiveId(isExpanded ? null : session.id)} className="p-4 cursor-pointer flex justify-between items-start">
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-[14px] font-semibold text-white">{session.date}</span>
-                          {isFav && <Icons.Star size={12} fill="#FFD166" className="text-[#FFD166]" />}
+                  <div key={session.id} className={`rounded-xl border overflow-hidden transition-all ${isExpanded ? 'border-[#4ECDC4]/50 bg-[#4ECDC4]/[0.04]' : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'}`}>
+                    <div onClick={() => setSelectedArchiveId(isExpanded ? null : session.id)} className="px-3 py-2.5 cursor-pointer flex justify-between items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className="text-[12px] font-display font-semibold text-white truncate">{session.date}</span>
+                          {isFav && <Icons.Star size={10} fill="#FFD166" className="text-[#FFD166] shrink-0" />}
                         </div>
-                        <p className="text-[12px] text-[#B3B3B3]">时长 {session.durationStr} · {session.skillCards.join(' · ')}</p>
+                        <p className="text-[10px] text-white/50 font-body truncate">时长 {session.durationStr} · {session.skillCards.join(' · ')}</p>
                       </div>
-                      <div className="text-[#6B6B6B] mt-1">{isExpanded ? <Icons.ChevronUp size={16} /> : <Icons.ChevronDown size={16} />}</div>
+                      <div className="text-white/30 mt-0.5 shrink-0">{isExpanded ? <Icons.ChevronUp size={14} /> : <Icons.ChevronDown size={14} />}</div>
                     </div>
-                    
+
                     {isExpanded && (
-                      <div className="p-4 border-t border-[#333333] space-y-5 bg-[#0F0F0F]/50">
+                      <div className="px-3 pb-3 pt-1 border-t border-white/5 space-y-3">
                         <div>
-                          <h4 className="text-[14px] font-medium text-white mb-2">综合诊断</h4>
-                          <div className="bg-[#0F0F0F] rounded-lg p-3 border border-[#333333]">
-                            <p className="text-[12px] text-[#B3B3B3] leading-relaxed">{session.summary}</p>
-                          </div>
+                          <h4 className="text-[11px] font-display font-semibold text-white/70 mb-1.5 uppercase tracking-wider">综合诊断</h4>
+                          <p className="text-[11px] text-white/70 leading-relaxed font-body">{session.summary}</p>
                         </div>
-                        <div>
-                          <h4 className="text-[14px] font-medium text-white mb-2">改进建议</h4>
-                          <div className="bg-[#0F0F0F] rounded-lg p-3 border border-[#333333] space-y-2">
-                            {session.suggestions?.map((item, idx) => (
-                              <p key={idx} className="text-[12px] text-[#B3B3B3] flex items-start gap-1.5"><span className="text-[#FFD166] mt-0.5">•</span> {item}</p>
-                            ))}
+                        {session.suggestions?.length > 0 && (
+                          <div>
+                            <h4 className="text-[11px] font-display font-semibold text-white/70 mb-1.5 uppercase tracking-wider">改进建议</h4>
+                            <div className="space-y-1">
+                              {session.suggestions.map((item, idx) => (
+                                <p key={idx} className="text-[11px] text-white/70 flex items-start gap-1.5 font-body leading-relaxed"><span className="text-[#FFD166] mt-0.5 shrink-0">•</span> {item}</p>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex gap-3 pt-2">
-                          <button onClick={() => toggleFavorite(session.id)} className={`flex-1 py-2.5 rounded-lg text-[13px] font-medium border flex items-center justify-center gap-2 ${isFav ? 'bg-[#FFD166]/10 border-[#FFD166]/30 text-[#FFD166]' : 'bg-[#262626] border-[#333333] text-white'}`}>
-                            <Icons.Star size={14} fill={isFav ? 'currentColor' : 'none'} /> {isFav ? '已收藏' : '收藏'}
+                        )}
+                        <div className="flex gap-2 pt-1">
+                          <button onClick={() => toggleFavorite(session.id)} className={`flex-1 py-2 rounded-lg text-[12px] font-medium border flex items-center justify-center gap-1.5 transition-colors ${isFav ? 'bg-[#FFD166]/10 border-[#FFD166]/30 text-[#FFD166]' : 'bg-white/[0.03] border-white/10 text-white hover:bg-white/[0.06]'}`}>
+                            <Icons.Star size={12} fill={isFav ? 'currentColor' : 'none'} /> {isFav ? '已收藏' : '收藏'}
                           </button>
-                          <button onClick={() => deleteSession(session.id)} className="px-4 py-2.5 rounded-lg border border-[#333333] text-[#FF4D6D] bg-[#262626] flex items-center justify-center">
-                            <Icons.Trash2 size={16} />
+                          <button onClick={() => deleteSession(session.id)} className="px-3 py-2 rounded-lg border border-white/10 text-[#FF4D6D] bg-white/[0.03] hover:bg-[#FF4D6D]/10 transition-colors flex items-center justify-center">
+                            <Icons.Trash2 size={14} />
                           </button>
                         </div>
                       </div>
