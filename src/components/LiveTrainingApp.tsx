@@ -1337,64 +1337,73 @@ function ProfilePage({
           </div>
         </section>
 
-        {/* 训练档案 — 固定高度，内部滚动 */}
-        <section className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl border border-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display text-[14px] font-semibold text-white flex items-center gap-2">
-              <Icons.BookOpen size={14} className="text-[#FF4D6D]" /> 训练档案
+        {/* 训练档案 — 发光玻璃 */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1 h-4 bg-[#FF4D6D] rounded-full shadow-[0_0_6px_#FF4D6D]" />
+              训练档案
             </h3>
-            <span className="text-[11px] text-white/40 font-mono tabular-nums">{trainSessions.length} REC</span>
+            <span className="text-[10px] text-[#4ECDC4] font-bold tracking-tighter font-display tabular-nums">{trainSessions.length} REC</span>
           </div>
 
           {trainSessions.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-[13px] text-white font-medium mb-1 font-display">还没有训练记录</p>
-              <p className="text-[11px] text-white/40 mb-3 font-body">去首页导入素材，开始第一场训练</p>
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D]/10 to-[#4ECDC4]/10 rounded-2xl blur opacity-30 pointer-events-none" />
+              <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl py-8 text-center">
+                <p className="text-[13px] text-white font-medium mb-1 font-display">还没有训练记录</p>
+                <p className="text-[11px] text-white/40 font-body">去首页导入素材，开始第一场训练</p>
+              </div>
             </div>
           ) : (
-            <div className="max-h-[260px] overflow-y-auto pr-1 space-y-2 archive-scroll">
+            <div className="max-h-[240px] overflow-y-auto pr-1 space-y-2.5 archive-scroll">
               {trainSessions.map(session => {
                 const isExpanded = selectedArchiveId === session.id;
                 const isFav = favoriteSessions.includes(session.id);
                 return (
-                  <div key={session.id} className={`rounded-xl border overflow-hidden transition-all ${isExpanded ? 'border-[#4ECDC4]/50 bg-[#4ECDC4]/[0.04]' : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'}`}>
-                    <div onClick={() => setSelectedArchiveId(isExpanded ? null : session.id)} className="px-3 py-2.5 cursor-pointer flex justify-between items-start gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="text-[12px] font-display font-semibold text-white truncate">{session.date}</span>
-                          {isFav && <Icons.Star size={10} fill="#FFD166" className="text-[#FFD166] shrink-0" />}
-                        </div>
-                        <p className="text-[10px] text-white/50 font-body truncate">时长 {session.durationStr} · {session.skillCards.join(' · ')}</p>
-                      </div>
-                      <div className="text-white/30 mt-0.5 shrink-0">{isExpanded ? <Icons.ChevronUp size={14} /> : <Icons.ChevronDown size={14} />}</div>
-                    </div>
-
-                    {isExpanded && (
-                      <div className="px-3 pb-3 pt-1 border-t border-white/5 space-y-3">
-                        <div>
-                          <h4 className="text-[11px] font-display font-semibold text-white/70 mb-1.5 uppercase tracking-wider">综合诊断</h4>
-                          <p className="text-[11px] text-white/70 leading-relaxed font-body">{session.summary}</p>
-                        </div>
-                        {session.suggestions?.length > 0 && (
-                          <div>
-                            <h4 className="text-[11px] font-display font-semibold text-white/70 mb-1.5 uppercase tracking-wider">改进建议</h4>
-                            <div className="space-y-1">
-                              {session.suggestions.map((item, idx) => (
-                                <p key={idx} className="text-[11px] text-white/70 flex items-start gap-1.5 font-body leading-relaxed"><span className="text-[#FFD166] mt-0.5 shrink-0">•</span> {item}</p>
-                              ))}
-                            </div>
+                  <div key={session.id} className="relative group">
+                    {isExpanded && <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4ECDC4]/30 to-[#FF4D6D]/20 rounded-2xl blur opacity-40 pointer-events-none" />}
+                    <div className={`relative rounded-2xl border backdrop-blur-xl overflow-hidden transition-all ${isExpanded ? 'border-[#4ECDC4]/40 bg-white/[0.06]' : 'border-white/10 bg-white/5 hover:bg-white/[0.08]'}`}>
+                      <div onClick={() => setSelectedArchiveId(isExpanded ? null : session.id)} className="p-4 cursor-pointer flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-[13px] font-display font-bold text-white truncate">{session.date}</p>
+                            {isFav && <span className="text-[#FFD166] text-[11px] shrink-0">✦</span>}
                           </div>
-                        )}
-                        <div className="flex gap-2 pt-1">
-                          <button onClick={() => toggleFavorite(session.id)} className={`flex-1 py-2 rounded-lg text-[12px] font-medium border flex items-center justify-center gap-1.5 transition-colors ${isFav ? 'bg-[#FFD166]/10 border-[#FFD166]/30 text-[#FFD166]' : 'bg-white/[0.03] border-white/10 text-white hover:bg-white/[0.06]'}`}>
-                            <Icons.Star size={12} fill={isFav ? 'currentColor' : 'none'} /> {isFav ? '已收藏' : '收藏'}
-                          </button>
-                          <button onClick={() => deleteSession(session.id)} className="px-3 py-2 rounded-lg border border-white/10 text-[#FF4D6D] bg-white/[0.03] hover:bg-[#FF4D6D]/10 transition-colors flex items-center justify-center">
-                            <Icons.Trash2 size={14} />
-                          </button>
+                          <p className="text-white/40 text-[11px] truncate font-body">时长 {session.durationStr} · {session.skillCards.join(' · ')}</p>
+                        </div>
+                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-colors ${isExpanded ? 'border-[#4ECDC4]/40 text-[#4ECDC4] bg-[#4ECDC4]/10' : 'border-white/10 text-white/40 group-hover:border-white/20 group-hover:text-white'}`}>
+                          {isExpanded ? <Icons.ChevronUp size={14} /> : <Icons.ChevronRight size={14} />}
                         </div>
                       </div>
-                    )}
+
+                      {isExpanded && (
+                        <div className="px-4 pb-4 pt-1 border-t border-white/5 space-y-3 animate-[fade-in_0.2s_ease-out]">
+                          <div>
+                            <h4 className="text-[10px] font-display font-bold text-[#4ECDC4] mb-1.5 uppercase tracking-widest">综合诊断</h4>
+                            <p className="text-[11px] text-white/70 leading-relaxed font-body">{session.summary}</p>
+                          </div>
+                          {session.suggestions?.length > 0 && (
+                            <div>
+                              <h4 className="text-[10px] font-display font-bold text-[#FFD166] mb-1.5 uppercase tracking-widest">改进建议</h4>
+                              <div className="space-y-1">
+                                {session.suggestions.map((item, idx) => (
+                                  <p key={idx} className="text-[11px] text-white/70 flex items-start gap-1.5 font-body leading-relaxed"><span className="text-[#FFD166] mt-0.5 shrink-0">›</span> {item}</p>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex gap-2 pt-1">
+                            <button onClick={() => toggleFavorite(session.id)} className={`flex-1 py-2 rounded-xl text-[12px] font-medium border flex items-center justify-center gap-1.5 backdrop-blur-md transition-colors ${isFav ? 'bg-[#FFD166]/10 border-[#FFD166]/30 text-[#FFD166]' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}>
+                              <Icons.Star size={12} fill={isFav ? 'currentColor' : 'none'} /> {isFav ? '已收藏' : '收藏'}
+                            </button>
+                            <button onClick={() => deleteSession(session.id)} className="px-3 py-2 rounded-xl border border-white/10 text-[#FF4D6D] bg-white/5 hover:bg-[#FF4D6D]/10 backdrop-blur-md transition-colors flex items-center justify-center">
+                              <Icons.Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
