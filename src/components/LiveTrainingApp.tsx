@@ -630,9 +630,8 @@ function HomePage({
 
         {/* 基础设置区 */}
         <section className="bg-[#1A1A1A] rounded-xl border border-[#333333] shadow-lg overflow-hidden">
-          <div className="p-4 flex items-center justify-between border-b border-[#333333]">
+          <div className="p-4 border-b border-[#333333]">
             <h2 className="text-[16px] font-semibold text-white">基础设置</h2>
-            <span className="text-[12px] text-[#6B6B6B]">展开 ▼</span>
           </div>
           
           <div className="p-4 space-y-6">
@@ -670,28 +669,59 @@ function HomePage({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-[14px] font-medium text-[#B3B3B3]">标签</h3>
-                <span className="text-[12px] text-[#4ECDC4]">已选：{basicSettings.tags.join('、') || '无'}</span>
+                <span className="text-[12px] text-[#4ECDC4] truncate max-w-[60%] text-right">已选：{basicSettings.tags.join('、') || '无'}</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className={`flex gap-2 ${tagsExpanded ? 'flex-wrap' : 'flex-nowrap overflow-x-auto scrollbar-none'}`}>
                 {TAG_OPTIONS.map(tag => {
                   const isTagActive = basicSettings.tags.includes(tag);
                   return (
                     <button
                       key={tag}
                       onClick={() => toggleTagChip(tag)}
-                      className={`text-[12px] px-3 py-1.5 rounded-full border transition-all ${isTagActive ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/40 text-[#4ECDC4]' : 'bg-[#0F0F0F] border-[#333333] text-[#6B6B6B] hover:border-[#6B6B6B]'}`}
+                      className={`text-[12px] px-3 py-1.5 rounded-full border transition-all shrink-0 ${isTagActive ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/40 text-[#4ECDC4]' : 'bg-[#0F0F0F] border-[#333333] text-[#6B6B6B] hover:border-[#6B6B6B]'}`}
                     >
                       {tag}
                     </button>
                   );
                 })}
               </div>
+              <button
+                onClick={() => setTagsExpanded(p => !p)}
+                className="text-[12px] text-[#6B6B6B] hover:text-[#4ECDC4] flex items-center gap-1 transition-colors"
+              >
+                {tagsExpanded ? <>收起 <Icons.ChevronUp size={12} /></> : <>展开全部标签 <Icons.ChevronDown size={12} /></>}
+              </button>
             </div>
 
           </div>
         </section>
 
       </main>
+
+      {/* 底部"开始直播"操作栏 */}
+      {selectedSkills.length > 0 && (
+        <div className="sticky bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-3 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F] to-transparent pointer-events-auto animate-[slide-in-up_0.3s_ease-out]">
+          <div className="bg-gradient-to-r from-[#1A1A1A] to-[#262626] border border-[#4ECDC4]/40 rounded-2xl p-3 shadow-2xl shadow-[#4ECDC4]/10 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#4ECDC4]/15 border border-[#4ECDC4]/30 flex items-center justify-center shrink-0">
+              <Icons.Sparkles size={16} className="text-[#4ECDC4]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-semibold text-white leading-tight">
+                技能卡沙盒配置已就绪
+              </p>
+              <p className="text-[10px] text-[#B3B3B3] leading-snug mt-0.5">
+                已加载 <span className="text-[#4ECDC4] font-mono font-semibold">{selectedSkills.length}</span> 张金牌实训策略，虚拟AI观众将针对话术产生特定行为
+              </p>
+            </div>
+            <button
+              onClick={() => { triggerToast(`已加载 ${selectedSkills.length} 张技能卡`, 'success'); setCurrentPath('/live'); }}
+              className="shrink-0 px-4 h-10 rounded-xl bg-gradient-to-r from-[#FF4D6D] to-[#FF6B85] text-white text-[13px] font-semibold shadow-lg shadow-[#FF4D6D]/30 hover:shadow-[#FF4D6D]/50 transition-all flex items-center gap-1.5"
+            >
+              开始直播 <Icons.ArrowRight size={14} />
+            </button>
+          </div>
+        </div>
+      )}
 
 
       {/* 技能卡详情半弹窗 */}
