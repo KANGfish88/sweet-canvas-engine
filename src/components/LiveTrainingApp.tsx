@@ -986,58 +986,78 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
       <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/60 to-transparent z-20 pointer-events-none" />
       <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20 pointer-events-none" />
 
-      {/* 顶部栏 */}
-      <div className="absolute top-safe pt-4 inset-x-4 z-30 flex items-start justify-between pointer-events-auto">
-        <div className="flex flex-col gap-2">
-          <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-2 border border-white/10 w-fit">
-            <span className="w-2 h-2 bg-[#FF4D6D] rounded-full animate-pulse" />
-            <span className="text-[12px] font-medium text-white">训练中</span>
+      {/* 观看人数 — 右上独立 */}
+      <div className="absolute top-safe pt-4 right-4 z-30 pointer-events-auto">
+        <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-white/10 text-[12px] text-white">
+          <Icons.Eye size={14} className="text-[#B3B3B3]" /> <span className="font-mono tabular-nums">{viewerCount.toLocaleString()}</span>
+        </div>
+      </div>
+
+      {/* 顶部栏：左侧[直播中+时间 / 技能卡多选]，右侧[智能提示] */}
+      <div className="absolute top-safe pt-4 left-4 right-4 mt-9 z-30 pointer-events-auto flex items-stretch gap-2">
+        {/* 左侧两行 */}
+        <div className="flex flex-col gap-2 w-[42%] min-w-0">
+          {/* 直播中 + 开播时间 */}
+          <div className="bg-black/40 backdrop-blur-md rounded-full pl-3 pr-3 py-1.5 flex items-center gap-2 border border-white/10 shadow-lg">
+            <span className="w-2 h-2 bg-[#FF4D6D] rounded-full animate-pulse shrink-0" />
+            <span className="text-[12px] font-semibold text-white tracking-wide">直播中</span>
+            <span className="w-px h-3 bg-white/20" />
+            <Icons.Clock size={12} className="text-[#B3B3B3] shrink-0" />
+            <span className="text-[12px] font-mono tabular-nums text-white/90">{formatTime(liveSeconds)}</span>
           </div>
-          {activeSkillCard && (
-            <button onClick={() => setShowSkillSheet(true)} className="bg-[#4ECDC4]/90 backdrop-blur text-black text-[12px] font-medium px-3 py-1 rounded-full flex items-center gap-1 shadow-md w-fit">
-              🏷 {activeSkillCard.title.substring(1, 5)}... <Icons.ChevronDown size={12} />
+          {/* 技能卡 — 多选展示 */}
+          <button
+            onClick={() => setShowSkillSheet(true)}
+            className="bg-gradient-to-r from-[#4ECDC4]/90 to-[#4ECDC4]/70 backdrop-blur text-black text-[12px] font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg hover:shadow-[0_4px_12px_rgba(78,205,196,0.4)] transition-all min-w-0"
+          >
+            <span className="shrink-0">🏷</span>
+            <span className="truncate flex-1 text-left">
+              {activeSkillCards.length === 0
+                ? '未选择技能卡'
+                : activeSkillCards.length === 1
+                  ? activeSkillCards[0].title.replace(/[「」]/g, '')
+                  : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
+            </span>
+            <Icons.ChevronDown size={12} className="shrink-0 opacity-70" />
+          </button>
+        </div>
+
+        {/* 右侧 — 智能提示卡片，宽度=剩余空间(≈左侧两项相加) */}
+        <div className="flex-1 min-w-0">
+          {topicPrompt ? (
+            <div className="bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-md border border-[#FFD166]/50 rounded-xl shadow-2xl p-3 h-full flex flex-col justify-between animate-[fade-in_0.2s]">
+              <div className="flex justify-between items-center text-[11px] text-[#FFD166] mb-1.5">
+                <span className="font-semibold flex items-center gap-1 truncate">
+                  <Icons.Lightbulb size={12} className="shrink-0" /> 智能提示
+                </span>
+                <span className="font-mono tabular-nums shrink-0">{promptCountdown}s</span>
+              </div>
+              <p className="text-[12px] text-[#4ECDC4] leading-snug line-clamp-3 flex-1">
+                {topicPrompt.tipText}
+              </p>
+            </div>
+          ) : (
+            <button
+              onClick={triggerPrompt}
+              disabled={!activeSkillCard}
+              className="w-full h-full bg-gradient-to-br from-black/50 to-black/30 backdrop-blur-md border border-dashed border-[#FFD166]/40 rounded-xl text-[12px] text-white/80 flex flex-col items-center justify-center gap-1 hover:border-[#FFD166]/80 hover:text-white hover:bg-[#FFD166]/5 transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed px-2"
+            >
+              <Icons.Lightbulb size={16} className="text-[#FFD166]" />
+              <span className="font-medium text-[11px]">获取智能提示</span>
             </button>
           )}
-        </div>
-        <div className="flex flex-col items-end gap-2 text-white">
-          <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-white/10 text-[12px]">
-            <Icons.Eye size={14} className="text-[#B3B3B3]" /> <span className="font-mono tabular-nums">{viewerCount.toLocaleString()}</span>
-          </div>
         </div>
       </div>
 
       {/* 5分钟提示 */}
       {showSummaryPill && (
-        <div className="absolute top-[130px] inset-x-4 z-40 animate-[slide-in-down_0.3s_ease-out]">
+        <div className="absolute top-[170px] inset-x-4 z-40 animate-[slide-in-down_0.3s_ease-out]">
           <div onClick={() => { setShowSummaryPill(false); setShowSummarySheet(true); }} className="bg-[#FFD166] text-black rounded-full px-4 py-2.5 flex items-center justify-between shadow-lg cursor-pointer">
             <span className="text-[12px] font-medium">📊 第1个5分钟小结已生成</span>
             <span className="text-[10px] bg-black/10 px-2 py-0.5 rounded-full font-medium">点击查看</span>
           </div>
         </div>
       )}
-
-      {/* TopicPromptCard — 智能提示面板 */}
-      <div className="absolute bottom-[calc(80px+30vh)] inset-x-4 z-30 pointer-events-auto">
-        {topicPrompt ? (
-          <div className="bg-black/40 backdrop-blur-md border border-[#FFD166]/50 rounded-xl shadow-2xl p-4 animate-[fade-in_0.2s]">
-            <div className="flex justify-between items-center text-[12px] text-[#FFD166] mb-2">
-              <span className="font-medium flex items-center gap-1"><Icons.Lightbulb size={14} /> {topicPrompt.title}</span>
-              <span>剩余 {promptCountdown}s</span>
-            </div>
-            
-            <div className="bg-[#4ECDC4]/10 border border-[#4ECDC4]/20 p-3 rounded-lg mb-3">
-              <p className="text-[13px] text-[#4ECDC4] leading-relaxed">【提示】: "{topicPrompt.tipText}"</p>
-            </div>
-            <div className="h-1 bg-[#0F0F0F] rounded-full overflow-hidden">
-              <div className="h-full bg-[#FFD166] transition-all duration-1000" style={{ width: `${(promptCountdown / 12) * 100}%` }} />
-            </div>
-          </div>
-        ) : (
-          <button onClick={triggerPrompt} className="w-full bg-black/40 backdrop-blur-md border border-[#FFD166]/50 py-3 rounded-xl text-[12px] text-white/70 flex items-center justify-center gap-1 hover:text-white transition-colors shadow-2xl">
-            <Icons.Target size={14} /> 获取智能提示
-          </button>
-        )}
-      </div>
 
       {/* 评论区 */}
       <div className="absolute bottom-[80px] inset-x-4 h-[30vh] z-30 flex flex-col justify-end pointer-events-none">
