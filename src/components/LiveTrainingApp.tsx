@@ -288,51 +288,28 @@ function HomePage({
       triggerToast("请先粘贴分享链接", "error");
       return;
     }
-    if (!linkInput.includes("douyin.com")) {
-      setParseState('error');
-      triggerToast("解析失败，请检查链接是否有效", "error");
-      return;
-    }
-
     setParseState('parsing');
     setAnalysisProgress(0);
     setActiveStepIdx(-1);
 
-    let count = 0;
-    const interval = setInterval(() => {
-      count += 1;
-      setAnalysisProgress(prev => Math.min(100, prev + 12));
-      setActiveStepIdx(Math.floor((count / 10) * analysisSteps.length));
-      
-      if (count >= 10) {
-        clearInterval(interval);
-        setAnalysisProgress(100);
-        setActiveStepIdx(5);
-        setTimeout(() => {
-          setParseState('completed');
-          const newId = `sc-${Date.now()}`;
-          const newCard = {
-            id: newId,
-            title: `「核心停留」爆款直播留存拆解`,
-            category: "互动停留",
-            difficulty: 4,
-            sourceVideo: "@带货达人 的切片",
-            sourceLink: linkInput,
-            dimensions: ["情绪调动", "收尾引导"],
-            estimatedDuration: "约6分钟",
-            targetSessions: 5,
-            trainedSessions: 0,
-            keyPoints: ["迅速展示高货产品细节", "发起高密度互动"],
-            tips: ["多用极具引导性的身体姿态", "用低门槛抽奖筛选活跃粉"],
-            trainingGoal: "新观众进入后的黄金互动窗口切入，促成弹幕氛围拉起。"
-          };
-          setSkillCardLibrary(prev => [newCard, ...prev]);
-          setSelectedSkills(prev => [...prev, newId]);
-          triggerToast("AI分析完成，已提炼新技能卡", "success");
-        }, 500);
-      }
-    }, 250);
+    skillsApi
+      .parseFromLink(linkInput, ({ progress, stepIdx }) => {
+        setAnalysisProgress(progress);
+        setActiveStepIdx(stepIdx);
+      })
+      .then(newCard => {
+        setParseState('completed');
+        setSkillCardLibrary(prev => [newCard, ...prev]);
+        setSelectedSkills(prev => [...prev, newCard.id]);
+        triggerToast("AI分析完成，已提炼新技能卡", "success");
+      })
+      .catch(() => {
+        setParseState('error');
+        triggerToast("解析失败，请检查链接是否有效", "error");
+      });
   };
+
+
 
   const toggleSkillCardSelection = (id) => {
     if (selectedSkills.includes(id)) {
