@@ -8,6 +8,8 @@ import {
   userApi,
   liveApi,
 } from '@/api';
+import mascotImg from '@/assets/mascot.png';
+
 
 
 // ==========================================
