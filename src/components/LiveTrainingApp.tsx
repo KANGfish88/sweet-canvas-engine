@@ -979,14 +979,14 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
             const isGift = c.type === 'gift';
             return (
               <div key={c.id} className="flex items-start gap-2 max-w-[85%] animate-[slide-in-left_0.2s_ease-out]">
-                <div className={`rounded-xl rounded-tl-none px-3 py-2 backdrop-blur-md border ${
-                  isBuy ? 'bg-[#FF4D6D]/20 border-[#FF4D6D]/40' : isGift ? 'bg-[#FFD166]/20 border-[#FFD166]/40' : 'bg-black/50 border-white/10'
+                <div className={`rounded-2xl rounded-bl-none px-3 py-2 backdrop-blur-xl border ${
+                  isBuy ? 'bg-[#FF4D6D]/15 border-[#FF4D6D]/40' : isGift ? 'bg-[#FFD166]/15 border-[#FFD166]/40' : 'bg-white/5 border-white/10'
                 }`}>
                   <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[10px] text-white/70 font-medium">{c.agent.name}</span>
-                    <span className="text-[8px] bg-white/20 px-1 rounded text-white">{c.agent.level}</span>
+                    <span className="text-[9px] font-bold text-white/40 tracking-tight font-display">{c.agent.name}</span>
+                    <span className="px-1.5 py-0.5 rounded-sm bg-white/10 text-[7px] text-white/60 font-bold uppercase font-display">{c.agent.level}</span>
                   </div>
-                  <p className={`text-[14px] leading-snug ${isBuy ? 'text-[#FF4D6D] font-medium' : isGift ? 'text-[#FFD166] font-medium' : 'text-white'}`}>
+                  <p className={`text-[13px] leading-relaxed font-body ${isBuy ? 'text-[#FF4D6D] font-medium' : isGift ? 'text-[#FFD166] font-medium' : 'text-white'}`}>
                     {c.text}
                   </p>
                 </div>
