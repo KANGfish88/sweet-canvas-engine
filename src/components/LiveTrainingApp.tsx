@@ -208,6 +208,7 @@ export default function App() {
           {currentPath === '/live' && (
             <VirtualLiveRoom 
               selectedSkills={selectedSkills}
+              setSelectedSkills={setSelectedSkills}
               basicSettings={basicSettings}
               skillCardLibrary={skillCardLibrary}
               triggerToast={triggerToast}
@@ -655,7 +656,7 @@ function HomePage({
 // ==========================================
 // 5. 页面二：虚拟直播间组件 (VirtualLiveRoom)
 // ==========================================
-function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, triggerToast, setCurrentPath, setTrainSessions }) {
+function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, skillCardLibrary, triggerToast, setCurrentPath, setTrainSessions }) {
   const [liveSeconds, setLiveSeconds] = useState(0);
   const [viewerCount, setViewerCount] = useState(1280);
   const [comments, setComments] = useState([]);
@@ -869,24 +870,17 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
       <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/60 to-transparent z-20 pointer-events-none" />
       <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20 pointer-events-none" />
 
-      {/* 观看人数 — 右上独立 */}
-      <div className="absolute top-safe pt-4 right-4 z-30 pointer-events-auto">
-        <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-white/10 text-[12px] text-white">
-          <Icons.Eye size={14} className="text-[#B3B3B3]" /> <span className="font-mono tabular-nums">{viewerCount.toLocaleString()}</span>
-        </div>
-      </div>
-
       {/* 顶部栏：左侧[直播中+时间 / 技能卡多选]，右侧[智能提示] */}
-      <div className="absolute top-safe pt-4 left-4 right-4 mt-9 z-30 pointer-events-auto flex items-stretch gap-2">
+      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-stretch gap-2">
         {/* 左侧两行 */}
         <div className="flex flex-col gap-2 w-[42%] min-w-0">
-          {/* 直播中 + 开播时间 */}
-          <div className="bg-black/40 backdrop-blur-md rounded-full pl-3 pr-3 py-1.5 flex items-center gap-2 border border-white/10 shadow-lg">
-            <span className="w-2 h-2 bg-[#FF4D6D] rounded-full animate-pulse shrink-0" />
-            <span className="text-[12px] font-semibold text-white tracking-wide">直播中</span>
-            <span className="w-px h-3 bg-white/20" />
-            <Icons.Clock size={12} className="text-[#B3B3B3] shrink-0" />
-            <span className="text-[12px] font-mono tabular-nums text-white/90">{formatTime(liveSeconds)}</span>
+          {/* 直播中 + 开播时间 — 单行紧凑 */}
+          <div className="bg-black/40 backdrop-blur-md rounded-full pl-2.5 pr-2.5 py-1 flex items-center gap-1.5 border border-white/10 shadow-lg whitespace-nowrap">
+            <span className="w-1.5 h-1.5 bg-[#FF4D6D] rounded-full animate-pulse shrink-0" />
+            <span className="text-[10px] font-semibold text-white tracking-wide">直播中</span>
+            <span className="w-px h-2.5 bg-white/20" />
+            <Icons.Clock size={10} className="text-[#B3B3B3] shrink-0" />
+            <span className="text-[10px] font-mono tabular-nums text-white/90">{formatTime(liveSeconds)}</span>
           </div>
           {/* 技能卡 — 多选展示 */}
           <button
@@ -1034,20 +1028,55 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
 
       {/* 技能切换 Sheet */}
       {showSkillSheet && (
-        <div className="absolute inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-[430px] bg-[#1A1A1A] rounded-t-2xl border-t border-[#333333] p-5 max-h-[50vh] flex flex-col">
+        <div className="absolute inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowSkillSheet(false)}>
+          <div className="w-full max-w-[430px] bg-[#1A1A1A] rounded-t-2xl border-t border-[#333333] p-5 max-h-[60vh] flex flex-col animate-[slide-in-up_0.25s_ease-out]" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center pb-4 border-b border-[#333333]">
-              <h3 className="text-[16px] font-semibold text-white">切换实训技能卡</h3>
+              <div>
+                <h3 className="text-[16px] font-semibold text-white">切换实训技能卡</h3>
+                <p className="text-[11px] text-[#6B6B6B] mt-0.5">单击选中 / 再次单击取消 · 支持多选</p>
+              </div>
               <button onClick={() => setShowSkillSheet(false)} className="text-[#6B6B6B] hover:text-white"><Icons.X size={20} /></button>
             </div>
             <div className="overflow-y-auto space-y-3 py-4 flex-1">
-              {activeSkillCards.length === 0 && <p className="text-center text-[#6B6B6B] text-[14px] py-4">未选择任何技能卡</p>}
-              {activeSkillCards.map((card, idx) => (
-                <div key={card.id} onClick={() => { setCurrentSkillIdx(idx); setSkillProgress(0); setShowSkillSheet(false); triggerToast("技能卡已切换"); }} className={`p-4 rounded-xl border cursor-pointer ${currentSkillIdx === idx ? 'border-[#4ECDC4] bg-[#4ECDC4]/10' : 'border-[#333333] bg-[#0F0F0F]'}`}>
-                  <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-white/80 font-medium mb-2 inline-block">{card.category}</span>
-                  <p className="text-[14px] font-medium text-white">{card.title}</p>
-                </div>
-              ))}
+              {skillCardLibrary.length === 0 && <p className="text-center text-[#6B6B6B] text-[14px] py-4">技能卡库为空</p>}
+              {skillCardLibrary.map((card) => {
+                const isSelected = selectedSkills.includes(card.id);
+                const isCurrent = isSelected && activeSkillCards[currentSkillIdx]?.id === card.id;
+                return (
+                  <div
+                    key={card.id}
+                    onClick={() => {
+                      const next = isSelected ? selectedSkills.filter((x) => x !== card.id) : [...selectedSkills, card.id];
+                      setSelectedSkills(next);
+                      if (isSelected) {
+                        triggerToast('已取消该技能卡');
+                        if (isCurrent) setCurrentSkillIdx(0);
+                      } else {
+                        triggerToast('已加入该技能卡');
+                        setCurrentSkillIdx(next.filter((id) => skillCardLibrary.some((c) => c.id === id)).indexOf(card.id));
+                        setSkillProgress(0);
+                      }
+                    }}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                      isCurrent
+                        ? 'border-[#4ECDC4] bg-[#4ECDC4]/15 shadow-[0_0_0_1px_rgba(78,205,196,0.3)]'
+                        : isSelected
+                          ? 'border-[#4ECDC4]/60 bg-[#4ECDC4]/5'
+                          : 'border-[#333333] bg-[#0F0F0F] hover:border-[#4ECDC4]/30'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-white/80 font-medium mb-2 inline-block">{card.category}</span>
+                        <p className="text-[14px] font-medium text-white">{card.title}</p>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${isSelected ? 'bg-[#4ECDC4] border-[#4ECDC4]' : 'border-[#555]'}`}>
+                        {isSelected && <Icons.Check size={12} className="text-black" strokeWidth={3} />}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
