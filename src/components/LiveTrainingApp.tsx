@@ -1003,25 +1003,8 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
           <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-white/10 text-[12px]">
             <Icons.Eye size={14} className="text-[#B3B3B3]" /> <span className="font-mono tabular-nums">{viewerCount.toLocaleString()}</span>
           </div>
-          <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-white/10 text-[12px]">
-            <Icons.Clock size={14} className="text-[#B3B3B3]" /> <span className="font-mono tabular-nums">{formatTime(liveSeconds)}</span>
-          </div>
         </div>
       </div>
-
-      {/* 进度条 */}
-      {activeSkillCard && (
-        <div className="absolute top-[80px] left-4 right-[120px] z-30 bg-black/40 backdrop-blur-md rounded-lg p-2 border border-white/10 pointer-events-auto">
-          <div className="flex justify-between text-[10px] text-white mb-1.5">
-            <span className="truncate">{activeSkillCard.title}</span>
-            <span className="text-[#4ECDC4] shrink-0 ml-2">第{activeSkillCard.trainedSessions + 1}/5场</span>
-          </div>
-          <div className="h-1.5 bg-white/20 rounded-full overflow-hidden relative">
-            <div className="h-full bg-[#4ECDC4] transition-all duration-1000" style={{ width: `${skillProgress}%` }} />
-            <div className="absolute top-0 bottom-0 left-[80%] w-0.5 bg-white/80" />
-          </div>
-        </div>
-      )}
 
       {/* 5分钟提示 */}
       {showSummaryPill && (
@@ -1041,7 +1024,7 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
               <span className="font-medium flex items-center gap-1"><Icons.Lightbulb size={14} /> {topicPrompt.title}</span>
               <span>剩余 {promptCountdown}s</span>
             </div>
-            <p className="text-[14px] text-white font-medium mb-3">{activeSkillCard?.title}</p>
+            
             <div className="bg-[#4ECDC4]/10 border border-[#4ECDC4]/20 p-3 rounded-lg mb-3">
               <p className="text-[13px] text-[#4ECDC4] leading-relaxed">【提示】: "{topicPrompt.tipText}"</p>
             </div>
