@@ -1024,7 +1024,7 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
               <span className="font-medium flex items-center gap-1"><Icons.Lightbulb size={14} /> {topicPrompt.title}</span>
               <span>剩余 {promptCountdown}s</span>
             </div>
-            <p className="text-[14px] text-white font-medium mb-3">{activeSkillCard?.title}</p>
+            
             <div className="bg-[#4ECDC4]/10 border border-[#4ECDC4]/20 p-3 rounded-lg mb-3">
               <p className="text-[13px] text-[#4ECDC4] leading-relaxed">【提示】: "{topicPrompt.tipText}"</p>
             </div>
