@@ -1033,10 +1033,10 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
         </div>
       )}
 
-      {/* 提词浮层 */}
-      <div className="absolute bottom-[35vh] inset-x-4 z-30 pointer-events-auto">
+      {/* TopicPromptCard — 智能提示面板 */}
+      <div className="absolute bottom-[calc(80px+30vh)] inset-x-4 z-30 pointer-events-auto">
         {topicPrompt ? (
-          <div className="bg-black/60 backdrop-blur-md border border-[#FFD166]/50 p-4 rounded-xl shadow-2xl animate-[fade-in_0.2s]">
+          <div className="bg-black/40 backdrop-blur-md border border-[#FFD166]/50 rounded-xl shadow-2xl p-4 animate-[fade-in_0.2s]">
             <div className="flex justify-between items-center text-[12px] text-[#FFD166] mb-2">
               <span className="font-medium flex items-center gap-1"><Icons.Lightbulb size={14} /> {topicPrompt.title}</span>
               <span>剩余 {promptCountdown}s</span>
@@ -1050,8 +1050,8 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
             </div>
           </div>
         ) : (
-          <button onClick={triggerPrompt} className="w-full bg-black/40 backdrop-blur-md border border-white/10 py-3 rounded-full text-[12px] text-white/70 flex items-center justify-center gap-1 hover:text-white transition-colors">
-            <Icons.Target size={14} /> 获取智能提词
+          <button onClick={triggerPrompt} className="w-full bg-black/40 backdrop-blur-md border border-[#FFD166]/50 py-3 rounded-xl text-[12px] text-white/70 flex items-center justify-center gap-1 hover:text-white transition-colors shadow-2xl">
+            <Icons.Target size={14} /> 获取智能提示
           </button>
         )}
       </div>
