@@ -899,58 +899,67 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
       {/* 顶部栏：左侧[直播中+时间 / 技能卡多选]，右侧[智能提示] */}
       <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-stretch gap-2">
         {/* 左侧两行 */}
-        <div className="flex flex-col gap-2 w-[42%] min-w-0">
-          {/* 直播中 + 开播时间 — 单行紧凑 */}
-          <div className="bg-black/40 backdrop-blur-md rounded-full pl-2.5 pr-2.5 py-1 flex items-center gap-1.5 border border-white/10 shadow-lg whitespace-nowrap">
-            <span className="w-1.5 h-1.5 bg-[#FF4D6D] rounded-full animate-pulse shrink-0" />
-            <span className="text-[10px] font-semibold text-white tracking-wide">直播中</span>
-            <span className="w-px h-2.5 bg-white/20" />
-            <Icons.Clock size={10} className="text-[#B3B3B3] shrink-0" />
-            <span className="text-[10px] font-mono tabular-nums text-white/90">{formatTime(liveSeconds)}</span>
+        <div className="flex flex-col gap-2 w-[44%] min-w-0">
+          {/* 直播中 + 时间 — 玻璃 chip */}
+          <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
+              <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
+            </div>
+            <div className="w-[1px] h-3 bg-white/10" />
+            <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
           </div>
-          {/* 技能卡 — 多选展示 */}
+          {/* 技能卡 chip */}
           <button
             onClick={() => setShowSkillSheet(true)}
-            className="bg-gradient-to-r from-[#4ECDC4]/90 to-[#4ECDC4]/70 backdrop-blur text-black text-[12px] font-medium px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg hover:shadow-[0_4px_12px_rgba(78,205,196,0.4)] transition-all min-w-0"
+            className="bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-3 py-2 flex items-center justify-between gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors min-w-0"
           >
-            <span className="shrink-0">🏷</span>
-            <span className="truncate flex-1 text-left">
-              {activeSkillCards.length === 0
-                ? '未选择技能卡'
-                : activeSkillCards.length === 1
-                  ? activeSkillCards[0].title.replace(/[「」]/g, '')
-                  : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
-            </span>
-            <Icons.ChevronDown size={12} className="shrink-0 opacity-70" />
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-[10px] shrink-0">🏷️</span>
+              <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
+                {activeSkillCards.length === 0
+                  ? '未选择技能卡'
+                  : activeSkillCards.length === 1
+                    ? activeSkillCards[0].title.replace(/[「」]/g, '')
+                    : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
+              </span>
+            </div>
+            <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
           </button>
         </div>
 
-        {/* 右侧 — 智能提示卡片，宽度=剩余空间(≈左侧两项相加) */}
+        {/* 右侧 — 智能提示卡 */}
         <div className="flex-1 min-w-0">
           {topicPrompt ? (
-            <div className="bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-md border border-[#FFD166]/50 rounded-xl shadow-2xl p-3 h-full flex flex-col justify-between animate-[fade-in_0.2s]">
-              <div className="flex justify-between items-center text-[11px] text-[#FFD166] mb-1.5">
-                <span className="font-semibold flex items-center gap-1 truncate">
-                  <Icons.Lightbulb size={12} className="shrink-0" /> 智能提示
-                </span>
-                <span className="font-mono tabular-nums shrink-0">{promptCountdown}s</span>
+            <div className="relative h-full">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FFD166]/30 to-[#FF4D6D]/20 rounded-2xl blur opacity-50 pointer-events-none" />
+              <div className="relative bg-white/5 backdrop-blur-3xl border border-[#FFD166]/40 rounded-2xl p-3 h-full flex flex-col justify-between animate-[fade-in_0.2s]">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[10px] text-[#FFD166] font-bold uppercase tracking-widest font-display flex items-center gap-1">
+                    <Icons.Lightbulb size={11} /> 提示
+                  </span>
+                  <span className="text-[10px] font-display tabular-nums text-[#FFD166]/80">{promptCountdown}s</span>
+                </div>
+                <p className="text-[12px] text-white/90 leading-snug line-clamp-3 flex-1 font-body">
+                  {topicPrompt.tipText}
+                </p>
               </div>
-              <p className="text-[12px] text-[#4ECDC4] leading-snug line-clamp-3 flex-1">
-                {topicPrompt.tipText}
-              </p>
             </div>
           ) : (
             <button
               onClick={triggerPrompt}
               disabled={!activeSkillCard}
-              className="w-full h-full bg-gradient-to-br from-black/50 to-black/30 backdrop-blur-md border border-dashed border-[#FFD166]/40 rounded-xl text-[12px] text-white/80 flex flex-col items-center justify-center gap-1 hover:border-[#FFD166]/80 hover:text-white hover:bg-[#FFD166]/5 transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed px-2"
+              className="w-full h-full bg-white/5 backdrop-blur-3xl border border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center gap-1.5 hover:bg-white/10 hover:border-[#FFD166]/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(0,0,0,0.4)] px-2"
             >
-              <Icons.Lightbulb size={16} className="text-[#FFD166]" />
-              <span className="font-medium text-[11px]">获取智能提示</span>
+              <div className="w-7 h-7 rounded-full bg-[#FFD166]/10 flex items-center justify-center border border-[#FFD166]/30">
+                <Icons.Lightbulb size={14} className="text-[#FFD166]" />
+              </div>
+              <span className="text-[10px] text-white font-medium uppercase tracking-wider font-display">获取智能提示</span>
             </button>
           )}
         </div>
       </div>
+
 
       {/* 5分钟提示 */}
       {showSummaryPill && (
@@ -970,14 +979,14 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
             const isGift = c.type === 'gift';
             return (
               <div key={c.id} className="flex items-start gap-2 max-w-[85%] animate-[slide-in-left_0.2s_ease-out]">
-                <div className={`rounded-xl rounded-tl-none px-3 py-2 backdrop-blur-md border ${
-                  isBuy ? 'bg-[#FF4D6D]/20 border-[#FF4D6D]/40' : isGift ? 'bg-[#FFD166]/20 border-[#FFD166]/40' : 'bg-black/50 border-white/10'
+                <div className={`rounded-2xl rounded-bl-none px-3 py-2 backdrop-blur-xl border ${
+                  isBuy ? 'bg-[#FF4D6D]/15 border-[#FF4D6D]/40' : isGift ? 'bg-[#FFD166]/15 border-[#FFD166]/40' : 'bg-white/5 border-white/10'
                 }`}>
                   <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[10px] text-white/70 font-medium">{c.agent.name}</span>
-                    <span className="text-[8px] bg-white/20 px-1 rounded text-white">{c.agent.level}</span>
+                    <span className="text-[9px] font-bold text-white/40 tracking-tight font-display">{c.agent.name}</span>
+                    <span className="px-1.5 py-0.5 rounded-sm bg-white/10 text-[7px] text-white/60 font-bold uppercase font-display">{c.agent.level}</span>
                   </div>
-                  <p className={`text-[14px] leading-snug ${isBuy ? 'text-[#FF4D6D] font-medium' : isGift ? 'text-[#FFD166] font-medium' : 'text-white'}`}>
+                  <p className={`text-[13px] leading-relaxed font-body ${isBuy ? 'text-[#FF4D6D] font-medium' : isGift ? 'text-[#FFD166] font-medium' : 'text-white'}`}>
                     {c.text}
                   </p>
                 </div>
@@ -988,20 +997,20 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
         </div>
       </div>
 
-      {/* 底部控制 */}
-      <div className="absolute bottom-0 inset-x-0 h-[80px] bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between px-4 pb-safe z-30 pointer-events-auto">
-        <button onClick={() => { setIsLivePaused(true); setShowExitConfirm(true); }} className="w-12 h-12 rounded-full bg-[#FF4D6D] text-white flex flex-col items-center justify-center shadow-lg active:scale-95 transition-transform">
-          <div className="w-4 h-4 bg-white rounded-sm mb-0.5" />
-          <span className="text-[10px] font-medium">结束</span>
+      {/* 底部控制 — 玻璃 */}
+      <div className="absolute bottom-0 inset-x-0 h-[88px] bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-between px-4 pb-safe z-30 pointer-events-auto">
+        <button onClick={() => { setIsLivePaused(true); setShowExitConfirm(true); }} className="h-12 w-12 rounded-full bg-[#FF4D6D] text-white flex flex-col items-center justify-center shadow-[0_0_20px_rgba(255,77,109,0.4)] active:scale-95 transition-transform">
+          <div className="w-3.5 h-3.5 bg-white rounded-sm mb-0.5" />
+          <span className="text-[8px] font-bold uppercase tracking-wide font-display">结束</span>
         </button>
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsLivePaused(!isLivePaused)} className="w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center backdrop-blur-md active:scale-95 transition-transform">
-            {isLivePaused ? <span className="text-[14px]">▶</span> : <div className="flex gap-1"><div className="w-1 h-3 bg-white"/><div className="w-1 h-3 bg-white"/></div>}
+          <button onClick={() => setIsLivePaused(!isLivePaused)} className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
+            {isLivePaused ? <span className="text-[14px]">▶</span> : <div className="flex gap-1"><div className="w-1 h-3.5 bg-white/80"/><div className="w-1 h-3.5 bg-white/80"/></div>}
           </button>
-          <button onClick={() => setShowSkillSheet(true)} className="w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center backdrop-blur-md active:scale-95 transition-transform">
+          <button onClick={() => setShowSkillSheet(true)} className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
             <Icons.RefreshCw size={16} />
           </button>
-          <button onClick={() => setMicState(!micState)} className={`w-10 h-10 rounded-full border flex items-center justify-center backdrop-blur-md active:scale-95 transition-colors ${micState ? 'bg-black/60 border-white/20 text-white' : 'bg-[#FF4D6D]/20 border-[#FF4D6D] text-[#FF4D6D]'}`}>
+          <button onClick={() => setMicState(!micState)} className={`h-12 w-12 rounded-full border backdrop-blur-xl flex items-center justify-center active:scale-95 transition-all ${micState ? 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10' : 'bg-[#FF4D6D]/15 border-[#FF4D6D]/40 text-[#FF4D6D]'}`}>
             {micState ? <Icons.Mic size={16} /> : <Icons.MicOff size={16} />}
           </button>
         </div>
@@ -1297,95 +1306,113 @@ function ProfilePage({
           </div>
         </section>
 
-        {/* 训练日历 */}
-        <section className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl border border-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display text-[14px] font-semibold text-white flex items-center gap-2">
-              <Icons.Calendar size={14} className="text-[#4ECDC4]" /> 训练日历
-            </h3>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setCalendarOffset(p => p - 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/60 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronLeft size={14} /></button>
-              <span className="text-[12px] text-white font-mono font-medium min-w-[72px] text-center tabular-nums">{monthLabel}</span>
-              <button onClick={() => setCalendarOffset(p => p + 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/60 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronRight size={14} /></button>
+        {/* 训练日历 — 发光玻璃 */}
+        <section className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D]/20 to-[#4ECDC4]/20 rounded-3xl blur opacity-30 pointer-events-none"></div>
+          <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-5">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#4ECDC4] shadow-[0_0_8px_#4ECDC4]"></div>
+                <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider">训练日历</h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setCalendarOffset(p => p - 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/50 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronLeft size={12} /></button>
+                <span className="text-[11px] text-white/70 font-medium min-w-[72px] text-center tabular-nums font-body">{monthLabel}</span>
+                <button onClick={() => setCalendarOffset(p => p + 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/50 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronRight size={12} /></button>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-center mb-1">
-            {['一', '二', '三', '四', '五', '六', '日'].map(w => <span key={w} className="text-[10px] text-white/30 py-0.5 font-body">{w}</span>)}
-          </div>
-          <div className="grid grid-cols-7 gap-1">
-            {getCalendarDays().map((cell, idx) => {
-              if (cell.blank) return <div key={idx} className="aspect-square" />;
-              let bg = 'bg-white/[0.03]';
-              if (cell.density === 1) bg = 'bg-[#4ECDC4]/20';
-              else if (cell.density === 2) bg = 'bg-[#4ECDC4]/45';
-              else if (cell.density >= 3) bg = 'bg-[#4ECDC4]/75 shadow-[0_0_8px_rgba(78,205,196,0.4)]';
-              return (
-                <div key={idx} className={`aspect-square rounded-md flex items-center justify-center text-[11px] font-mono transition-colors ${bg} ${cell.isToday ? 'ring-1 ring-[#FF4D6D] shadow-[0_0_6px_rgba(255,77,109,0.5)]' : ''} ${cell.density > 0 ? 'text-white font-semibold' : 'text-white/30'}`}>
-                  {cell.dayNum}
-                </div>
-              );
-            })}
+            <div className="grid grid-cols-7 gap-1.5 text-center mb-2">
+              {['一', '二', '三', '四', '五', '六', '日'].map(w => <span key={w} className="text-[10px] text-white/30 font-bold">{w}</span>)}
+            </div>
+            <div className="grid grid-cols-7 gap-1.5">
+              {getCalendarDays().map((cell, idx) => {
+                if (cell.blank) return <div key={idx} className="aspect-square" />;
+                const hasDensity = cell.density > 0;
+                let cls = 'text-white/20';
+                if (hasDensity) {
+                  cls = 'bg-white/5 border border-white/5 text-white/80';
+                  if (cell.density >= 3) cls = 'bg-[#4ECDC4]/15 border border-[#4ECDC4]/30 text-white shadow-[inset_0_0_10px_rgba(78,205,196,0.18)]';
+                  else if (cell.density === 2) cls = 'bg-[#4ECDC4]/10 border border-[#4ECDC4]/20 text-white';
+                }
+                if (cell.isToday) cls = 'bg-[#FF4D6D]/10 border-2 border-[#FF4D6D] text-white font-bold shadow-[inset_0_0_12px_rgba(255,77,109,0.2)]';
+                return (
+                  <div key={idx} className={`aspect-square rounded-lg flex items-center justify-center text-[11px] font-display tabular-nums transition-colors relative ${cls}`}>
+                    {cell.dayNum}
+                    {cell.isToday && <div className="absolute -top-1 -right-1 w-2 h-2 bg-[#FFD166] rounded-full border border-[#0F0F0F]" />}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 
-        {/* 训练档案 — 固定高度，内部滚动 */}
-        <section className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl border border-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display text-[14px] font-semibold text-white flex items-center gap-2">
-              <Icons.BookOpen size={14} className="text-[#FF4D6D]" /> 训练档案
+        {/* 训练档案 — 发光玻璃 */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <span className="w-1 h-4 bg-[#FF4D6D] rounded-full shadow-[0_0_6px_#FF4D6D]" />
+              训练档案
             </h3>
-            <span className="text-[11px] text-white/40 font-mono tabular-nums">{trainSessions.length} REC</span>
+            <span className="text-[10px] text-[#4ECDC4] font-bold tracking-tighter font-display tabular-nums">{trainSessions.length} REC</span>
           </div>
 
           {trainSessions.length === 0 ? (
-            <div className="py-8 text-center">
-              <p className="text-[13px] text-white font-medium mb-1 font-display">还没有训练记录</p>
-              <p className="text-[11px] text-white/40 mb-3 font-body">去首页导入素材，开始第一场训练</p>
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D]/10 to-[#4ECDC4]/10 rounded-2xl blur opacity-30 pointer-events-none" />
+              <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl py-8 text-center">
+                <p className="text-[13px] text-white font-medium mb-1 font-display">还没有训练记录</p>
+                <p className="text-[11px] text-white/40 font-body">去首页导入素材，开始第一场训练</p>
+              </div>
             </div>
           ) : (
-            <div className="max-h-[260px] overflow-y-auto pr-1 space-y-2 archive-scroll">
+            <div className="max-h-[240px] overflow-y-auto pr-1 space-y-2.5 archive-scroll">
               {trainSessions.map(session => {
                 const isExpanded = selectedArchiveId === session.id;
                 const isFav = favoriteSessions.includes(session.id);
                 return (
-                  <div key={session.id} className={`rounded-xl border overflow-hidden transition-all ${isExpanded ? 'border-[#4ECDC4]/50 bg-[#4ECDC4]/[0.04]' : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'}`}>
-                    <div onClick={() => setSelectedArchiveId(isExpanded ? null : session.id)} className="px-3 py-2.5 cursor-pointer flex justify-between items-start gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="text-[12px] font-display font-semibold text-white truncate">{session.date}</span>
-                          {isFav && <Icons.Star size={10} fill="#FFD166" className="text-[#FFD166] shrink-0" />}
-                        </div>
-                        <p className="text-[10px] text-white/50 font-body truncate">时长 {session.durationStr} · {session.skillCards.join(' · ')}</p>
-                      </div>
-                      <div className="text-white/30 mt-0.5 shrink-0">{isExpanded ? <Icons.ChevronUp size={14} /> : <Icons.ChevronDown size={14} />}</div>
-                    </div>
-
-                    {isExpanded && (
-                      <div className="px-3 pb-3 pt-1 border-t border-white/5 space-y-3">
-                        <div>
-                          <h4 className="text-[11px] font-display font-semibold text-white/70 mb-1.5 uppercase tracking-wider">综合诊断</h4>
-                          <p className="text-[11px] text-white/70 leading-relaxed font-body">{session.summary}</p>
-                        </div>
-                        {session.suggestions?.length > 0 && (
-                          <div>
-                            <h4 className="text-[11px] font-display font-semibold text-white/70 mb-1.5 uppercase tracking-wider">改进建议</h4>
-                            <div className="space-y-1">
-                              {session.suggestions.map((item, idx) => (
-                                <p key={idx} className="text-[11px] text-white/70 flex items-start gap-1.5 font-body leading-relaxed"><span className="text-[#FFD166] mt-0.5 shrink-0">•</span> {item}</p>
-                              ))}
-                            </div>
+                  <div key={session.id} className="relative group">
+                    {isExpanded && <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4ECDC4]/30 to-[#FF4D6D]/20 rounded-2xl blur opacity-40 pointer-events-none" />}
+                    <div className={`relative rounded-2xl border backdrop-blur-xl overflow-hidden transition-all ${isExpanded ? 'border-[#4ECDC4]/40 bg-white/[0.06]' : 'border-white/10 bg-white/5 hover:bg-white/[0.08]'}`}>
+                      <div onClick={() => setSelectedArchiveId(isExpanded ? null : session.id)} className="p-4 cursor-pointer flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-[13px] font-display font-bold text-white truncate">{session.date}</p>
+                            {isFav && <span className="text-[#FFD166] text-[11px] shrink-0">✦</span>}
                           </div>
-                        )}
-                        <div className="flex gap-2 pt-1">
-                          <button onClick={() => toggleFavorite(session.id)} className={`flex-1 py-2 rounded-lg text-[12px] font-medium border flex items-center justify-center gap-1.5 transition-colors ${isFav ? 'bg-[#FFD166]/10 border-[#FFD166]/30 text-[#FFD166]' : 'bg-white/[0.03] border-white/10 text-white hover:bg-white/[0.06]'}`}>
-                            <Icons.Star size={12} fill={isFav ? 'currentColor' : 'none'} /> {isFav ? '已收藏' : '收藏'}
-                          </button>
-                          <button onClick={() => deleteSession(session.id)} className="px-3 py-2 rounded-lg border border-white/10 text-[#FF4D6D] bg-white/[0.03] hover:bg-[#FF4D6D]/10 transition-colors flex items-center justify-center">
-                            <Icons.Trash2 size={14} />
-                          </button>
+                          <p className="text-white/40 text-[11px] truncate font-body">时长 {session.durationStr} · {session.skillCards.join(' · ')}</p>
+                        </div>
+                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-colors ${isExpanded ? 'border-[#4ECDC4]/40 text-[#4ECDC4] bg-[#4ECDC4]/10' : 'border-white/10 text-white/40 group-hover:border-white/20 group-hover:text-white'}`}>
+                          {isExpanded ? <Icons.ChevronUp size={14} /> : <Icons.ChevronRight size={14} />}
                         </div>
                       </div>
-                    )}
+
+                      {isExpanded && (
+                        <div className="px-4 pb-4 pt-1 border-t border-white/5 space-y-3 animate-[fade-in_0.2s_ease-out]">
+                          <div>
+                            <h4 className="text-[10px] font-display font-bold text-[#4ECDC4] mb-1.5 uppercase tracking-widest">综合诊断</h4>
+                            <p className="text-[11px] text-white/70 leading-relaxed font-body">{session.summary}</p>
+                          </div>
+                          {session.suggestions?.length > 0 && (
+                            <div>
+                              <h4 className="text-[10px] font-display font-bold text-[#FFD166] mb-1.5 uppercase tracking-widest">改进建议</h4>
+                              <div className="space-y-1">
+                                {session.suggestions.map((item, idx) => (
+                                  <p key={idx} className="text-[11px] text-white/70 flex items-start gap-1.5 font-body leading-relaxed"><span className="text-[#FFD166] mt-0.5 shrink-0">›</span> {item}</p>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex gap-2 pt-1">
+                            <button onClick={() => toggleFavorite(session.id)} className={`flex-1 py-2 rounded-xl text-[12px] font-medium border flex items-center justify-center gap-1.5 backdrop-blur-md transition-colors ${isFav ? 'bg-[#FFD166]/10 border-[#FFD166]/30 text-[#FFD166]' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}>
+                              <Icons.Star size={12} fill={isFav ? 'currentColor' : 'none'} /> {isFav ? '已收藏' : '收藏'}
+                            </button>
+                            <button onClick={() => deleteSession(session.id)} className="px-3 py-2 rounded-xl border border-white/10 text-[#FF4D6D] bg-white/5 hover:bg-[#FF4D6D]/10 backdrop-blur-md transition-colors flex items-center justify-center">
+                              <Icons.Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
