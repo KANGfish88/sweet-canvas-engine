@@ -1,14 +1,14 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  TAG_OPTIONS,
+  skillsApi,
+  settingsApi,
+  sessionsApi,
+  userApi,
+  liveApi,
+} from '@/api';
 
-const safeGet = (key: string, fallback: any) => {
-  if (typeof window === 'undefined') return fallback;
-  try { const v = window.localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
-};
-const safeSet = (key: string, value: any) => {
-  if (typeof window === 'undefined') return;
-  try { window.localStorage.setItem(key, JSON.stringify(value)); } catch {}
-};
 
 // ==========================================
 // 1. 图标库 (SVG Icons)
