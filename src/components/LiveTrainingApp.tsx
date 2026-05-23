@@ -392,6 +392,7 @@ function HomePage({
   const [selectedDetailCard, setSelectedDetailCard] = useState(null);
   const [personaTab, setPersonaTab] = useState('text'); // text, auto
   const [isRecording, setIsRecording] = useState(false);
+  const [tagsExpanded, setTagsExpanded] = useState(false);
   const recordingTimerRef = useRef(null);
 
   const analysisSteps = ["话题结构", "互动技巧", "节奏把控", "情绪调动", "开场设计", "收尾引导"];
@@ -629,9 +630,8 @@ function HomePage({
 
         {/* 基础设置区 */}
         <section className="bg-[#1A1A1A] rounded-xl border border-[#333333] shadow-lg overflow-hidden">
-          <div className="p-4 flex items-center justify-between border-b border-[#333333]">
+          <div className="p-4 border-b border-[#333333]">
             <h2 className="text-[16px] font-semibold text-white">基础设置</h2>
-            <span className="text-[12px] text-[#6B6B6B]">展开 ▼</span>
           </div>
           
           <div className="p-4 space-y-6">
@@ -669,28 +669,59 @@ function HomePage({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-[14px] font-medium text-[#B3B3B3]">标签</h3>
-                <span className="text-[12px] text-[#4ECDC4]">已选：{basicSettings.tags.join('、') || '无'}</span>
+                <span className="text-[12px] text-[#4ECDC4] truncate max-w-[60%] text-right">已选：{basicSettings.tags.join('、') || '无'}</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className={`flex gap-2 ${tagsExpanded ? 'flex-wrap' : 'flex-nowrap overflow-x-auto scrollbar-none'}`}>
                 {TAG_OPTIONS.map(tag => {
                   const isTagActive = basicSettings.tags.includes(tag);
                   return (
                     <button
                       key={tag}
                       onClick={() => toggleTagChip(tag)}
-                      className={`text-[12px] px-3 py-1.5 rounded-full border transition-all ${isTagActive ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/40 text-[#4ECDC4]' : 'bg-[#0F0F0F] border-[#333333] text-[#6B6B6B] hover:border-[#6B6B6B]'}`}
+                      className={`text-[12px] px-3 py-1.5 rounded-full border transition-all shrink-0 ${isTagActive ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/40 text-[#4ECDC4]' : 'bg-[#0F0F0F] border-[#333333] text-[#6B6B6B] hover:border-[#6B6B6B]'}`}
                     >
                       {tag}
                     </button>
                   );
                 })}
               </div>
+              <button
+                onClick={() => setTagsExpanded(p => !p)}
+                className="text-[12px] text-[#6B6B6B] hover:text-[#4ECDC4] flex items-center gap-1 transition-colors"
+              >
+                {tagsExpanded ? <>收起 <Icons.ChevronUp size={12} /></> : <>展开全部标签 <Icons.ChevronDown size={12} /></>}
+              </button>
             </div>
 
           </div>
         </section>
 
       </main>
+
+      {/* 底部"开始直播"操作栏 */}
+      {selectedSkills.length > 0 && (
+        <div className="sticky bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-3 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F] to-transparent pointer-events-auto animate-[slide-in-up_0.3s_ease-out]">
+          <div className="bg-gradient-to-r from-[#1A1A1A] to-[#262626] border border-[#4ECDC4]/40 rounded-2xl p-3 shadow-2xl shadow-[#4ECDC4]/10 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#4ECDC4]/15 border border-[#4ECDC4]/30 flex items-center justify-center shrink-0">
+              <Icons.Sparkles size={16} className="text-[#4ECDC4]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-semibold text-white leading-tight">
+                技能卡沙盒配置已就绪
+              </p>
+              <p className="text-[10px] text-[#B3B3B3] leading-snug mt-0.5">
+                已加载 <span className="text-[#4ECDC4] font-mono font-semibold">{selectedSkills.length}</span> 张金牌实训策略，虚拟AI观众将针对话术产生特定行为
+              </p>
+            </div>
+            <button
+              onClick={() => { triggerToast(`已加载 ${selectedSkills.length} 张技能卡`, 'success'); setCurrentPath('/live'); }}
+              className="shrink-0 px-4 h-10 rounded-xl bg-gradient-to-r from-[#FF4D6D] to-[#FF6B85] text-white text-[13px] font-semibold shadow-lg shadow-[#FF4D6D]/30 hover:shadow-[#FF4D6D]/50 transition-all flex items-center gap-1.5"
+            >
+              开始直播 <Icons.ArrowRight size={14} />
+            </button>
+          </div>
+        </div>
+      )}
 
 
       {/* 技能卡详情半弹窗 */}
@@ -1247,13 +1278,51 @@ function ProfilePage({
     setIsEditingUsername(false);
   };
 
+  // 真实月份计算（基于 calendarOffset 与今天）
+  const today = new Date();
+  const viewDate = new Date(today.getFullYear(), today.getMonth() + calendarOffset, 1);
+  const viewYear = viewDate.getFullYear();
+  const viewMonth = viewDate.getMonth();
+
+  // 训练密度热力图：根据 trainSessions 按日期聚合
+  const densityMap = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    trainSessions.forEach(s => {
+      // 兼容 session.date 形如 "2026年5月23日 14:30"，否则尝试 Date.parse
+      let key: string | null = null;
+      if (typeof s.date === 'string') {
+        const m = s.date.match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+        if (m) key = `${m[1]}-${parseInt(m[2], 10)}-${parseInt(m[3], 10)}`;
+      }
+      if (!key && s.timestamp) {
+        const d = new Date(s.timestamp);
+        if (!isNaN(d.getTime())) key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      }
+      if (key) map[key] = (map[key] || 0) + 1;
+    });
+    // demo 默认数据（仅当前月无任何训练时显示，便于预览热力图效果）
+    if (Object.keys(map).length === 0 && calendarOffset === 0) {
+      const y = today.getFullYear(), m = today.getMonth() + 1;
+      [[10,1],[13,1],[14,2],[15,3],[20,1],[23,1],[24,2]].forEach(([d,c]) => { map[`${y}-${m}-${d}`] = c; });
+    }
+    return map;
+  }, [trainSessions, calendarOffset]);
+
   const getCalendarDays = () => {
-    const days = [];
-    for (let i = 0; i < 4; i++) days.push({ blank: true });
-    const densityMap = { 10: 1, 13: 1, 14: 2, 15: 3, 20: 1, 23: 1, 24: 2 };
-    for (let d = 1; d <= 31; d++) days.push({ dayNum: d, density: densityMap[d] || 0, isToday: d === 23 });
+    const days: Array<{ blank?: boolean; dayNum?: number; density?: number; isToday?: boolean }> = [];
+    // 周一为一周起点：JS getDay() 周日=0，转换：(getDay()+6)%7
+    const firstWeekday = (new Date(viewYear, viewMonth, 1).getDay() + 6) % 7;
+    for (let i = 0; i < firstWeekday; i++) days.push({ blank: true });
+    const lastDay = new Date(viewYear, viewMonth + 1, 0).getDate();
+    for (let d = 1; d <= lastDay; d++) {
+      const density = densityMap[`${viewYear}-${viewMonth + 1}-${d}`] || 0;
+      const isToday = d === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear();
+      days.push({ dayNum: d, density, isToday });
+    }
     return days;
   };
+
+  const monthLabel = `${viewYear}年${viewMonth + 1}月`;
 
   const toggleFavorite = (id) => {
     if (favoriteSessions.includes(id)) {
@@ -1316,7 +1385,7 @@ function ProfilePage({
             </h3>
             <div className="flex items-center gap-3">
               <button onClick={() => setCalendarOffset(p => p - 1)} className="text-[#6B6B6B] hover:text-white"><Icons.ChevronLeft size={16} /></button>
-              <span className="text-[12px] text-white font-medium">{calendarOffset === 0 ? '2026年5月' : calendarOffset < 0 ? '2026年4月' : '2026年6月'}</span>
+              <span className="text-[12px] text-white font-medium min-w-[78px] text-center tabular-nums">{monthLabel}</span>
               <button onClick={() => setCalendarOffset(p => p + 1)} className="text-[#6B6B6B] hover:text-white"><Icons.ChevronRight size={16} /></button>
             </div>
           </div>
@@ -1331,7 +1400,7 @@ function ProfilePage({
               else if (cell.density === 2) bg = 'bg-[rgba(78,205,196,0.45)]';
               else if (cell.density >= 3) bg = 'bg-[rgba(78,205,196,0.75)]';
               return (
-                <div key={idx} className={`aspect-square rounded-md flex items-center justify-center text-[12px] font-mono ${bg} ${cell.isToday ? 'border border-[#FF4D6D]' : 'border border-[#333333]'} ${cell.density > 0 ? 'text-white' : 'text-[#6B6B6B]'}`}>
+                <div key={idx} className={`aspect-square rounded-md flex items-center justify-center text-[12px] font-mono transition-colors ${bg} ${cell.isToday ? 'ring-1 ring-[#FF4D6D]' : ''} ${cell.density > 0 ? 'text-white' : 'text-[#6B6B6B]'}`}>
                   {cell.dayNum}
                 </div>
               );
