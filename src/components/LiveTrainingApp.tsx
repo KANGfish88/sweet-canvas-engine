@@ -1006,20 +1006,6 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
         </div>
       </div>
 
-      {/* 进度条 */}
-      {activeSkillCard && (
-        <div className="absolute top-[80px] left-4 right-[120px] z-30 bg-black/40 backdrop-blur-md rounded-lg p-2 border border-white/10 pointer-events-auto">
-          <div className="flex justify-between text-[10px] text-white mb-1.5">
-            <span className="truncate">{activeSkillCard.title}</span>
-            <span className="text-[#4ECDC4] shrink-0 ml-2">第{activeSkillCard.trainedSessions + 1}/5场</span>
-          </div>
-          <div className="h-1.5 bg-white/20 rounded-full overflow-hidden relative">
-            <div className="h-full bg-[#4ECDC4] transition-all duration-1000" style={{ width: `${skillProgress}%` }} />
-            <div className="absolute top-0 bottom-0 left-[80%] w-0.5 bg-white/80" />
-          </div>
-        </div>
-      )}
-
       {/* 5分钟提示 */}
       {showSummaryPill && (
         <div className="absolute top-[130px] inset-x-4 z-40 animate-[slide-in-down_0.3s_ease-out]">
