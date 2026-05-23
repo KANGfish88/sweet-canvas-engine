@@ -1400,7 +1400,7 @@ function ProfilePage({
               else if (cell.density === 2) bg = 'bg-[rgba(78,205,196,0.45)]';
               else if (cell.density >= 3) bg = 'bg-[rgba(78,205,196,0.75)]';
               return (
-                <div key={idx} className={`aspect-square rounded-md flex items-center justify-center text-[12px] font-mono ${bg} ${cell.isToday ? 'border border-[#FF4D6D]' : 'border border-[#333333]'} ${cell.density > 0 ? 'text-white' : 'text-[#6B6B6B]'}`}>
+                <div key={idx} className={`aspect-square rounded-md flex items-center justify-center text-[12px] font-mono transition-colors ${bg} ${cell.isToday ? 'ring-1 ring-[#FF4D6D]' : ''} ${cell.density > 0 ? 'text-white' : 'text-[#6B6B6B]'}`}>
                   {cell.dayNum}
                 </div>
               );
