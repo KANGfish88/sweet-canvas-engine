@@ -116,33 +116,53 @@ export default function App() {
   const [currentPath, setCurrentPath] = useState('/');
   const [toast, setToast] = useState(null);
 
-  // localStorage States
-  const [skillCardLibrary, setSkillCardLibrary] = useState(() => {
-    try { const saved = localStorage.getItem('skill-card-library'); return saved ? JSON.parse(saved) : MOCK_SKILL_CARDS; } catch { return MOCK_SKILL_CARDS; }
-  });
-  const [selectedSkills, setSelectedSkills] = useState(() => {
-    try { const saved = localStorage.getItem('selected-skill-cards'); return saved ? JSON.parse(saved) : ["sc-1", "sc-2"]; } catch { return ["sc-1", "sc-2"]; }
-  });
-  const [trainSessions, setTrainSessions] = useState(() => {
-    try { const saved = localStorage.getItem('train-sessions'); return saved ? JSON.parse(saved) : MOCK_INITIAL_ARCHIVE; } catch { return MOCK_INITIAL_ARCHIVE; }
-  });
-  const [favoriteSessions, setFavoriteSessions] = useState(() => {
-    try { const saved = localStorage.getItem('favorite-sessions'); return saved ? JSON.parse(saved) : ["session-001"]; } catch { return ["session-001"]; }
-  });
-  const [userProfile, setUserProfile] = useState(() => {
-    try { const saved = localStorage.getItem('user-profile'); return saved ? JSON.parse(saved) : { username: "直播练习生", totalSessions: 12, totalSkills: 8, totalFavorites: 3 }; } catch { return { username: "直播练习生", totalSessions: 12, totalSkills: 8, totalFavorites: 3 }; }
-  });
-  const [basicSettings, setBasicSettings] = useState(() => {
-    try { const saved = localStorage.getItem('basic-settings'); return saved ? JSON.parse(saved) : { persona: "我是一个分享通勤穿搭的上班族，风格偏简约...", tags: ["穿搭", "职场"] }; } catch { return { persona: "我是一个分享通勤穿搭的上班族，风格偏简约...", tags: ["穿搭", "职场"] }; }
-  });
+  // 数据状态：初始空值 → useEffect 异步从 api 加载；写入自动经 api 持久化
+  const [skillCardLibrary, setSkillCardLibraryState] = useState([]);
+  const [selectedSkills, setSelectedSkillsState] = useState([]);
+  const [trainSessions, setTrainSessionsState] = useState([]);
+  const [favoriteSessions, setFavoriteSessionsState] = useState([]);
+  const [userProfile, setUserProfileState] = useState({ username: '', totalSessions: 0, totalSkills: 0, totalFavorites: 0 });
+  const [basicSettings, setBasicSettingsState] = useState({ persona: '', tags: [] });
+  const [dataReady, setDataReady] = useState(false);
 
-  // Persist to localStorage
-  useEffect(() => { localStorage.setItem('skill-card-library', JSON.stringify(skillCardLibrary)); }, [skillCardLibrary]);
-  useEffect(() => { localStorage.setItem('selected-skill-cards', JSON.stringify(selectedSkills)); }, [selectedSkills]);
-  useEffect(() => { localStorage.setItem('train-sessions', JSON.stringify(trainSessions)); }, [trainSessions]);
-  useEffect(() => { localStorage.setItem('favorite-sessions', JSON.stringify(favoriteSessions)); }, [favoriteSessions]);
-  useEffect(() => { localStorage.setItem('user-profile', JSON.stringify(userProfile)); }, [userProfile]);
-  useEffect(() => { localStorage.setItem('basic-settings', JSON.stringify(basicSettings)); }, [basicSettings]);
+  // 初次挂载：并行拉取全部数据
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([
+      skillsApi.list(),
+      skillsApi.getSelected(),
+      sessionsApi.listTrain(),
+      sessionsApi.listFavorites(),
+      userApi.getProfile(),
+      settingsApi.get(),
+    ]).then(([lib, sel, train, fav, prof, basic]) => {
+      if (!mounted) return;
+      setSkillCardLibraryState(lib);
+      setSelectedSkillsState(sel);
+      setTrainSessionsState(train);
+      setFavoriteSessionsState(fav);
+      setUserProfileState(prof);
+      setBasicSettingsState(basic);
+      setDataReady(true);
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  // 写入封装：state 更新后自动调用 api 持久化（mock 走 localStorage，真后端走 HTTP）
+  const wrap = (setter, save) => (updater) => {
+    setter(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (dataReady) save(next);
+      return next;
+    });
+  };
+  const setSkillCardLibrary = wrap(setSkillCardLibraryState, skillsApi.saveLibrary);
+  const setSelectedSkills    = wrap(setSelectedSkillsState,    skillsApi.setSelected);
+  const setTrainSessions     = wrap(setTrainSessionsState,     sessionsApi.saveTrain);
+  const setFavoriteSessions  = wrap(setFavoriteSessionsState,  sessionsApi.saveFavorites);
+  const setUserProfile       = wrap(setUserProfileState,       userApi.saveProfile);
+  const setBasicSettings     = wrap(setBasicSettingsState,     settingsApi.save);
+
 
   // Toast Control
   const triggerToast = (msg, type = 'success') => {
