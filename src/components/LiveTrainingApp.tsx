@@ -780,7 +780,7 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
     return () => cancelAnimationFrame(animationFrameId);
   }, [cameraFailed, micState, isLivePaused]);
 
-  // 全局计时器
+  // 全局计时器（直播时长 + 当前技能卡进度）
   useEffect(() => {
     let interval;
     if (!isLivePaused && !showReportOverlay) {
@@ -790,36 +790,30 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
           if (next === 300) setShowSummaryPill(true);
           return next;
         });
-        setViewerCount(prev => Math.max(100, prev + Math.floor(Math.random() * 40) - 20));
         setSkillProgress(p => Math.min(100, p + 0.5));
       }, 1000);
     }
     return () => clearInterval(interval);
   }, [isLivePaused, showReportOverlay]);
 
-  // 弹幕生成器
+  // 观众数：订阅后端推送（mock 模式下本地模拟）
   useEffect(() => {
-    let timer;
-    const generate = () => {
-      const agent = AI_AGENTS_POOL[Math.floor(Math.random() * AI_AGENTS_POOL.length)];
-      let templates = [...COMMENT_TEMPLATES.general];
-      if (activeSkillCard && COMMENT_TEMPLATES[activeSkillCard.id]) {
-        if (Math.random() > 0.5) templates = [...COMMENT_TEMPLATES[activeSkillCard.id], ...templates];
-      }
-      const text = templates[Math.floor(Math.random() * templates.length)];
-      
-      let type = 'normal';
-      if (text.includes("下单") || text.includes("抢")) type = 'buy';
-      else if (Math.random() < 0.1) type = 'gift';
+    return liveApi.subscribeViewers({
+      isPaused: () => isLivePaused || showReportOverlay,
+      onChange: (delta) => setViewerCount(prev => Math.max(100, prev + delta)),
+    });
+  }, [isLivePaused, showReportOverlay]);
 
-      setComments(prev => [...prev.slice(-39), { id: Date.now() + Math.random(), agent, text, type }]);
-      timer = setTimeout(generate, Math.random() * 2000 + 1500);
-    };
-    if (!isLivePaused && !showReportOverlay) {
-      timer = setTimeout(generate, 1500);
-    }
-    return () => clearTimeout(timer);
+  // 评论流：订阅后端推送（mock 模式下按当前激活技能卡生成）
+  useEffect(() => {
+    return liveApi.subscribeComments({
+      getActiveSkillId: () => activeSkillCard?.id ?? null,
+      isPaused: () => isLivePaused || showReportOverlay,
+      onComment: (c) => setComments(prev => [...prev.slice(-39), c]),
+    });
   }, [isLivePaused, showReportOverlay, activeSkillCard]);
+
+
 
   // 滚动弹幕到底部
   useEffect(() => {
