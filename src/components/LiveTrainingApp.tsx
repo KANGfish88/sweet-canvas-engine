@@ -997,20 +997,20 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
         </div>
       </div>
 
-      {/* 底部控制 */}
-      <div className="absolute bottom-0 inset-x-0 h-[80px] bg-gradient-to-t from-black/90 to-transparent flex items-center justify-between px-4 pb-safe z-30 pointer-events-auto">
-        <button onClick={() => { setIsLivePaused(true); setShowExitConfirm(true); }} className="w-12 h-12 rounded-full bg-[#FF4D6D] text-white flex flex-col items-center justify-center shadow-lg active:scale-95 transition-transform">
-          <div className="w-4 h-4 bg-white rounded-sm mb-0.5" />
-          <span className="text-[10px] font-medium">结束</span>
+      {/* 底部控制 — 玻璃 */}
+      <div className="absolute bottom-0 inset-x-0 h-[88px] bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-between px-4 pb-safe z-30 pointer-events-auto">
+        <button onClick={() => { setIsLivePaused(true); setShowExitConfirm(true); }} className="h-12 w-12 rounded-full bg-[#FF4D6D] text-white flex flex-col items-center justify-center shadow-[0_0_20px_rgba(255,77,109,0.4)] active:scale-95 transition-transform">
+          <div className="w-3.5 h-3.5 bg-white rounded-sm mb-0.5" />
+          <span className="text-[8px] font-bold uppercase tracking-wide font-display">结束</span>
         </button>
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsLivePaused(!isLivePaused)} className="w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center backdrop-blur-md active:scale-95 transition-transform">
-            {isLivePaused ? <span className="text-[14px]">▶</span> : <div className="flex gap-1"><div className="w-1 h-3 bg-white"/><div className="w-1 h-3 bg-white"/></div>}
+          <button onClick={() => setIsLivePaused(!isLivePaused)} className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
+            {isLivePaused ? <span className="text-[14px]">▶</span> : <div className="flex gap-1"><div className="w-1 h-3.5 bg-white/80"/><div className="w-1 h-3.5 bg-white/80"/></div>}
           </button>
-          <button onClick={() => setShowSkillSheet(true)} className="w-10 h-10 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center backdrop-blur-md active:scale-95 transition-transform">
+          <button onClick={() => setShowSkillSheet(true)} className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
             <Icons.RefreshCw size={16} />
           </button>
-          <button onClick={() => setMicState(!micState)} className={`w-10 h-10 rounded-full border flex items-center justify-center backdrop-blur-md active:scale-95 transition-colors ${micState ? 'bg-black/60 border-white/20 text-white' : 'bg-[#FF4D6D]/20 border-[#FF4D6D] text-[#FF4D6D]'}`}>
+          <button onClick={() => setMicState(!micState)} className={`h-12 w-12 rounded-full border backdrop-blur-xl flex items-center justify-center active:scale-95 transition-all ${micState ? 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10' : 'bg-[#FF4D6D]/15 border-[#FF4D6D]/40 text-[#FF4D6D]'}`}>
             {micState ? <Icons.Mic size={16} /> : <Icons.MicOff size={16} />}
           </button>
         </div>
