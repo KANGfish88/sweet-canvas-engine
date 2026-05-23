@@ -846,22 +846,18 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
     return `${h}:${m}:${s}`;
   };
 
-  const saveAndExit = () => {
-    const newSession = {
-      id: `session-${Date.now()}`,
-      date: new Date().toISOString().slice(0, 16).replace('T', ' '),
+  const saveAndExit = async () => {
+    const session = await sessionsApi.endLive({
+      sessionId: `session-${Date.now()}`,
       duration: liveSeconds,
-      durationStr: `${Math.floor(liveSeconds / 60)}分${liveSeconds % 60}秒`,
       skillCards: activeSkillCards.map(c => c.title.split('」')[0].substring(1)),
-      scores: { rhythm: 8, interaction: 7, topic: 8 },
-      summary: "本次训练中表现自然流畅。评论区互动积极，冷场时的应对可以更灵活。",
-      suggestions: ["尝试加入更多具体细节", "先认同再展开"]
-    };
-    setTrainSessions(prev => [newSession, ...prev]);
+    });
+    setTrainSessions(prev => [session, ...prev]);
     setShowReportOverlay(false);
     setCurrentPath('/profile');
     triggerToast("报告已存入档案");
   };
+
 
   return (
     <div className="absolute inset-0 bg-black z-50 flex flex-col justify-between overflow-hidden">
