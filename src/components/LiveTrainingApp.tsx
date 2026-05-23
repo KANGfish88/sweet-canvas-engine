@@ -1297,34 +1297,43 @@ function ProfilePage({
           </div>
         </section>
 
-        {/* 训练日历 */}
-        <section className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl border border-white/[0.06] p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display text-[14px] font-semibold text-white flex items-center gap-2">
-              <Icons.Calendar size={14} className="text-[#4ECDC4]" /> 训练日历
-            </h3>
-            <div className="flex items-center gap-2">
-              <button onClick={() => setCalendarOffset(p => p - 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/60 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronLeft size={14} /></button>
-              <span className="text-[12px] text-white font-mono font-medium min-w-[72px] text-center tabular-nums">{monthLabel}</span>
-              <button onClick={() => setCalendarOffset(p => p + 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/60 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronRight size={14} /></button>
+        {/* 训练日历 — 发光玻璃 */}
+        <section className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D]/20 to-[#4ECDC4]/20 rounded-3xl blur opacity-30 pointer-events-none"></div>
+          <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-5">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#4ECDC4] shadow-[0_0_8px_#4ECDC4]"></div>
+                <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider">训练日历</h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setCalendarOffset(p => p - 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/50 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronLeft size={12} /></button>
+                <span className="text-[11px] text-white/70 font-medium min-w-[72px] text-center tabular-nums font-body">{monthLabel}</span>
+                <button onClick={() => setCalendarOffset(p => p + 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/50 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronRight size={12} /></button>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-center mb-1">
-            {['一', '二', '三', '四', '五', '六', '日'].map(w => <span key={w} className="text-[10px] text-white/30 py-0.5 font-body">{w}</span>)}
-          </div>
-          <div className="grid grid-cols-7 gap-1">
-            {getCalendarDays().map((cell, idx) => {
-              if (cell.blank) return <div key={idx} className="aspect-square" />;
-              let bg = 'bg-white/[0.03]';
-              if (cell.density === 1) bg = 'bg-[#4ECDC4]/20';
-              else if (cell.density === 2) bg = 'bg-[#4ECDC4]/45';
-              else if (cell.density >= 3) bg = 'bg-[#4ECDC4]/75 shadow-[0_0_8px_rgba(78,205,196,0.4)]';
-              return (
-                <div key={idx} className={`aspect-square rounded-md flex items-center justify-center text-[11px] font-mono transition-colors ${bg} ${cell.isToday ? 'ring-1 ring-[#FF4D6D] shadow-[0_0_6px_rgba(255,77,109,0.5)]' : ''} ${cell.density > 0 ? 'text-white font-semibold' : 'text-white/30'}`}>
-                  {cell.dayNum}
-                </div>
-              );
-            })}
+            <div className="grid grid-cols-7 gap-1.5 text-center mb-2">
+              {['一', '二', '三', '四', '五', '六', '日'].map(w => <span key={w} className="text-[10px] text-white/30 font-bold">{w}</span>)}
+            </div>
+            <div className="grid grid-cols-7 gap-1.5">
+              {getCalendarDays().map((cell, idx) => {
+                if (cell.blank) return <div key={idx} className="aspect-square" />;
+                const hasDensity = cell.density > 0;
+                let cls = 'text-white/20';
+                if (hasDensity) {
+                  cls = 'bg-white/5 border border-white/5 text-white/80';
+                  if (cell.density >= 3) cls = 'bg-[#4ECDC4]/15 border border-[#4ECDC4]/30 text-white shadow-[inset_0_0_10px_rgba(78,205,196,0.18)]';
+                  else if (cell.density === 2) cls = 'bg-[#4ECDC4]/10 border border-[#4ECDC4]/20 text-white';
+                }
+                if (cell.isToday) cls = 'bg-[#FF4D6D]/10 border-2 border-[#FF4D6D] text-white font-bold shadow-[inset_0_0_12px_rgba(255,77,109,0.2)]';
+                return (
+                  <div key={idx} className={`aspect-square rounded-lg flex items-center justify-center text-[11px] font-display tabular-nums transition-colors relative ${cls}`}>
+                    {cell.dayNum}
+                    {cell.isToday && <div className="absolute -top-1 -right-1 w-2 h-2 bg-[#FFD166] rounded-full border border-[#0F0F0F]" />}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 
