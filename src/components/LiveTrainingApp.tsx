@@ -346,26 +346,35 @@ function HomePage({
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto pb-24 animate-[fade-in_0.3s_ease-out]">
-      <header className="px-4 py-4 flex items-center justify-between sticky top-0 z-40 bg-[#0F0F0F]/90 backdrop-blur-md">
-        <h1 className="text-[20px] font-semibold text-white flex items-center gap-2">
-          虚拟直播间
-        </h1>
-        <button onClick={() => setCurrentPath('/live')} className="p-2 rounded-full bg-[#1A1A1A] text-[#4ECDC4] border border-[#333333] hover:bg-[#262626] transition-colors" aria-label="快捷开播">
+    <div className="flex-1 flex flex-col overflow-y-auto pb-24 animate-[fade-in_0.3s_ease-out] relative font-body">
+      {/* Ambient background glows */}
+      <div className="pointer-events-none absolute top-[-8%] right-[-15%] w-72 h-72 bg-[#FF4D6D]/15 blur-[100px] rounded-full animate-ambient z-0" />
+      <div className="pointer-events-none absolute top-[40%] left-[-20%] w-72 h-72 bg-[#4ECDC4]/12 blur-[110px] rounded-full animate-ambient-slow z-0" />
+
+      <header className="px-5 pt-6 pb-4 flex items-center justify-between sticky top-0 z-40 bg-[#0F0F0F]/80 backdrop-blur-xl">
+        <div>
+          <h1 className="text-[24px] font-bold text-white font-display tracking-tight leading-none">
+            虚拟<span className="text-[#FF4D6D]">直播间</span>
+          </h1>
+          <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-display mt-1">Live Training Studio</p>
+        </div>
+        <button onClick={() => setCurrentPath('/live')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 text-[#4ECDC4] flex items-center justify-center hover:bg-white/10 transition-all active:scale-95" aria-label="快捷开播">
           <Icons.Camera size={18} />
         </button>
       </header>
 
-      <main className="p-4 space-y-6">
-        
+      <main className="px-5 space-y-7 relative z-10">
+
         {/* 素材导入区 */}
-        <section className="space-y-3">
-          <div className="bg-[#1A1A1A] rounded-xl border border-[#333333] p-4 shadow-lg">
-            {parseState !== 'completed' ? (
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <div className="flex-1 bg-[#0F0F0F] border border-[#333333] rounded-lg flex items-center px-3 focus-within:border-[#4ECDC4] transition-colors">
-                    <input 
+        <section className="space-y-3 pt-2">
+          {parseState !== 'completed' ? (
+            <div className="space-y-3">
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D] to-[#4ECDC4] rounded-2xl blur opacity-20 group-focus-within:opacity-50 transition duration-500" />
+                <div className="relative flex items-center bg-[#1A1A1A] rounded-2xl border border-white/10 p-1.5">
+                  <div className="flex-1 flex items-center px-3 min-w-0">
+                    <Icons.Link size={16} className={`mr-2 shrink-0 transition-colors ${linkInput ? 'text-[#4ECDC4]' : 'text-white/30'}`} />
+                    <input
                       type="text"
                       placeholder="粘贴抖音视频分享链接..."
                       value={linkInput}
@@ -374,117 +383,125 @@ function HomePage({
                         if (parseState === 'error') setParseState('idle');
                       }}
                       disabled={parseState === 'parsing'}
-                      className="bg-transparent border-none outline-none text-[14px] text-white w-full py-2.5 placeholder-[#6B6B6B]"
+                      className="bg-transparent border-none outline-none text-[14px] text-white w-full py-2.5 placeholder:text-white/25"
                     />
-                    <Icons.Link size={16} className={`text-[#6B6B6B] ${linkInput ? 'text-[#4ECDC4]' : 'animate-pulse'}`} />
                   </div>
-                  <button 
+                  <button
                     onClick={handleParseLink}
                     disabled={parseState === 'parsing'}
-                    className="bg-[#262626] text-white px-4 rounded-lg text-[14px] font-medium border border-[#333333] hover:bg-[#333333] disabled:opacity-50 transition-colors"
+                    className="px-5 py-2.5 bg-white text-black text-[13px] font-bold rounded-xl font-display active:scale-95 disabled:opacity-50 transition-transform"
                   >
                     解析
                   </button>
                 </div>
-
-                {parseState === 'parsing' && (
-                  <div className="space-y-2 pt-2 animate-[fade-in_0.2s]">
-                    <div className="flex items-center justify-between text-[12px] text-[#4ECDC4]">
-                      <span className="flex items-center gap-1">
-                        <Icons.Loader size={14} /> 正在解析视频...
-                      </span>
-                      <span>{Math.floor(analysisProgress)}%</span>
-                    </div>
-                    <div className="h-1.5 bg-[#0F0F0F] rounded-full overflow-hidden">
-                      <div className="h-full bg-[#4ECDC4] transition-all duration-300" style={{ width: `${analysisProgress}%` }} />
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {analysisSteps.map((step, idx) => (
-                        <span key={step} className={`text-[10px] px-2 py-0.5 rounded-full border transition-all ${idx <= activeStepIdx ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/30 text-[#4ECDC4]' : 'bg-[#0F0F0F] border-[#333333] text-[#6B6B6B]'}`}>
-                          {idx <= activeStepIdx && '✓ '}{step}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {parseState === 'error' && (
-                  <div className="text-[12px] text-[#FF4D6D] flex items-center justify-between mt-2">
-                    <span>解析失败，请检查链接是否有效</span>
-                    <button onClick={() => setParseState('idle')} className="underline font-medium">重试</button>
-                  </div>
-                )}
               </div>
-            ) : (
-              <div className="bg-[#0F0F0F] rounded-lg p-3 border border-[#333333] flex items-center gap-3 animate-[fade-in_0.3s]">
-                <div className="w-14 h-16 rounded bg-[#262626] flex items-center justify-center shrink-0 text-xl border border-[#333333]">🎬</div>
+
+              {parseState === 'parsing' && (
+                <div className="space-y-2 px-1 animate-[fade-in_0.2s]">
+                  <div className="flex items-center justify-between text-[12px] text-[#4ECDC4]">
+                    <span className="flex items-center gap-1">
+                      <Icons.Loader size={14} className="animate-spin" /> 正在解析视频...
+                    </span>
+                    <span className="font-mono">{Math.floor(analysisProgress)}%</span>
+                  </div>
+                  <div className="h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-[#4ECDC4] to-[#FF4D6D] transition-all duration-300" style={{ width: `${analysisProgress}%` }} />
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {analysisSteps.map((step, idx) => (
+                      <span key={step} className={`text-[10px] px-2 py-0.5 rounded-full border transition-all ${idx <= activeStepIdx ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/30 text-[#4ECDC4]' : 'bg-white/5 border-white/10 text-white/30'}`}>
+                        {idx <= activeStepIdx && '✓ '}{step}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {parseState === 'error' && (
+                <div className="text-[12px] text-[#FF4D6D] flex items-center justify-between px-1">
+                  <span>解析失败，请检查链接是否有效</span>
+                  <button onClick={() => setParseState('idle')} className="underline font-medium">重试</button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4ECDC4]/30 to-transparent rounded-2xl blur opacity-30" />
+              <div className="relative bg-[#1A1A1A] rounded-2xl border border-white/10 p-3 flex items-center gap-3 animate-[fade-in_0.3s]">
+                <div className="w-14 h-16 rounded-xl bg-gradient-to-br from-[#262626] to-[#0F0F0F] flex items-center justify-center shrink-0 text-xl border border-white/10">🎬</div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-medium text-white truncate">超长待机精选带货案例切片</p>
-                  <p className="text-[12px] text-[#B3B3B3] mt-1">时长 15:32 · @带货达人</p>
-                  <div className="mt-1 flex items-center gap-1 text-[10px] bg-[#4ECDC4]/10 text-[#4ECDC4] w-fit px-2 py-0.5 rounded-full border border-[#4ECDC4]/20">
+                  <p className="text-[14px] font-semibold text-white truncate">超长待机精选带货案例切片</p>
+                  <p className="text-[11px] text-white/50 mt-0.5">时长 15:32 · @带货达人</p>
+                  <div className="mt-1.5 flex items-center gap-1 text-[10px] bg-[#4ECDC4]/10 text-[#4ECDC4] w-fit px-2 py-0.5 rounded-full border border-[#4ECDC4]/20">
                     <Icons.Check size={10} /> 解析完成 · 已识别6个维度
                   </div>
                 </div>
-                <button onClick={() => { setParseState('idle'); setLinkInput(''); }} className="p-1.5 hover:bg-[#262626] rounded-md text-[#6B6B6B] hover:text-white">
+                <button onClick={() => { setParseState('idle'); setLinkInput(''); }} className="p-1.5 hover:bg-white/10 rounded-md text-white/40 hover:text-white transition-colors">
                   <Icons.X size={16} />
                 </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </section>
 
         {/* 技能卡模块 */}
-        <section className="bg-[#1A1A1A] rounded-xl border border-[#333333] p-4 shadow-lg space-y-4">
-          <div className="flex items-center justify-between">
+        <section className="space-y-4">
+          <div className="flex items-end justify-between">
             <div>
-              <h2 className="text-[16px] font-semibold text-white flex items-center gap-2">技能卡</h2>
-              <p className="text-[12px] text-[#6B6B6B] mt-1">分析生成的技能卡将同步至直播间</p>
+              <h2 className="text-[18px] font-bold text-white font-display">技能卡</h2>
+              <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-display mt-1">Skillset Engine v2.0</p>
             </div>
-            <span className="text-[12px] bg-[#4ECDC4]/10 text-[#4ECDC4] px-2 py-1 rounded-full border border-[#4ECDC4]/20 font-medium">
-              已选 {selectedSkills.length} / {skillCardLibrary.length}
-            </span>
+            <div className="px-3 py-1 bg-[#4ECDC4]/10 border border-[#4ECDC4]/30 rounded-full">
+              <span className="text-[#4ECDC4] text-[10px] font-bold tracking-wide">
+                已选 {selectedSkills.length} / {skillCardLibrary.length}
+              </span>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[420px] overflow-y-auto pr-1 pb-1 scrollbar-none">
+          <div className="grid grid-cols-2 gap-3 max-h-[460px] overflow-y-auto pr-1 pb-1 scrollbar-none">
             {skillCardLibrary.map(card => {
               const isSelected = selectedSkills.includes(card.id);
               const isStop = card.category === "互动停留";
               const isConvert = card.category === "促单转化";
+              const accent = isStop ? '#4ECDC4' : isConvert ? '#FF4D6D' : '#FFD166';
 
               return (
-                <div 
+                <div
                   key={card.id}
                   onClick={() => setSelectedDetailCard(card)}
-                  className={`relative p-4 rounded-xl border cursor-pointer transition-all ${
-                    isSelected ? 'border-[#4ECDC4] bg-gradient-to-br from-[#1A1A1A] to-[#4ECDC4]/5 shadow-[0_2px_8px_rgba(0,0,0,0.3)]' : 'border-[#333333] bg-[#0F0F0F] hover:border-[#4ECDC4]/50'
-                  }`}
+                  className="relative p-[1px] rounded-3xl overflow-hidden cursor-pointer transition-all active:scale-[0.98]"
+                  style={{ backgroundImage: `linear-gradient(135deg, ${isSelected ? accent + '66' : 'rgba(255,255,255,0.12)'}, transparent)` }}
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                      isStop ? 'bg-[#4ECDC4]/10 text-[#4ECDC4]' : isConvert ? 'bg-[#FF4D6D]/10 text-[#FF4D6D]' : 'bg-[#FFD166]/10 text-[#FFD166]'
-                    }`}>
-                      {card.category || "综合技巧"}
-                    </span>
-                    <div className="flex gap-0.5 text-[#FFD166]">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Icons.Star key={i} size={10} fill={i < card.difficulty ? 'currentColor' : 'none'} className={i < card.difficulty ? 'text-[#FFD166]' : 'text-[#333333]'} />
-                      ))}
+                  <div className="bg-[#161616] p-4 rounded-[23px] h-full flex flex-col">
+                    <div className="flex items-start justify-between mb-3">
+                      <span
+                        className="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider"
+                        style={{ background: `${accent}22`, color: accent }}
+                      >
+                        {card.category || "综合技巧"}
+                      </span>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <span key={i} className="w-1 h-1 rounded-full" style={{ background: i < card.difficulty ? '#FFD166' : 'rgba(255,255,255,0.12)' }} />
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  <h3 className="text-[14px] font-semibold text-white mb-2 leading-snug">{card.title}</h3>
-                  <p className="text-[12px] text-[#B3B3B3] line-clamp-2 leading-relaxed mb-4 min-h-[36px]">
-                    {card.keyPoints[0]}
-                  </p>
+                    <h3 className="text-[13px] font-bold text-white mb-2 leading-tight">{card.title}</h3>
+                    <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 mb-3 min-h-[32px]">
+                      {card.keyPoints[0]}
+                    </p>
 
-                  <div className="border-t border-[#333333] pt-3 flex items-center justify-between text-[12px]">
-                    <span className="text-[#6B6B6B]">难度：{card.difficulty > 3 ? '困难' : '简单'}</span>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); toggleSkillCardSelection(card.id); }}
-                      className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'bg-[#4ECDC4] border-[#4ECDC4] text-[#0F0F0F]' : 'border-[#6B6B6B] bg-transparent'}`}
-                    >
-                      {isSelected && <Icons.Check size={12} strokeWidth={4} />}
-                    </button>
+                    <div className="border-t border-white/5 pt-2.5 flex items-center justify-between">
+                      <span className="text-[10px] text-white/30 italic">难度: {card.difficulty > 3 ? '困难' : '简单'}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleSkillCardSelection(card.id); }}
+                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'border-transparent text-black' : 'border-white/30 bg-transparent'}`}
+                        style={isSelected ? { background: accent } : undefined}
+                      >
+                        {isSelected && <Icons.Check size={12} strokeWidth={3} />}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -493,38 +510,43 @@ function HomePage({
         </section>
 
         {/* 基础设置区 */}
-        <section className="bg-[#1A1A1A] rounded-xl border border-[#333333] shadow-lg overflow-hidden">
-          <div className="p-4 border-b border-[#333333]">
-            <h2 className="text-[16px] font-semibold text-white">基础设置</h2>
+        <section className="space-y-5">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 bg-[#FF4D6D] rounded-full" />
+            <h2 className="text-[18px] font-bold text-white font-display">基础设置</h2>
           </div>
-          
-          <div className="p-4 space-y-6">
+
+          <div className="space-y-5">
             {/* 人设 */}
             <div className="space-y-3">
-              <h3 className="text-[14px] font-medium text-[#B3B3B3]">人设</h3>
-              <div className="flex gap-2">
-                <button onClick={() => setPersonaTab('text')} className={`flex-1 py-1.5 text-[12px] rounded-md transition-colors ${personaTab === 'text' ? 'bg-[#262626] text-white border border-[#333333]' : 'text-[#6B6B6B]'}`}>主动输入</button>
-                <button onClick={() => setPersonaTab('auto')} className={`flex-1 py-1.5 text-[12px] rounded-md transition-colors ${personaTab === 'auto' ? 'bg-[#262626] text-white border border-[#333333]' : 'text-[#6B6B6B]'}`}>动态生成</button>
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">人设设定</label>
+                <div className="flex bg-white/5 p-1 rounded-lg border border-white/5">
+                  <button onClick={() => setPersonaTab('text')} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${personaTab === 'text' ? 'bg-white/10 text-white' : 'text-white/30'}`}>主动输入</button>
+                  <button onClick={() => setPersonaTab('auto')} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${personaTab === 'auto' ? 'bg-white/10 text-white' : 'text-white/30'}`}>动态生成</button>
+                </div>
               </div>
               {personaTab === 'text' ? (
-                <div className="relative">
-                  <textarea 
+                <div className="relative bg-[#1A1A1A] rounded-2xl border border-white/10 p-4 focus-within:border-[#4ECDC4]/40 transition-colors">
+                  <textarea
                     value={basicSettings.persona}
                     onChange={(e) => setBasicSettings(prev => ({...prev, persona: e.target.value}))}
                     placeholder="用一段话描述你的人设，比如'我是一个分享通勤穿搭的上班族，风格偏简约...'"
-                    className="w-full bg-[#0F0F0F] border border-[#333333] rounded-lg p-3 text-[14px] text-white placeholder-[#6B6B6B] resize-none h-24 focus:border-[#4ECDC4] outline-none transition-colors"
+                    className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-white/85 placeholder:text-white/25 resize-none min-h-[72px]"
                   />
-                  <button 
-                    onClick={startRecordingSim}
-                    className={`absolute bottom-3 right-3 p-2 rounded-full transition-all ${isRecording ? 'bg-[#FF4D6D] text-white animate-pulse' : 'bg-[#262626] text-[#B3B3B3] hover:text-white'}`}
-                  >
-                    {isRecording ? <Icons.MicOff size={16} /> : <Icons.Mic size={16} />}
-                  </button>
-                  <span className="absolute bottom-3 left-3 text-[10px] text-[#6B6B6B]">{basicSettings.persona.length} 字</span>
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                    <span className="text-[10px] text-white/30 font-mono">{basicSettings.persona.length} 字</span>
+                    <button
+                      onClick={startRecordingSim}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isRecording ? 'bg-[#FF4D6D] text-white animate-pulse' : 'bg-white/5 text-white/50 hover:text-[#4ECDC4]'}`}
+                    >
+                      {isRecording ? <Icons.MicOff size={14} /> : <Icons.Mic size={14} />}
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="bg-[#0F0F0F] rounded-lg border border-[#333333] p-4 text-center">
-                  <p className="text-[12px] text-[#6B6B6B]">直播过程中将根据您的语音，每3分钟智能更新人设标签。</p>
+                <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-4 text-center">
+                  <p className="text-[12px] text-white/40">直播过程中将根据您的语音，每3分钟智能更新人设标签。</p>
                 </div>
               )}
             </div>
@@ -532,8 +554,8 @@ function HomePage({
             {/* 标签 */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-[14px] font-medium text-[#B3B3B3]">标签</h3>
-                <span className="text-[12px] text-[#4ECDC4] truncate max-w-[60%] text-right">已选：{basicSettings.tags.join('、') || '无'}</span>
+                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">标签筛选</label>
+                <span className="text-[10px] text-[#4ECDC4] truncate max-w-[60%] text-right">已选: {basicSettings.tags.join('、') || '无'}</span>
               </div>
               <div className={`flex gap-2 ${tagsExpanded ? 'flex-wrap' : 'flex-nowrap overflow-x-auto scrollbar-none'}`}>
                 {TAG_OPTIONS.map(tag => {
@@ -542,7 +564,7 @@ function HomePage({
                     <button
                       key={tag}
                       onClick={() => toggleTagChip(tag)}
-                      className={`text-[12px] px-3 py-1.5 rounded-full border transition-all shrink-0 ${isTagActive ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/40 text-[#4ECDC4]' : 'bg-[#0F0F0F] border-[#333333] text-[#6B6B6B] hover:border-[#6B6B6B]'}`}
+                      className={`text-[12px] px-4 py-2 rounded-xl border transition-all shrink-0 font-medium ${isTagActive ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/40 text-[#4ECDC4]' : 'bg-white/5 border-white/10 text-white/40 hover:text-white/70 hover:border-white/20'}`}
                     >
                       {tag}
                     </button>
@@ -551,7 +573,7 @@ function HomePage({
               </div>
               <button
                 onClick={() => setTagsExpanded(p => !p)}
-                className="text-[12px] text-[#6B6B6B] hover:text-[#4ECDC4] flex items-center gap-1 transition-colors"
+                className="text-[11px] text-white/40 hover:text-[#4ECDC4] flex items-center gap-1 transition-colors"
               >
                 {tagsExpanded ? <>收起 <Icons.ChevronUp size={12} /></> : <>展开全部标签 <Icons.ChevronDown size={12} /></>}
               </button>
@@ -564,22 +586,22 @@ function HomePage({
 
       {/* 底部"开始直播"操作栏 */}
       {selectedSkills.length > 0 && (
-        <div className="sticky bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-3 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F] to-transparent pointer-events-auto animate-[slide-in-up_0.3s_ease-out]">
-          <div className="bg-gradient-to-r from-[#1A1A1A] to-[#262626] border border-[#4ECDC4]/40 rounded-2xl p-3 shadow-2xl shadow-[#4ECDC4]/10 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#4ECDC4]/15 border border-[#4ECDC4]/30 flex items-center justify-center shrink-0">
-              <Icons.Sparkles size={16} className="text-[#4ECDC4]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-semibold text-white leading-tight">
-                技能卡沙盒配置已就绪
-              </p>
-              <p className="text-[10px] text-[#B3B3B3] leading-snug mt-0.5">
-                已加载 <span className="text-[#4ECDC4] font-mono font-semibold">{selectedSkills.length}</span> 张金牌实训策略，虚拟AI观众将针对话术产生特定行为
-              </p>
+        <div className="sticky bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-10 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/90 to-transparent pointer-events-auto animate-[slide-in-up_0.3s_ease-out]">
+          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-[28px] p-3 shadow-2xl flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 pl-1 min-w-0">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#4ECDC4] to-[#FF4D6D] flex items-center justify-center shrink-0 shadow-lg shadow-[#FF4D6D]/20">
+                <Icons.Sparkles size={18} className="text-white" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[12px] font-bold text-white leading-tight truncate">技能卡配置就绪</p>
+                <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-mono mt-0.5">
+                  {selectedSkills.length} skills loaded
+                </p>
+              </div>
             </div>
             <button
               onClick={() => { triggerToast(`已加载 ${selectedSkills.length} 张技能卡`, 'success'); setCurrentPath('/live'); }}
-              className="shrink-0 px-4 h-10 rounded-xl bg-gradient-to-r from-[#FF4D6D] to-[#FF6B85] text-white text-[13px] font-semibold shadow-lg shadow-[#FF4D6D]/30 hover:shadow-[#FF4D6D]/50 transition-all flex items-center gap-1.5"
+              className="shrink-0 h-11 px-5 rounded-2xl bg-gradient-to-r from-[#FF4D6D] to-[#FF6B85] text-white text-[13px] font-bold font-display flex items-center gap-1.5 animate-cta-pulse active:scale-95 transition-transform"
             >
               开始直播 <Icons.ArrowRight size={14} />
             </button>
