@@ -1003,9 +1003,6 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
           <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-white/10 text-[12px]">
             <Icons.Eye size={14} className="text-[#B3B3B3]" /> <span className="font-mono tabular-nums">{viewerCount.toLocaleString()}</span>
           </div>
-          <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-white/10 text-[12px]">
-            <Icons.Clock size={14} className="text-[#B3B3B3]" /> <span className="font-mono tabular-nums">{formatTime(liveSeconds)}</span>
-          </div>
         </div>
       </div>
 
