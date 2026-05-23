@@ -831,13 +831,12 @@ function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, trig
     return () => clearTimeout(t);
   }, [topicPrompt, promptCountdown, isLivePaused]);
 
-  const triggerPrompt = () => {
+  const triggerPrompt = async () => {
     if (!activeSkillCard) return;
+    const prompt = await liveApi.fetchPrompt(activeSkillCard);
+    if (!prompt) return;
     setPromptCountdown(12);
-    setTopicPrompt({
-      title: "实战训练提示",
-      tipText: activeSkillCard.tips[Math.floor(Math.random() * activeSkillCard.tips.length)]
-    });
+    setTopicPrompt(prompt);
   };
 
   const formatTime = (sec) => {
