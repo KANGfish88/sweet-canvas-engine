@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
+import mascotImg from '@/assets/mascot.png';
 import {
   TAG_OPTIONS,
   skillsApi,
