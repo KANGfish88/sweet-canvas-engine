@@ -208,6 +208,7 @@ export default function App() {
           {currentPath === '/live' && (
             <VirtualLiveRoom 
               selectedSkills={selectedSkills}
+              setSelectedSkills={setSelectedSkills}
               basicSettings={basicSettings}
               skillCardLibrary={skillCardLibrary}
               triggerToast={triggerToast}
