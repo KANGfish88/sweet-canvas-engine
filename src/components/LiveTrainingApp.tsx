@@ -1385,7 +1385,7 @@ function ProfilePage({
             </h3>
             <div className="flex items-center gap-3">
               <button onClick={() => setCalendarOffset(p => p - 1)} className="text-[#6B6B6B] hover:text-white"><Icons.ChevronLeft size={16} /></button>
-              <span className="text-[12px] text-white font-medium">{calendarOffset === 0 ? '2026年5月' : calendarOffset < 0 ? '2026年4月' : '2026年6月'}</span>
+              <span className="text-[12px] text-white font-medium min-w-[78px] text-center tabular-nums">{monthLabel}</span>
               <button onClick={() => setCalendarOffset(p => p + 1)} className="text-[#6B6B6B] hover:text-white"><Icons.ChevronRight size={16} /></button>
             </div>
           </div>
