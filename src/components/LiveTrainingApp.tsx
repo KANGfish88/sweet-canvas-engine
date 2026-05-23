@@ -362,9 +362,6 @@ function HomePage({
           </h1>
           <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-display mt-1">Live Training Studio</p>
         </div>
-        <button onClick={() => setCurrentPath('/live')} className="w-10 h-10 rounded-full bg-white/5 border border-white/10 text-[#4ECDC4] flex items-center justify-center hover:bg-white/10 transition-all active:scale-95" aria-label="快捷开播">
-          <Icons.Camera size={18} />
-        </button>
       </header>
 
       <main className="px-5 space-y-7 relative z-10">
