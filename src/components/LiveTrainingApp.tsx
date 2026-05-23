@@ -656,7 +656,7 @@ function HomePage({
 // ==========================================
 // 5. 页面二：虚拟直播间组件 (VirtualLiveRoom)
 // ==========================================
-function VirtualLiveRoom({ selectedSkills, basicSettings, skillCardLibrary, triggerToast, setCurrentPath, setTrainSessions }) {
+function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, skillCardLibrary, triggerToast, setCurrentPath, setTrainSessions }) {
   const [liveSeconds, setLiveSeconds] = useState(0);
   const [viewerCount, setViewerCount] = useState(1280);
   const [comments, setComments] = useState([]);
