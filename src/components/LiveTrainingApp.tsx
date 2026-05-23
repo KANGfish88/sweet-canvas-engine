@@ -870,24 +870,17 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
       <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/60 to-transparent z-20 pointer-events-none" />
       <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20 pointer-events-none" />
 
-      {/* 观看人数 — 右上独立 */}
-      <div className="absolute top-safe pt-4 right-4 z-30 pointer-events-auto">
-        <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1.5 flex items-center gap-1.5 border border-white/10 text-[12px] text-white">
-          <Icons.Eye size={14} className="text-[#B3B3B3]" /> <span className="font-mono tabular-nums">{viewerCount.toLocaleString()}</span>
-        </div>
-      </div>
-
       {/* 顶部栏：左侧[直播中+时间 / 技能卡多选]，右侧[智能提示] */}
-      <div className="absolute top-safe pt-4 left-4 right-4 mt-9 z-30 pointer-events-auto flex items-stretch gap-2">
+      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-stretch gap-2">
         {/* 左侧两行 */}
         <div className="flex flex-col gap-2 w-[42%] min-w-0">
-          {/* 直播中 + 开播时间 */}
-          <div className="bg-black/40 backdrop-blur-md rounded-full pl-3 pr-3 py-1.5 flex items-center gap-2 border border-white/10 shadow-lg">
-            <span className="w-2 h-2 bg-[#FF4D6D] rounded-full animate-pulse shrink-0" />
-            <span className="text-[12px] font-semibold text-white tracking-wide">直播中</span>
-            <span className="w-px h-3 bg-white/20" />
-            <Icons.Clock size={12} className="text-[#B3B3B3] shrink-0" />
-            <span className="text-[12px] font-mono tabular-nums text-white/90">{formatTime(liveSeconds)}</span>
+          {/* 直播中 + 开播时间 — 单行紧凑 */}
+          <div className="bg-black/40 backdrop-blur-md rounded-full pl-2.5 pr-2.5 py-1 flex items-center gap-1.5 border border-white/10 shadow-lg whitespace-nowrap">
+            <span className="w-1.5 h-1.5 bg-[#FF4D6D] rounded-full animate-pulse shrink-0" />
+            <span className="text-[10px] font-semibold text-white tracking-wide">直播中</span>
+            <span className="w-px h-2.5 bg-white/20" />
+            <Icons.Clock size={10} className="text-[#B3B3B3] shrink-0" />
+            <span className="text-[10px] font-mono tabular-nums text-white/90">{formatTime(liveSeconds)}</span>
           </div>
           {/* 技能卡 — 多选展示 */}
           <button
