@@ -356,16 +356,14 @@ function HomePage({
       <div className="pointer-events-none absolute top-[-8%] right-[-15%] w-72 h-72 bg-[#FF4D6D]/15 blur-[100px] rounded-full animate-ambient z-0" />
       <div className="pointer-events-none absolute top-[40%] left-[-20%] w-72 h-72 bg-[#4ECDC4]/12 blur-[110px] rounded-full animate-ambient-slow z-0" />
 
-      <header className="px-5 pt-6 pb-4 flex items-center justify-between sticky top-0 z-40 bg-[#0F0F0F]/80 backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <div>
-            <h1 className="text-[24px] font-bold font-display tracking-tight leading-none">
-              <span className="text-[#FF4D6D]">播练</span><span className="text-white">营</span>
-            </h1>
-            <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-display mt-1">Live Practice Camp</p>
-          </div>
-          <img src={mascotImg} alt="播练营吉祥物" className="h-14 w-14 object-contain drop-shadow-[0_4px_16px_rgba(255,77,109,0.45)]" />
+      <header className="px-5 pt-6 pb-4 flex items-center justify-between sticky top-0 z-40 bg-[#0F0F0F]/80 backdrop-blur-xl relative">
+        <div>
+          <h1 className="text-[24px] font-bold font-display tracking-tight leading-none">
+            <span className="text-[#FF4D6D]">播练</span><span className="text-white">营</span>
+          </h1>
+          <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-display mt-1">Live Practice Camp</p>
         </div>
+        <img src={mascotImg} alt="播练营吉祥物" className="h-14 w-14 object-contain drop-shadow-[0_4px_16px_rgba(255,77,109,0.45)] absolute right-5 top-1/2 -translate-y-1/2" />
       </header>
 
       <main className="px-5 space-y-7 relative z-10">
