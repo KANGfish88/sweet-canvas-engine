@@ -692,29 +692,6 @@ function HomePage({
 
       </main>
 
-      {/* 底部操作栏 */}
-      <div className="fixed bottom-[64px] left-0 right-0 p-4 z-40">
-        <div className="bg-[#161616] border border-[#333333] rounded-2xl p-4 shadow-[0_-4px_16px_rgba(0,0,0,0.5)] backdrop-blur-md flex items-center justify-between">
-          <div className="flex-1 pr-2">
-            <h3 className="text-[14px] font-semibold text-white flex items-center gap-1.5">
-              <Icons.Flame size={16} className="text-[#FFD166]" />
-              技能卡沙盒配置已就绪
-            </h3>
-            <p className="text-[12px] text-[#B3B3B3] mt-1 leading-snug">已加载 {selectedSkills.length} 张金牌策略，AI观众将产生特定行为！</p>
-          </div>
-          <div className="flex flex-col gap-2 shrink-0">
-            <button className="text-[12px] text-[#B3B3B3] border border-[#333333] rounded-lg py-1.5 px-3 hover:bg-[#262626] transition-colors">
-              保存策略包
-            </button>
-            <button 
-              onClick={() => setCurrentPath('/live')}
-              className="bg-[#FF4D6D] text-white text-[12px] font-medium rounded-lg py-1.5 px-3 shadow-[0_4px_12px_rgba(255,77,109,0.3)] hover:scale-105 transition-all flex items-center gap-1 justify-center"
-            >
-              进入直播 <Icons.ArrowRight size={14} />
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* 技能卡详情半弹窗 */}
       {selectedDetailCard && (
