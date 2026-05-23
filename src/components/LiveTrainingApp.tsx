@@ -232,26 +232,30 @@ export default function App() {
 
         {/* 底部导航 TabBar (不在 /live 显示) */}
         {currentPath !== '/live' && (
-          <nav className="h-[64px] pb-safe bg-[#141414]/95 backdrop-blur-md border-t border-[#333333] flex items-center justify-around shrink-0 z-50">
+          <nav className="h-[68px] pb-safe bg-black/40 backdrop-blur-xl border-t border-white/5 flex items-center justify-around shrink-0 z-50">
             {[
               { path: '/', icon: Icons.Home, label: '首页' },
               { path: '/live', icon: Icons.Radio, label: '直播', isLive: true },
               { path: '/profile', icon: Icons.User, label: '我的' },
-            ].map(tab => (
-              <button 
-                key={tab.path}
-                onClick={() => setCurrentPath(tab.path)}
-                className={`flex flex-col items-center gap-1 w-1/3 py-2 transition-all ${currentPath === tab.path ? 'text-[#FF4D6D]' : 'text-[#6B6B6B] hover:text-[#B3B3B3]'}`}
-              >
-                <div className="relative">
-                  <tab.icon size={22} />
-                  {tab.isLive && currentPath !== tab.path && (
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-[#FF4D6D] rounded-full animate-pulse border border-[#141414]" />
-                  )}
-                </div>
-                <span className="text-[10px] font-medium">{tab.label}</span>
-              </button>
-            ))}
+            ].map(tab => {
+              const active = currentPath === tab.path;
+              return (
+                <button
+                  key={tab.path}
+                  onClick={() => setCurrentPath(tab.path)}
+                  className={`flex flex-col items-center gap-0.5 w-1/3 py-2 transition-all ${active ? 'text-[#FF4D6D]' : 'text-white/30 hover:text-white/60'}`}
+                >
+                  <span className={`w-1 h-1 rounded-full mb-1 transition-all ${active ? 'bg-[#FF4D6D] shadow-[0_0_8px_rgba(255,77,109,0.8)]' : 'bg-transparent'}`} />
+                  <div className="relative">
+                    <tab.icon size={20} />
+                    {tab.isLive && !active && (
+                      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-[#FF4D6D] rounded-full animate-pulse" />
+                    )}
+                  </div>
+                  <span className="text-[10px] font-bold font-display tracking-wide mt-0.5">{tab.label}</span>
+                </button>
+              );
+            })}
           </nav>
         )}
       </div>
