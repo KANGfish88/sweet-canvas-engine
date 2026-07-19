@@ -533,36 +533,25 @@ function HomePage({
               <div>
                 <h2 className="text-[16px] font-semibold text-white mb-1">{selectedDetailCard.title}</h2>
                 <p className="text-[12px] text-[#B3B3B3]">维度：{selectedDetailCard.dimensions.join(' · ')}</p>
-                <p className="text-[12px] text-[#B3B3B3]">来源：{selectedDetailCard.sourceVideo}</p>
-                <p className="text-[12px] text-[#B3B3B3]">预计训练 {selectedDetailCard.estimatedDuration} · 目标 {selectedDetailCard.targetSessions} 场</p>
+                <p className="text-[12px] text-[#B3B3B3]">视频标题：{selectedDetailCard.sourceVideo}</p>
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-[14px] font-semibold text-white">关键要点</h3>
-                <div className="bg-[#0F0F0F] border border-[#333333] rounded-xl p-4">
+                <h3 className="text-[14px] font-semibold text-white">具体内容</h3>
+                <div className="bg-[#0F0F0F] border border-[#333333] rounded-xl p-4 space-y-3">
                   {selectedDetailCard.keyPoints.map((point, idx) => (
-                    <p key={idx} className="text-[14px] text-[#B3B3B3] mb-2 last:mb-0 leading-relaxed">
+                    <p key={idx} className="text-[14px] text-[#B3B3B3] leading-relaxed">
                       {idx + 1}. {point}
                     </p>
                   ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="text-[14px] font-semibold text-white">核心 Tips</h3>
-                <div className="bg-[#0F0F0F] border border-[#333333] rounded-xl p-4">
                   {selectedDetailCard.tips.map((tip, idx) => (
-                    <p key={idx} className="text-[14px] text-[#B3B3B3] mb-2 last:mb-0 leading-relaxed flex items-start gap-1.5">
+                    <p key={idx} className="text-[14px] text-[#B3B3B3] leading-relaxed flex items-start gap-1.5">
                       <span className="text-[#FFD166] mt-0.5">•</span> <span>{tip}</span>
                     </p>
                   ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <h3 className="text-[14px] font-semibold text-white">训练目标</h3>
-                <div className="bg-[#0F0F0F] border border-[#333333] rounded-xl p-4">
-                  <p className="text-[14px] text-[#B3B3B3] leading-relaxed">{selectedDetailCard.trainingGoal}</p>
+                  <p className="text-[14px] text-[#B3B3B3] leading-relaxed border-t border-[#333333] pt-3 mt-1">
+                    {selectedDetailCard.trainingGoal}
+                  </p>
                 </div>
               </div>
 
