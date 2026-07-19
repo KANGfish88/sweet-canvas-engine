@@ -284,10 +284,7 @@ function HomePage({
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [activeStepIdx, setActiveStepIdx] = useState(-1);
   const [selectedDetailCard, setSelectedDetailCard] = useState(null);
-  const [personaTab, setPersonaTab] = useState('text'); // text, auto
-  const [isRecording, setIsRecording] = useState(false);
-  const [tagsExpanded, setTagsExpanded] = useState(false);
-  const recordingTimerRef = useRef(null);
+
 
   const analysisSteps = ["话题结构", "互动技巧", "节奏把控", "情绪调动", "开场设计", "收尾引导"];
 
