@@ -514,78 +514,7 @@ function HomePage({
           </div>
         </section>
 
-        {/* 基础设置区 */}
-        <section className="space-y-5">
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-4 bg-[#FF4D6D] rounded-full" />
-            <h2 className="text-[18px] font-bold text-white font-display">基础设置</h2>
-          </div>
 
-          <div className="space-y-5">
-            {/* 人设 */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">人设设定</label>
-                <div className="flex bg-white/5 p-1 rounded-lg border border-white/5">
-                  <button onClick={() => setPersonaTab('text')} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${personaTab === 'text' ? 'bg-white/10 text-white' : 'text-white/30'}`}>主动输入</button>
-                  <button onClick={() => setPersonaTab('auto')} className={`px-3 py-1 text-[10px] font-bold rounded-md transition-colors ${personaTab === 'auto' ? 'bg-white/10 text-white' : 'text-white/30'}`}>动态生成</button>
-                </div>
-              </div>
-              {personaTab === 'text' ? (
-                <div className="relative bg-[#1A1A1A] rounded-2xl border border-white/10 p-4 focus-within:border-[#4ECDC4]/40 transition-colors">
-                  <textarea
-                    value={basicSettings.persona}
-                    onChange={(e) => setBasicSettings(prev => ({...prev, persona: e.target.value}))}
-                    placeholder="用一段话描述你的人设，比如'我是一个分享通勤穿搭的上班族，风格偏简约...'"
-                    className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-white/85 placeholder:text-white/25 resize-none min-h-[72px]"
-                  />
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
-                    <span className="text-[10px] text-white/30 font-mono">{basicSettings.persona.length} 字</span>
-                    <button
-                      onClick={startRecordingSim}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isRecording ? 'bg-[#FF4D6D] text-white animate-pulse' : 'bg-white/5 text-white/50 hover:text-[#4ECDC4]'}`}
-                    >
-                      {isRecording ? <Icons.MicOff size={14} /> : <Icons.Mic size={14} />}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-[#1A1A1A] border border-white/10 rounded-2xl p-4 text-center">
-                  <p className="text-[12px] text-white/40">直播过程中将根据您的语音，每3分钟智能更新人设标签。</p>
-                </div>
-              )}
-            </div>
-
-            {/* 标签 */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">标签筛选</label>
-                <span className="text-[10px] text-[#4ECDC4] truncate max-w-[60%] text-right">已选: {basicSettings.tags.join('、') || '无'}</span>
-              </div>
-              <div className={`flex gap-2 ${tagsExpanded ? 'flex-wrap' : 'flex-nowrap overflow-x-auto scrollbar-none'}`}>
-                {TAG_OPTIONS.map(tag => {
-                  const isTagActive = basicSettings.tags.includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      onClick={() => toggleTagChip(tag)}
-                      className={`text-[12px] px-4 py-2 rounded-xl border transition-all shrink-0 font-medium ${isTagActive ? 'bg-[#4ECDC4]/10 border-[#4ECDC4]/40 text-[#4ECDC4]' : 'bg-white/5 border-white/10 text-white/40 hover:text-white/70 hover:border-white/20'}`}
-                    >
-                      {tag}
-                    </button>
-                  );
-                })}
-              </div>
-              <button
-                onClick={() => setTagsExpanded(p => !p)}
-                className="text-[11px] text-white/40 hover:text-[#4ECDC4] flex items-center gap-1 transition-colors"
-              >
-                {tagsExpanded ? <>收起 <Icons.ChevronUp size={12} /></> : <>展开全部标签 <Icons.ChevronDown size={12} /></>}
-              </button>
-            </div>
-
-          </div>
-        </section>
 
       </main>
 
