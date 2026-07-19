@@ -226,6 +226,8 @@ export default function App() {
               setTrainSessions={setTrainSessions}
               favoriteSessions={favoriteSessions}
               setFavoriteSessions={setFavoriteSessions}
+              basicSettings={basicSettings}
+              setBasicSettings={setBasicSettings}
               triggerToast={triggerToast}
             />
           )}
