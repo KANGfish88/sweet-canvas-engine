@@ -326,28 +326,7 @@ function HomePage({
     }
   };
 
-  const toggleTagChip = (tag) => {
-    if (basicSettings.tags.includes(tag)) {
-      setBasicSettings(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
-    } else {
-      setBasicSettings(prev => ({ ...prev, tags: [...prev.tags, tag] }));
-    }
-  };
 
-  const startRecordingSim = () => {
-    if (isRecording) {
-      clearInterval(recordingTimerRef.current);
-      setIsRecording(false);
-      setBasicSettings(prev => ({
-        ...prev,
-        persona: prev.persona + (prev.persona ? "，" : "") + "平时也喜欢分享一些好物。"
-      }));
-      triggerToast("语音转文字成功", "success");
-    } else {
-      setIsRecording(true);
-      recordingTimerRef.current = setInterval(() => {}, 1000);
-    }
-  };
 
   return (
     <div className="flex-1 flex flex-col overflow-y-auto pb-24 animate-[fade-in_0.3s_ease-out] relative font-body">
