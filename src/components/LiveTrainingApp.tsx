@@ -1083,12 +1083,26 @@ function ProfilePage({
   setTrainSessions, 
   favoriteSessions, 
   setFavoriteSessions, 
+  basicSettings,
+  setBasicSettings,
   triggerToast 
 }) {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [tempUsername, setTempUsername] = useState(userProfile.username);
   const [calendarOffset, setCalendarOffset] = useState(0);
   const [selectedArchiveId, setSelectedArchiveId] = useState(null);
+  const [tagInput, setTagInput] = useState('');
+
+  const addTag = (raw: string) => {
+    const t = raw.trim().replace(/[,，\s]+$/, '');
+    if (!t) return;
+    if (basicSettings.tags.includes(t)) { setTagInput(''); return; }
+    setBasicSettings(prev => ({ ...prev, tags: [...prev.tags, t] }));
+    setTagInput('');
+  };
+  const removeTag = (t: string) => {
+    setBasicSettings(prev => ({ ...prev, tags: prev.tags.filter(x => x !== t) }));
+  };
 
   const handleSaveUsername = () => {
     if (tempUsername.trim()) {
