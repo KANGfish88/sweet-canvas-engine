@@ -830,82 +830,71 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
 
 
-      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-start justify-between gap-3">
-        {/* 左侧：主播信息 + 下方直播时长/技能卡 */}
-        <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
-          {/* 主播信息浮层 */}
-          <div className="w-full bg-[#1A2A4A]/70 backdrop-blur-2xl border border-white/10 rounded-2xl px-3 py-2.5 flex items-center gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.35)] min-w-0">
-            {/* 圆形头像：模糊轮廓色块 */}
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF9A9E] via-[#FECFEF] to-[#4ECDC4] opacity-85 blur-[2px] shrink-0 border border-white/20" />
-            {/* 文字区 */}
-            <div className="flex flex-col justify-center min-w-0 flex-1">
-              <span className="text-[13px] font-bold text-white truncate font-display leading-tight">主播名字</span>
-              <span className="text-[10px] text-white/50 font-body leading-tight">
-                {totalLikes >= 10000 ? `${(totalLikes / 10000).toFixed(1)}万` : totalLikes.toLocaleString()}
+      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex flex-col items-start gap-2">
+        {/* 第一行：主播名片（左，紧凑） + 在线人数（右） */}
+        <div className="w-full flex items-center justify-between gap-2">
+          {/* 主播信息浮层 — 紧凑 */}
+          <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl pl-1.5 pr-1.5 py-1 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] max-w-[240px]">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#FF9A9E] via-[#FECFEF] to-[#4ECDC4] opacity-85 blur-[1.5px] shrink-0 border border-white/20" />
+            <div className="flex flex-col justify-center min-w-0">
+              <span className="text-[11px] font-bold text-white truncate font-display leading-tight">主播名字</span>
+              <span className="text-[9px] text-white/55 font-body leading-tight tabular-nums">
+                {(totalLikes >= 10000 ? `${(totalLikes / 10000).toFixed(1)}万` : totalLikes.toLocaleString())} 本场点赞
               </span>
             </div>
-            {/* 关注按钮 */}
             <button
               onClick={() => setIsFollowing(!isFollowing)}
-              className="bg-[#FE2C55] hover:bg-[#FF4D6D] text-white text-[11px] font-bold px-3.5 py-1.5 rounded-full shadow-md active:scale-95 transition-transform shrink-0"
+              className="bg-[#FE2C55] hover:bg-[#FF4D6D] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md active:scale-95 transition-transform shrink-0"
             >
               {isFollowing ? '已关注' : '关注'}
             </button>
           </div>
 
-          {/* 直播时长 + 技能卡 — 放在主播信息下方 */}
-          <div className="flex items-center gap-2 w-full">
-            {/* 直播中 + 时间 */}
-            <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
-                <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
-              </div>
-              <div className="w-[1px] h-3 bg-white/10" />
-              <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
+          {/* 在线人数 胶囊 — 与直播中气泡同底色/圆角 */}
+          {showViewerPill && (
+            <div className="shrink-0 bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/90 shrink-0">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span className="text-[11px] text-white font-semibold tabular-nums font-display leading-none">
+                {viewerCount.toLocaleString()}
+              </span>
             </div>
-            {/* 技能卡 chip */}
-            <button
-              onClick={() => setShowSkillSheet(true)}
-              className="flex-1 min-w-0 bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-3 py-1.5 flex items-center justify-between gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors"
-            >
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-[10px] shrink-0">🏷️</span>
-                <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
-                  {activeSkillCards.length === 0
-                    ? '未选择技能卡'
-                    : activeSkillCards.length === 1
-                      ? activeSkillCards[0].title.replace(/[「」]/g, '')
-                      : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
-                </span>
-              </div>
-              <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
-            </button>
-          </div>
+          )}
         </div>
 
-        {/* 场观 / 在线人数 胶囊 */}
-        {showViewerPill && (
-          <div className="shrink-0 bg-black/55 backdrop-blur-2xl border border-white/10 rounded-full pl-2.5 pr-1 py-1 flex items-center gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/90 shrink-0">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            <span className="text-[11px] text-white font-semibold tabular-nums font-display leading-none">
-              {viewerCount.toLocaleString()}
-            </span>
-            <button
-              onClick={() => setShowViewerPill(false)}
-              aria-label="关闭在线人数"
-              className="ml-0.5 w-4 h-4 rounded-full flex items-center justify-center text-white/80 hover:bg-white/10 transition-colors"
-            >
-              <Icons.X size={10} />
-            </button>
+        {/* 第二行：直播中 + 时间 + 技能卡 */}
+        <div className="flex items-center gap-2 w-full">
+          <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
+              <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
+            </div>
+            <div className="w-[1px] h-3 bg-white/10" />
+            <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
           </div>
-        )}
+          <button
+            onClick={() => setShowSkillSheet(true)}
+            className="flex-1 min-w-0 bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-3 py-1.5 flex items-center justify-between gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors"
+          >
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-[10px] shrink-0">🏷️</span>
+              <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
+                {activeSkillCards.length === 0
+                  ? '未选择技能卡'
+                  : activeSkillCards.length === 1
+                    ? activeSkillCards[0].title.replace(/[「」]/g, '')
+                    : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
+              </span>
+            </div>
+            <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
+          </button>
+        </div>
       </div>
+
 
       {/* 飘心粒子层 */}
       <div className="absolute right-6 bottom-[100px] z-40 pointer-events-none" aria-hidden>
@@ -1031,12 +1020,29 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
           <span className="text-[8px] font-bold uppercase tracking-wide font-display">结束</span>
         </button>
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsLivePaused(!isLivePaused)} className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
-            {isLivePaused ? <span className="text-[14px]">▶</span> : <div className="flex gap-1"><div className="w-1 h-3.5 bg-white/80"/><div className="w-1 h-3.5 bg-white/80"/></div>}
+          {/* 左一：切换摄像头 */}
+          <button aria-label="切换摄像头" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
+              <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5" />
+              <circle cx="12" cy="12" r="3" />
+              <path d="m18 22-3-3 3-3" />
+              <path d="m6 2 3 3-3 3" />
+            </svg>
           </button>
-          <button onClick={() => setShowSkillSheet(true)} className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
+          <button onClick={() => setShowSkillSheet(true)} aria-label="切换技能卡" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
             <Icons.RefreshCw size={16} />
           </button>
+          {/* 右二：礼物 */}
+          <button aria-label="礼物" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="8" width="18" height="4" rx="1" />
+              <path d="M12 8v13" />
+              <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+              <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5" />
+            </svg>
+          </button>
+
           <button
             onClick={() => spawnHearts(1)}
             onDoubleClick={() => spawnHearts(6)}
