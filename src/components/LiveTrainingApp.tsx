@@ -908,11 +908,12 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
       </div>
 
       {/* 飘心粒子层 */}
-      <div className="absolute left-4 bottom-[100px] z-40 pointer-events-none" aria-hidden>
+      <div className="absolute right-6 bottom-[100px] z-40 pointer-events-none" aria-hidden>
         {hearts.map(h => (
           <div
             key={h.id}
-            className="absolute bottom-0 left-0"
+            className="absolute bottom-0 right-0"
+
             style={{
               // @ts-ignore custom props
               '--hx': `${h.hx}px`,
