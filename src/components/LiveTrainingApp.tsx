@@ -1496,9 +1496,10 @@ function ProfilePage({
       </header>
 
       <main className="px-4 pt-2 space-y-4 relative z-10">
-        {/* 个人信息 */}
+        {/* 个人信息 + 基础设置 合并卡片 */}
         <section className="relative rounded-2xl p-[1px] bg-gradient-to-br from-[#FF4D6D]/40 via-white/5 to-[#4ECDC4]/40 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl p-4">
+          <div className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl p-4 space-y-5">
+            {/* 个人信息 */}
             <div className="flex items-center gap-3.5">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#FF4D6D] to-[#4ECDC4] p-[2px] shadow-[0_0_20px_rgba(255,77,109,0.3)]">
                 <div className="w-full h-full bg-[#161616] rounded-[14px] flex items-center justify-center font-display font-bold text-[18px] text-white">
@@ -1517,7 +1518,7 @@ function ProfilePage({
                 <p className="text-[11px] text-white/40 font-body mt-0.5 tracking-wide">LIVE TRAINER · LV.2</p>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 pt-4 mt-4 border-t border-white/5">
+            <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/5">
               {[
                 { val: trainSessions.length, label: '累计场次', color: '#FF4D6D' },
                 { val: userProfile.totalSkills, label: '掌握技能', color: '#4ECDC4' },
@@ -1529,65 +1530,61 @@ function ProfilePage({
                 </div>
               ))}
             </div>
-          </div>
-        </section>
 
-        {/* 基础设置 */}
-        <section className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D]/15 to-[#4ECDC4]/15 rounded-3xl blur opacity-30 pointer-events-none"></div>
-          <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-5 space-y-5">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#FF4D6D] shadow-[0_0_8px_#FF4D6D]"></div>
-              <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider">基础设置</h3>
-            </div>
-
-            {/* 人设设定 */}
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">人设设定</label>
-              <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-3 focus-within:border-[#4ECDC4]/40 transition-colors">
-                <textarea
-                  value={basicSettings.persona}
-                  onChange={(e) => setBasicSettings(prev => ({ ...prev, persona: e.target.value }))}
-                  placeholder="用一段话描述你的人设，比如'我是一个分享通勤穿搭的上班族，风格偏简约...'"
-                  className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-white/85 placeholder:text-white/25 resize-none min-h-[68px]"
-                />
+            {/* 分隔 + 基础设置 */}
+            <div className="pt-4 border-t border-white/5 space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#FF4D6D] shadow-[0_0_8px_#FF4D6D]"></div>
+                <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider">基础设置</h3>
               </div>
-            </div>
 
-            {/* 标签 —— 输入生成气泡 */}
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">标签</label>
-              <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-2.5 focus-within:border-[#4ECDC4]/40 transition-colors">
-                <div className="flex flex-wrap gap-1.5 items-center">
-                  {basicSettings.tags.map(tag => (
-                    <span key={tag} className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-[#4ECDC4]/10 border border-[#4ECDC4]/40 text-[#4ECDC4] text-[12px] font-medium">
-                      {tag}
-                      <button onClick={() => removeTag(tag)} className="w-4 h-4 rounded-full hover:bg-[#4ECDC4]/25 flex items-center justify-center">
-                        <Icons.X size={10} />
-                      </button>
-                    </span>
-                  ))}
-                  <input
-                    value={tagInput}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      if (/[,，]$/.test(v)) { addTag(v.slice(0, -1)); } else { setTagInput(v); }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }
-                      else if (e.key === 'Backspace' && !tagInput && basicSettings.tags.length) {
-                        removeTag(basicSettings.tags[basicSettings.tags.length - 1]);
-                      }
-                    }}
-                    onBlur={() => tagInput && addTag(tagInput)}
-                    placeholder={basicSettings.tags.length ? '继续添加…' : '输入标签后按回车 / 逗号添加'}
-                    className="flex-1 min-w-[120px] bg-transparent border-none outline-none px-2 py-1 text-[13px] text-white/85 placeholder:text-white/25"
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">人设设定</label>
+                <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-3 focus-within:border-[#4ECDC4]/40 transition-colors">
+                  <textarea
+                    value={basicSettings.persona}
+                    onChange={(e) => setBasicSettings(prev => ({ ...prev, persona: e.target.value }))}
+                    placeholder="用一段话描述你的人设，比如'我是一个分享通勤穿搭的上班族，风格偏简约...'"
+                    className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-white/85 placeholder:text-white/25 resize-none min-h-[68px]"
                   />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">标签</label>
+                <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-2.5 focus-within:border-[#4ECDC4]/40 transition-colors">
+                  <div className="flex flex-wrap gap-1.5 items-center">
+                    {basicSettings.tags.map(tag => (
+                      <span key={tag} className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-[#4ECDC4]/10 border border-[#4ECDC4]/40 text-[#4ECDC4] text-[12px] font-medium">
+                        {tag}
+                        <button onClick={() => removeTag(tag)} className="w-4 h-4 rounded-full hover:bg-[#4ECDC4]/25 flex items-center justify-center">
+                          <Icons.X size={10} />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      value={tagInput}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (/[,，]$/.test(v)) { addTag(v.slice(0, -1)); } else { setTagInput(v); }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }
+                        else if (e.key === 'Backspace' && !tagInput && basicSettings.tags.length) {
+                          removeTag(basicSettings.tags[basicSettings.tags.length - 1]);
+                        }
+                      }}
+                      onBlur={() => tagInput && addTag(tagInput)}
+                      placeholder={basicSettings.tags.length ? '继续添加…' : '输入标签后按回车 / 逗号添加'}
+                      className="flex-1 min-w-[120px] bg-transparent border-none outline-none px-2 py-1 text-[13px] text-white/85 placeholder:text-white/25"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
+
 
         {/* 训练日历 — 发光玻璃 */}
         <section className="relative group">
