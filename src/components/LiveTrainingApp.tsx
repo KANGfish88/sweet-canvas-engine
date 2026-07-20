@@ -831,7 +831,7 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
 
       <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex flex-col items-start gap-2">
-        {/* 第一行：主播名片（左，紧凑） + 在线人数（右） */}
+        {/* 第一行：主播名片（左，紧凑） + 技能卡（右，顶右，1/3 宽度） */}
         <div className="w-full flex items-center justify-between gap-2">
           {/* 主播信息浮层 — 紧凑 */}
           <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl pl-1.5 pr-1.5 py-1 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] max-w-[240px]">
@@ -850,6 +850,36 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
             </button>
           </div>
 
+          {/* 技能卡胶囊 — 顶右，1/3 宽度 */}
+          <button
+            onClick={() => setShowSkillSheet(true)}
+            className="w-1/3 min-w-0 bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-2 py-1.5 flex items-center justify-between gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors"
+          >
+            <div className="flex items-center gap-1 min-w-0">
+              <span className="text-[10px] shrink-0">🏷️</span>
+              <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
+                {activeSkillCards.length === 0
+                  ? '选择技能卡'
+                  : activeSkillCards.length === 1
+                    ? activeSkillCards[0].title.replace(/[「」]/g, '').substring(0, 4)
+                    : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 3)} +${activeSkillCards.length - 1}`}
+              </span>
+            </div>
+            <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
+          </button>
+        </div>
+
+        {/* 第二行：直播中 + 时间 + 在线人数 */}
+        <div className="flex items-center justify-between gap-2 w-full">
+          <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
+              <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
+            </div>
+            <div className="w-[1px] h-3 bg-white/10" />
+            <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
+          </div>
+
           {/* 在线人数 胶囊 — 与直播中气泡同底色/圆角 */}
           {showViewerPill && (
             <div className="shrink-0 bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
@@ -864,34 +894,6 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
               </span>
             </div>
           )}
-        </div>
-
-        {/* 第二行：直播中 + 时间 + 技能卡 */}
-        <div className="flex items-center gap-2 w-full">
-          <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
-              <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
-            </div>
-            <div className="w-[1px] h-3 bg-white/10" />
-            <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
-          </div>
-          <button
-            onClick={() => setShowSkillSheet(true)}
-            className="flex-1 min-w-0 bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-3 py-1.5 flex items-center justify-between gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors"
-          >
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[10px] shrink-0">🏷️</span>
-              <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
-                {activeSkillCards.length === 0
-                  ? '未选择技能卡'
-                  : activeSkillCards.length === 1
-                    ? activeSkillCards[0].title.replace(/[「」]/g, '')
-                    : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
-              </span>
-            </div>
-            <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
-          </button>
         </div>
       </div>
 
