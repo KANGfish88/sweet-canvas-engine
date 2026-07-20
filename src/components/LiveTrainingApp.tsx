@@ -841,6 +841,57 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
         </div>
       )}
 
+      {/* 智能提示条 — 位于评论区正上方 */}
+      <div className="absolute bottom-[calc(80px+30vh+8px)] left-4 right-4 z-30 pointer-events-auto">
+        <div className="w-[85%]">
+          {promptExpanded ? (
+            <div className="relative bg-black/40 backdrop-blur-md border border-[#FFD166]/50 rounded-xl shadow-2xl px-3 py-2.5 pr-8 animate-[fade-in_0.2s]">
+              <button
+                onClick={() => setPromptExpanded(false)}
+                aria-label="收起智能提示"
+                className="absolute top-1 right-1 w-5 h-5 rounded-md flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <Icons.Minus size={12} />
+              </button>
+              {topicPrompt ? (
+                <div className="flex items-start gap-2">
+                  <div className="shrink-0 mt-0.5">
+                    <Icons.Lightbulb size={13} className="text-[#FFD166]" />
+                  </div>
+                  <p className="flex-1 text-[12px] leading-snug text-white/95 font-body pr-2">
+                    {topicPrompt.tipText}
+                  </p>
+                  <span className="shrink-0 text-[10px] font-display tabular-nums text-[#FFD166]/80 mt-0.5">
+                    {promptCountdown}s
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 min-h-[18px]">
+                  <Icons.Lightbulb size={12} className="text-[#FFD166]/50" />
+                  <span className="text-[11px] text-white/40 font-body">暂无提示</span>
+                  {activeSkillCard && (
+                    <button
+                      onClick={triggerPrompt}
+                      className="ml-auto mr-2 text-[10px] text-[#FFD166] hover:text-[#FFD166]/80 font-display uppercase tracking-wider"
+                    >
+                      获取
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => setPromptExpanded(true)}
+              aria-label="展开智能提示"
+              className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md border border-[#FFD166]/50 shadow-2xl flex items-center justify-center hover:bg-black/60 transition-colors"
+            >
+              <Icons.Lightbulb size={14} className="text-[#FFD166]" />
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* 评论区 */}
       <div className="absolute bottom-[80px] inset-x-4 h-[30vh] z-30 flex flex-col justify-end pointer-events-none">
         <div className="overflow-y-auto space-y-2.5 pr-2 pb-2 scrollbar-none pointer-events-auto mask-image-bottom max-h-full">
