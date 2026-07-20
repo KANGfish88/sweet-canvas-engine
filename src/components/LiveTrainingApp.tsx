@@ -579,7 +579,10 @@ function HomePage({
 // ==========================================
 function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, skillCardLibrary, triggerToast, setCurrentPath, setTrainSessions }) {
   const [liveSeconds, setLiveSeconds] = useState(0);
-  const [viewerCount, setViewerCount] = useState(1280);
+  const [viewerCount, setViewerCount] = useState(5432);
+  const [showViewerPill, setShowViewerPill] = useState(true);
+  const [totalLikes, setTotalLikes] = useState(264000);
+  const [likeBurst, setLikeBurst] = useState(0);
   const [comments, setComments] = useState([]);
   const [isLivePaused, setIsLivePaused] = useState(false);
   
