@@ -1317,33 +1317,55 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
           )}
 
           {activeGift.id === 'carnival' && (
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ animation: 'carnival-stage 5s ease-out forwards' }}>
-              <div className="relative w-[220px] h-[220px] flex items-center justify-center">
-                {/* Interlaced glow halos: purple / yellow / red */}
-                <div className="absolute inset-0 rounded-full blur-3xl opacity-60" style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.55), transparent 65%)', animation: 'carnival-rotate 6s linear infinite' }} />
-                <div className="absolute inset-0 rounded-full blur-3xl opacity-55" style={{ background: 'radial-gradient(circle at 70% 30%, rgba(253,224,71,0.55), transparent 60%)', animation: 'carnival-rotate 8s linear infinite reverse' }} />
-                <div className="absolute inset-0 rounded-full blur-3xl opacity-55" style={{ background: 'radial-gradient(circle at 30% 70%, rgba(255,77,109,0.55), transparent 60%)', animation: 'carnival-rotate 10s linear infinite' }} />
-                {/* Small sparkles around icon */}
-                {Array.from({ length: 10 }).map((_, i) => {
-                  const angle = (i / 10) * Math.PI * 2;
-                  const r = 70 + Math.random() * 25;
-                  const fx = Math.cos(angle) * r;
-                  const fy = Math.sin(angle) * r;
-                  const colors = ['#A855F7', '#FDE047', '#FF4D6D'];
-                  const delay = Math.random() * 2;
-                  return (
-                    <div
-                      key={i}
-                      className="absolute left-1/2 top-1/2 text-[16px]"
-                      style={{ ['--fx' as any]: `${fx}px`, ['--fy' as any]: `${fy}px`, color: colors[i % colors.length], animation: `carnival-firework 1.2s ${delay}s ease-out infinite` }}
-                    >
-                      ✦
-                    </div>
-                  );
-                })}
-                <div className="relative text-[88px] leading-none drop-shadow-[0_0_24px_rgba(253,224,71,0.7)]">🎡</div>
+            <>
+              {/* Ribbons falling from the sky */}
+              {Array.from({ length: 28 }).map((_, i) => {
+                const rx = (Math.random() - 0.5) * 700;
+                const delay = Math.random() * 3;
+                const palette = [
+                  'linear-gradient(180deg,#A855F7,#FDE047)',
+                  'linear-gradient(180deg,#FDE047,#FF4D6D)',
+                  'linear-gradient(180deg,#FF4D6D,#A855F7)',
+                ];
+                return (
+                  <div
+                    key={`r${i}`}
+                    className="absolute left-1/2 -top-6 w-1.5 h-6 rounded-full"
+                    style={{
+                      background: palette[i % 3],
+                      ['--rx' as any]: `${rx}px`,
+                      animation: `ribbon-drop 3s ${delay}s linear infinite`,
+                    }}
+                  />
+                );
+              })}
+              {/* Centered glowing icon */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="relative w-[220px] h-[220px] flex items-center justify-center" style={{ animation: 'carnival-stage 5s ease-out forwards' }}>
+                  <div className="absolute inset-0 rounded-full blur-3xl opacity-60" style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.55), transparent 65%)', animation: 'carnival-rotate 6s linear infinite' }} />
+                  <div className="absolute inset-0 rounded-full blur-3xl opacity-55" style={{ background: 'radial-gradient(circle at 70% 30%, rgba(253,224,71,0.55), transparent 60%)', animation: 'carnival-rotate 8s linear infinite reverse' }} />
+                  <div className="absolute inset-0 rounded-full blur-3xl opacity-55" style={{ background: 'radial-gradient(circle at 30% 70%, rgba(255,77,109,0.55), transparent 60%)', animation: 'carnival-rotate 10s linear infinite' }} />
+                  {Array.from({ length: 10 }).map((_, i) => {
+                    const angle = (i / 10) * Math.PI * 2;
+                    const r = 70 + Math.random() * 25;
+                    const fx = Math.cos(angle) * r;
+                    const fy = Math.sin(angle) * r;
+                    const colors = ['#A855F7', '#FDE047', '#FF4D6D'];
+                    const delay = Math.random() * 2;
+                    return (
+                      <div
+                        key={i}
+                        className="absolute left-1/2 top-1/2 text-[16px]"
+                        style={{ ['--fx' as any]: `${fx}px`, ['--fy' as any]: `${fy}px`, color: colors[i % colors.length], animation: `carnival-firework 1.2s ${delay}s ease-out infinite` }}
+                      >
+                        ✦
+                      </div>
+                    );
+                  })}
+                  <div className="relative text-[88px] leading-none drop-shadow-[0_0_24px_rgba(253,224,71,0.7)]">🎡</div>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       )}
