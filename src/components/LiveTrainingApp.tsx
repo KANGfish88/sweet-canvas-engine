@@ -599,6 +599,7 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
   const [skillProgress, setSkillProgress] = useState(0);
   const [topicPrompt, setTopicPrompt] = useState(null);
   const [promptCountdown, setPromptCountdown] = useState(0);
+  const [promptExpanded, setPromptExpanded] = useState(false);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
