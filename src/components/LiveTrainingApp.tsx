@@ -907,24 +907,32 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
         )}
       </div>
 
-      {/* 右侧竖栏 — 点赞 */}
-      <div className="absolute right-3 top-[calc(env(safe-area-inset-top)+72px)] z-30 pointer-events-auto flex flex-col items-center">
-        <button
-          onClick={() => { setTotalLikes(v => v + 1); setLikeBurst(b => b + 1); }}
-          aria-label="点赞"
-          className="relative w-11 h-11 rounded-full bg-black/55 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.45)] active:scale-90 transition-transform"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="#FF3B5C" stroke="none" className="drop-shadow-[0_0_6px_rgba(255,59,92,0.6)]">
-            <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" />
-          </svg>
-          {likeBurst > 0 && (
-            <span key={likeBurst} className="absolute -top-1 text-[10px] text-[#FF3B5C] font-bold animate-[slide-in-up_0.6s_ease-out]">+1</span>
-          )}
-        </button>
-        <span className="mt-1 text-[10px] font-semibold text-white tabular-nums font-display drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-          {totalLikes >= 10000 ? `${(totalLikes / 10000).toFixed(1)}万` : totalLikes.toLocaleString()}
-        </span>
+      {/* 飘心粒子层 */}
+      <div className="absolute left-4 bottom-[100px] z-40 pointer-events-none" aria-hidden>
+        {hearts.map(h => (
+          <div
+            key={h.id}
+            className="absolute bottom-0 left-0"
+            style={{
+              // @ts-ignore custom props
+              '--hx': `${h.hx}px`,
+              '--hr': `${h.rot}deg`,
+              animation: `float-heart ${h.dur}ms ease-out forwards`,
+            }}
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" style={{ filter: `drop-shadow(0 0 6px hsla(${h.hue},90%,60%,0.7))` }}>
+              <defs>
+                <linearGradient id={`hg-${h.id}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={`hsl(${h.hue},95%,72%)`} />
+                  <stop offset="100%" stopColor={`hsl(${h.hue},90%,50%)`} />
+                </linearGradient>
+              </defs>
+              <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" fill={`url(#hg-${h.id})`} />
+            </svg>
+          </div>
+        ))}
       </div>
+
 
 
 
