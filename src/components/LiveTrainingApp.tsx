@@ -1317,56 +1317,14 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
           )}
 
           {activeGift.id === 'carnival' && (
-            <>
-              <div className="absolute inset-0 bg-gradient-to-b from-[#1a0a2e]/96 via-[#2d1b4e]/94 to-[#0a0518]/98 backdrop-blur-sm" />
-              {Array.from({ length: 24 }).map((_, i) => {
-                const fx = (Math.random() - 0.5) * 380;
-                const fy = (Math.random() - 0.5) * 500;
-                const delay = Math.random() * 4;
-                const colors = ['#FFD166', '#FF4D6D', '#4ECDC4', '#F9A8D4', '#FBBF24'];
-                return (
-                  <div
-                    key={i}
-                    className="absolute left-1/2 top-1/2 text-[26px]"
-                    style={{ ['--fx' as any]: `${fx}px`, ['--fy' as any]: `${fy}px`, color: colors[i % colors.length], animation: `carnival-firework 0.8s ${delay}s ease-out infinite` }}
-                  >
-                    ✦
-                  </div>
-                );
-              })}
-              {Array.from({ length: 30 }).map((_, i) => {
-                const rx = (Math.random() - 0.5) * 400;
-                const delay = Math.random() * 3;
-                return (
-                  <div
-                    key={`r${i}`}
-                    className="absolute left-1/2 -top-4 w-1.5 h-6 rounded-full"
-                    style={{
-                      background: i % 2 ? 'linear-gradient(180deg,#FFD166,#FF4D6D)' : 'linear-gradient(180deg,#4ECDC4,#818cf8)',
-                      ['--rx' as any]: `${rx}px`,
-                      animation: `ribbon-drop 2.5s ${delay}s linear infinite`,
-                    }}
-                  />
-                );
-              })}
-              <div className="absolute left-1/2 top-1/2 -translate-y-1/2" style={{ animation: 'carnival-stage 5s ease-out forwards' }}>
-                <div className="relative">
-                  <div className="absolute inset-0 -m-8 rounded-full bg-gradient-radial from-amber-300/40 via-amber-500/10 to-transparent blur-2xl" style={{ animation: 'carnival-rotate 4s linear infinite' }} />
-                  <div className="text-[100px] leading-none drop-shadow-[0_0_40px_rgba(255,209,102,0.9)]">🎡</div>
-                </div>
-                <div className="mt-4 text-center">
-                  <div className="text-[32px] font-black bg-gradient-to-b from-amber-200 via-yellow-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,209,102,0.6)] tracking-widest">
-                    嘉年华
-                  </div>
-                  <div className="mt-2 inline-block px-3 py-1 bg-black/50 backdrop-blur-md rounded-full border border-amber-300/50 text-amber-100 text-[12px] font-medium">
-                    你 · 全网霸屏推送中
-                  </div>
-                </div>
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ animation: 'carnival-stage 5s ease-out forwards' }}>
+              <div className="relative w-[220px] h-[220px] flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full blur-3xl opacity-40" style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.55), transparent 65%)', animation: 'carnival-rotate 3s linear infinite' }} />
+                <div className="absolute inset-2 rounded-full blur-3xl opacity-35" style={{ background: 'radial-gradient(circle, rgba(253,224,71,0.5), transparent 65%)', animation: 'carnival-rotate 4s linear infinite reverse' }} />
+                <div className="absolute inset-4 rounded-full blur-2xl opacity-35" style={{ background: 'radial-gradient(circle, rgba(255,77,109,0.5), transparent 65%)', animation: 'carnival-rotate 5s linear infinite' }} />
+                <div className="relative text-[88px] leading-none drop-shadow-[0_0_24px_rgba(253,224,71,0.7)]">🎡</div>
               </div>
-              <div className="absolute top-0 inset-x-0 py-2 bg-gradient-to-b from-amber-500/80 to-transparent text-center text-white text-[12px] font-medium animate-[slide-in-down_0.4s_ease-out]">
-                🎊 全平台通告：主播收到「嘉年华」
-              </div>
-            </>
+            </div>
           )}
         </div>
       )}
