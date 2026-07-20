@@ -621,6 +621,15 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
   const [topicPrompt, setTopicPrompt] = useState(null);
   const [promptCountdown, setPromptCountdown] = useState(0);
   const [promptExpanded, setPromptExpanded] = useState(false);
+  const [showGiftSheet, setShowGiftSheet] = useState(false);
+  const [activeGift, setActiveGift] = useState<{ id: string; key: number } | null>(null);
+  const triggerGift = (id: string) => {
+    setShowGiftSheet(false);
+    const dur = id === 'carnival' ? 10000 : id === 'car' ? 4500 : 4000;
+    setActiveGift({ id, key: Date.now() });
+    setTimeout(() => setActiveGift((g) => (g && g.id === id ? null : g)), dur);
+    triggerToast(id === 'bunny' ? '送出「比心兔兔」' : id === 'car' ? '送出「跑车」' : '送出「嘉年华」');
+  };
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
