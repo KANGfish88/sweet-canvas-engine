@@ -495,29 +495,34 @@ function HomePage({
       </main>
 
       {/* 底部"开始直播"操作栏 */}
-      {selectedSkills.length > 0 && (
-        <div className="sticky bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-10 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/90 to-transparent pointer-events-auto animate-[slide-in-up_0.3s_ease-out]">
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-[28px] p-3 shadow-2xl flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 pl-1 min-w-0">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#4ECDC4] to-[#FF4D6D] flex items-center justify-center shrink-0 shadow-lg shadow-[#FF4D6D]/20">
-                <Icons.Sparkles size={18} className="text-white" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[12px] font-bold text-white leading-tight truncate">技能卡配置就绪</p>
-                <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-mono mt-0.5">
-                  {selectedSkills.length} skills loaded
-                </p>
-              </div>
+      <div className="sticky bottom-0 left-0 right-0 z-30 px-4 pb-4 pt-10 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/90 to-transparent pointer-events-auto animate-[slide-in-up_0.3s_ease-out]">
+        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-[28px] p-3 shadow-2xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 pl-1 min-w-0">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#4ECDC4] to-[#FF4D6D] flex items-center justify-center shrink-0 shadow-lg shadow-[#FF4D6D]/20">
+              <Icons.Sparkles size={18} className="text-white" />
             </div>
-            <button
-              onClick={() => { triggerToast(`已加载 ${selectedSkills.length} 张技能卡`, 'success'); setCurrentPath('/live'); }}
-              className="shrink-0 h-11 px-5 rounded-2xl bg-gradient-to-r from-[#FF4D6D] to-[#FF6B85] text-white text-[13px] font-bold font-display flex items-center gap-1.5 animate-cta-pulse active:scale-95 transition-transform"
-            >
-              开始直播 <Icons.ArrowRight size={14} />
-            </button>
+            <div className="min-w-0">
+              <p className="text-[12px] font-bold text-white leading-tight truncate">
+                {selectedSkills.length > 0 ? '技能卡配置就绪' : '选择技能卡开启训练'}
+              </p>
+              <p className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-mono mt-0.5">
+                {selectedSkills.length} skills loaded
+              </p>
+            </div>
           </div>
+          <button
+            onClick={() => {
+              if (selectedSkills.length === 0) { triggerToast('请先选择至少 1 张技能卡', 'error'); return; }
+              triggerToast(`已加载 ${selectedSkills.length} 张技能卡`, 'success');
+              setCurrentPath('/live');
+            }}
+            className={`shrink-0 h-11 px-5 rounded-2xl text-white text-[13px] font-bold font-display flex items-center gap-1.5 active:scale-95 transition-transform ${selectedSkills.length > 0 ? 'bg-gradient-to-r from-[#FF4D6D] to-[#FF6B85] animate-cta-pulse' : 'bg-white/10 border border-white/10 text-white/50'}`}
+          >
+            开始直播 <Icons.ArrowRight size={14} />
+          </button>
         </div>
-      )}
+      </div>
+
 
 
       {/* 技能卡详情半弹窗 */}
