@@ -1533,19 +1533,15 @@ function ProfilePage({
 
             {/* 分隔 + 基础设置 */}
             <div className="pt-4 border-t border-white/5 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#FF4D6D] shadow-[0_0_8px_#FF4D6D]"></div>
-                <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider">基础设置</h3>
-              </div>
-
               <div className="space-y-2">
                 <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">人设设定</label>
                 <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-3 focus-within:border-[#4ECDC4]/40 transition-colors">
-                  <textarea
+                  <input
+                    type="text"
                     value={basicSettings.persona}
                     onChange={(e) => setBasicSettings(prev => ({ ...prev, persona: e.target.value }))}
-                    placeholder="用一段话描述你的人设，比如'我是一个分享通勤穿搭的上班族，风格偏简约...'"
-                    className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-white/85 placeholder:text-white/25 resize-none min-h-[68px]"
+                    placeholder="用一句话描述你的人设，如'简约通勤穿搭博主'"
+                    className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-white/85 placeholder:text-white/25"
                   />
                 </div>
               </div>
