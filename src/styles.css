@@ -241,3 +241,16 @@
   20% { opacity: 1; }
   100% { opacity: 0.6; transform: translate(calc(var(--rx,0) + 30px), 900px) rotate(720deg); }
 }
+@keyframes carnival-glow-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 0.75; transform: scale(1.15); }
+}
+@keyframes carnival-glow-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes carnival-shimmer {
+  0%, 100% { opacity: 0.3; filter: blur(12px); }
+  33% { opacity: 0.55; filter: blur(16px); }
+  66% { opacity: 0.4; filter: blur(14px); }
+}
