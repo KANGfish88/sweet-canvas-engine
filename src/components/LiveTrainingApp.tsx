@@ -582,6 +582,7 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
   const [viewerCount, setViewerCount] = useState(5432);
   const [showViewerPill, setShowViewerPill] = useState(true);
   const [totalLikes, setTotalLikes] = useState(264000);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [likeBurst, setLikeBurst] = useState(0);
   const [comments, setComments] = useState([]);
   const [isLivePaused, setIsLivePaused] = useState(false);
@@ -812,33 +813,60 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
 
 
-      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-center gap-2">
-        {/* 直播中 + 时间 — 玻璃 chip */}
-        <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
-            <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
+      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-start justify-between gap-3">
+        {/* 左侧：主播信息 + 下方直播时长/技能卡 */}
+        <div className="flex flex-col items-start gap-2 flex-1 min-w-0">
+          {/* 主播信息浮层 */}
+          <div className="w-full bg-[#1A2A4A]/70 backdrop-blur-2xl border border-white/10 rounded-2xl px-3 py-2.5 flex items-center gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.35)] min-w-0">
+            {/* 圆形头像：模糊轮廓色块 */}
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF9A9E] via-[#FECFEF] to-[#4ECDC4] opacity-85 blur-[2px] shrink-0 border border-white/20" />
+            {/* 文字区 */}
+            <div className="flex flex-col justify-center min-w-0 flex-1">
+              <span className="text-[13px] font-bold text-white truncate font-display leading-tight">主播名字</span>
+              <span className="text-[10px] text-white/50 font-body leading-tight">
+                {totalLikes >= 10000 ? `${(totalLikes / 10000).toFixed(1)}万` : totalLikes.toLocaleString()}
+              </span>
+            </div>
+            {/* 关注按钮 */}
+            <button
+              onClick={() => setIsFollowing(!isFollowing)}
+              className="bg-[#FE2C55] hover:bg-[#FF4D6D] text-white text-[11px] font-bold px-3.5 py-1.5 rounded-full shadow-md active:scale-95 transition-transform shrink-0"
+            >
+              {isFollowing ? '已关注' : '关注'}
+            </button>
           </div>
-          <div className="w-[1px] h-3 bg-white/10" />
-          <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
+
+          {/* 直播时长 + 技能卡 — 放在主播信息下方 */}
+          <div className="flex items-center gap-2 w-full">
+            {/* 直播中 + 时间 */}
+            <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
+                <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
+              </div>
+              <div className="w-[1px] h-3 bg-white/10" />
+              <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
+            </div>
+            {/* 技能卡 chip */}
+            <button
+              onClick={() => setShowSkillSheet(true)}
+              className="flex-1 min-w-0 bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-3 py-1.5 flex items-center justify-between gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors"
+            >
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="text-[10px] shrink-0">🏷️</span>
+                <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
+                  {activeSkillCards.length === 0
+                    ? '未选择技能卡'
+                    : activeSkillCards.length === 1
+                      ? activeSkillCards[0].title.replace(/[「」]/g, '')
+                      : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
+                </span>
+              </div>
+              <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
+            </button>
+          </div>
         </div>
-        {/* 技能卡 chip */}
-        <button
-          onClick={() => setShowSkillSheet(true)}
-          className="flex-1 min-w-0 bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-3 py-2 flex items-center justify-between gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors"
-        >
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="text-[10px] shrink-0">🏷️</span>
-            <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
-              {activeSkillCards.length === 0
-                ? '未选择技能卡'
-                : activeSkillCards.length === 1
-                  ? activeSkillCards[0].title.replace(/[「」]/g, '')
-                  : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
-            </span>
-          </div>
-          <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
-        </button>
+
         {/* 场观 / 在线人数 胶囊 */}
         {showViewerPill && (
           <div className="shrink-0 bg-black/55 backdrop-blur-2xl border border-white/10 rounded-full pl-2.5 pr-1 py-1 flex items-center gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
