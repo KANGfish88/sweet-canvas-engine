@@ -802,65 +802,36 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
       <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-stretch gap-2">
         {/* 左侧两行 */}
         <div className="flex flex-col gap-2 w-[44%] min-w-0">
-          {/* 直播中 + 时间 — 玻璃 chip */}
-          <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
-              <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
-            </div>
-            <div className="w-[1px] h-3 bg-white/10" />
-            <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
+      {/* 顶部栏：直播中+时间 / 技能卡多选 */}
+      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-center gap-2">
+        {/* 直播中 + 时间 — 玻璃 chip */}
+        <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
+            <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
           </div>
-          {/* 技能卡 chip */}
-          <button
-            onClick={() => setShowSkillSheet(true)}
-            className="bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-3 py-2 flex items-center justify-between gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors min-w-0"
-          >
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-[10px] shrink-0">🏷️</span>
-              <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
-                {activeSkillCards.length === 0
-                  ? '未选择技能卡'
-                  : activeSkillCards.length === 1
-                    ? activeSkillCards[0].title.replace(/[「」]/g, '')
-                    : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
-              </span>
-            </div>
-            <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
-          </button>
+          <div className="w-[1px] h-3 bg-white/10" />
+          <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
         </div>
-
-        {/* 右侧 — 智能提示卡 */}
-        <div className="flex-1 min-w-0">
-          {topicPrompt ? (
-            <div className="relative h-full">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FFD166]/30 to-[#FF4D6D]/20 rounded-2xl blur opacity-50 pointer-events-none" />
-              <div className="relative bg-white/5 backdrop-blur-3xl border border-[#FFD166]/40 rounded-2xl p-3 h-full flex flex-col justify-between animate-[fade-in_0.2s]">
-                <div className="flex justify-between items-center mb-1.5">
-                  <span className="text-[10px] text-[#FFD166] font-bold uppercase tracking-widest font-display flex items-center gap-1">
-                    <Icons.Lightbulb size={11} /> 提示
-                  </span>
-                  <span className="text-[10px] font-display tabular-nums text-[#FFD166]/80">{promptCountdown}s</span>
-                </div>
-                <p className="text-[12px] text-white/90 leading-snug line-clamp-3 flex-1 font-body">
-                  {topicPrompt.tipText}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={triggerPrompt}
-              disabled={!activeSkillCard}
-              className="w-full h-full bg-white/5 backdrop-blur-3xl border border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center gap-1.5 hover:bg-white/10 hover:border-[#FFD166]/40 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_4px_16px_rgba(0,0,0,0.4)] px-2"
-            >
-              <div className="w-7 h-7 rounded-full bg-[#FFD166]/10 flex items-center justify-center border border-[#FFD166]/30">
-                <Icons.Lightbulb size={14} className="text-[#FFD166]" />
-              </div>
-              <span className="text-[10px] text-white font-medium uppercase tracking-wider font-display">获取智能提示</span>
-            </button>
-          )}
-        </div>
+        {/* 技能卡 chip */}
+        <button
+          onClick={() => setShowSkillSheet(true)}
+          className="flex-1 min-w-0 bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-3 py-2 flex items-center justify-between gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors"
+        >
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-[10px] shrink-0">🏷️</span>
+            <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
+              {activeSkillCards.length === 0
+                ? '未选择技能卡'
+                : activeSkillCards.length === 1
+                  ? activeSkillCards[0].title.replace(/[「」]/g, '')
+                  : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 6)} +${activeSkillCards.length - 1}`}
+            </span>
+          </div>
+          <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
+        </button>
       </div>
+
 
 
       {/* 5分钟提示 */}
