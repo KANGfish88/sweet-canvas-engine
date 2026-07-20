@@ -798,11 +798,8 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
       <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/60 to-transparent z-20 pointer-events-none" />
       <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20 pointer-events-none" />
 
-      {/* 顶部栏：左侧[直播中+时间 / 技能卡多选]，右侧[智能提示] */}
-      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-stretch gap-2">
-        {/* 左侧两行 */}
-        <div className="flex flex-col gap-2 w-[44%] min-w-0">
-      {/* 顶部栏：直播中+时间 / 技能卡多选 */}
+
+
       <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex items-center gap-2">
         {/* 直播中 + 时间 — 玻璃 chip */}
         <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-3 py-2 flex items-center gap-2.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
