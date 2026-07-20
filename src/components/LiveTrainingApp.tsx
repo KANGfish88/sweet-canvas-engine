@@ -730,6 +730,15 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
     });
   }, [isLivePaused, showReportOverlay]);
 
+  // 点赞数：mock 自增
+  useEffect(() => {
+    if (isLivePaused || showReportOverlay) return;
+    const t = setInterval(() => {
+      setTotalLikes(prev => prev + Math.floor(Math.random() * 120) + 20);
+    }, 1500);
+    return () => clearInterval(t);
+  }, [isLivePaused, showReportOverlay]);
+
   // 评论流：订阅后端推送（mock 模式下按当前激活技能卡生成）
   useEffect(() => {
     return liveApi.subscribeComments({
