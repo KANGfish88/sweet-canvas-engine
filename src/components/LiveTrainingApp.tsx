@@ -1036,8 +1036,25 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
           <button onClick={() => setShowSkillSheet(true)} className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
             <Icons.RefreshCw size={16} />
           </button>
-          <button onClick={() => setMicState(!micState)} className={`h-12 w-12 rounded-full border backdrop-blur-xl flex items-center justify-center active:scale-95 transition-all ${micState ? 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10' : 'bg-[#FF4D6D]/15 border-[#FF4D6D]/40 text-[#FF4D6D]'}`}>
-            {micState ? <Icons.Mic size={16} /> : <Icons.MicOff size={16} />}
+          <button
+            onClick={() => spawnHearts(1)}
+            onDoubleClick={() => spawnHearts(6)}
+            aria-label="点赞"
+            className="relative h-12 w-12 rounded-full bg-black/55 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.45)] active:scale-90 transition-transform"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24">
+              <defs>
+                <radialGradient id="heart-btn-grad" cx="50%" cy="40%" r="60%">
+                  <stop offset="0%" stopColor="#FF9CB4" />
+                  <stop offset="60%" stopColor="#FF4D6D" />
+                  <stop offset="100%" stopColor="#D6265A" />
+                </radialGradient>
+              </defs>
+              <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" fill="url(#heart-btn-grad)" className="drop-shadow-[0_0_8px_rgba(255,77,109,0.7)]" />
+            </svg>
+            {likeBurst > 0 && (
+              <span key={likeBurst} className="absolute inset-0 rounded-full border border-[#FF4D6D]/60 animate-[fade-in_0.5s_ease-out]" />
+            )}
           </button>
         </div>
       </div>
