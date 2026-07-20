@@ -1032,9 +1032,6 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
               <path d="m6 2 3 3-3 3" />
             </svg>
           </button>
-          <button onClick={() => setShowSkillSheet(true)} aria-label="切换技能卡" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
-            <Icons.RefreshCw size={16} />
-          </button>
           {/* 右二：礼物 */}
           <button aria-label="礼物" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
