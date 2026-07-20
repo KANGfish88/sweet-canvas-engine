@@ -621,6 +621,15 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
   const [topicPrompt, setTopicPrompt] = useState(null);
   const [promptCountdown, setPromptCountdown] = useState(0);
   const [promptExpanded, setPromptExpanded] = useState(false);
+  const [showGiftSheet, setShowGiftSheet] = useState(false);
+  const [activeGift, setActiveGift] = useState<{ id: string; key: number } | null>(null);
+  const triggerGift = (id: string) => {
+    setShowGiftSheet(false);
+    const dur = id === 'carnival' ? 10000 : id === 'car' ? 4500 : 4000;
+    setActiveGift({ id, key: Date.now() });
+    setTimeout(() => setActiveGift((g) => (g && g.id === id ? null : g)), dur);
+    triggerToast(id === 'bunny' ? '送出「比心兔兔」' : id === 'car' ? '送出「跑车」' : '送出「嘉年华」');
+  };
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -1033,7 +1042,7 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
             </svg>
           </button>
           {/* 右二：礼物 */}
-          <button aria-label="礼物" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
+          <button onClick={() => setShowGiftSheet(true)} aria-label="礼物" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="8" width="18" height="4" rx="1" />
               <path d="M12 8v13" />
@@ -1212,7 +1221,157 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
           </div>
         </div>
       )}
+
+      {/* 礼物选择半弹窗 */}
+      {showGiftSheet && (
+        <div className="absolute inset-0 z-[80] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s]" onClick={() => setShowGiftSheet(false)}>
+          <div className="w-full max-w-[430px] bg-gradient-to-b from-[#1A1A1A] to-[#0F0F0F] rounded-t-2xl border-t border-white/10 p-5 animate-[slide-in-up_0.25s_ease-out]" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center pb-4">
+              <div>
+                <h3 className="text-[16px] font-semibold text-white">送出礼物</h3>
+                <p className="text-[11px] text-white/50 mt-0.5">点击即触发直播间动效</p>
+              </div>
+              <button onClick={() => setShowGiftSheet(false)} className="text-white/50 hover:text-white"><Icons.X size={20} /></button>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { id: 'bunny', name: '比心兔兔', price: '9', emoji: '🐰', tone: 'from-pink-400/30 to-pink-200/10 border-pink-300/40', tag: '半屏软萌' },
+                { id: 'car', name: '跑车', price: '288', emoji: '🏎️', tone: 'from-fuchsia-500/30 to-indigo-400/10 border-fuchsia-400/40', tag: '全屏过路' },
+                { id: 'carnival', name: '嘉年华', price: '3000', emoji: '🎡', tone: 'from-amber-400/30 to-orange-500/10 border-amber-300/50', tag: '霸屏史诗' },
+              ].map((g) => (
+                <button
+                  key={g.id}
+                  onClick={() => triggerGift(g.id)}
+                  className={`relative rounded-2xl border bg-gradient-to-b ${g.tone} p-3 flex flex-col items-center gap-2 active:scale-95 hover:scale-[1.02] transition-transform`}
+                >
+                  <div className="text-[40px] leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{g.emoji}</div>
+                  <div className="text-[13px] font-semibold text-white">{g.name}</div>
+                  <div className="text-[10px] text-white/60">{g.tag}</div>
+                  <div className="mt-1 px-2 py-0.5 rounded-full bg-black/40 border border-white/10 text-[10px] text-[#FFD166] font-mono">{g.price} 抖币</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 礼物动效层 */}
+      {activeGift && (
+        <div key={activeGift.key} className="pointer-events-none absolute inset-0 z-[90] overflow-hidden">
+          {activeGift.id === 'bunny' && (
+            <>
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-pink-300/30 via-pink-200/15 to-transparent" />
+              {Array.from({ length: 18 }).map((_, i) => {
+                const px = (Math.random() - 0.5) * 340;
+                const pdx = (Math.random() - 0.5) * 60;
+                const delay = Math.random() * 1.5;
+                return (
+                  <div
+                    key={i}
+                    className="absolute left-1/2 top-1/3 text-[18px]"
+                    style={{ ['--px' as any]: `${px}px`, ['--pdx' as any]: `${pdx}px`, animation: `petal-fall 3.5s ${delay}s ease-in forwards` }}
+                  >
+                    {i % 2 ? '🌸' : '💗'}
+                  </div>
+                );
+              })}
+              <div
+                className="absolute left-1/2 bottom-16"
+                style={{ animation: 'bunny-fade 4s ease-out forwards' }}
+              >
+                <div style={{ animation: 'bunny-dance 0.8s ease-in-out infinite' }} className="text-[120px] leading-none drop-shadow-[0_8px_24px_rgba(255,120,180,0.6)]">
+                  🐰
+                </div>
+                <div className="text-center mt-2 text-white text-[13px] font-medium bg-black/50 backdrop-blur-md rounded-full px-3 py-1 border border-pink-300/40">
+                  你 · 送出「比心兔兔」×1
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeGift.id === 'car' && (
+            <>
+              <div className="absolute left-1/2 top-1/2 w-[420px] h-[420px]" style={{ animation: 'car-ring 1.2s ease-out forwards' }}>
+                <div className="w-full h-full rounded-full border-4 border-fuchsia-400/70 shadow-[0_0_80px_rgba(232,121,249,0.8)]" />
+              </div>
+              <div className="absolute top-1/2 text-[110px] leading-none drop-shadow-[0_0_30px_rgba(255,200,50,0.8)]" style={{ animation: 'car-zoom 2.5s cubic-bezier(0.6,0,0.4,1) forwards' }}>
+                🏎️
+              </div>
+              {Array.from({ length: 20 }).map((_, i) => {
+                const px = (Math.random() - 0.5) * 500;
+                const delay = 0.2 + Math.random() * 1.8;
+                return (
+                  <div
+                    key={i}
+                    className="absolute top-1/2 left-1/2 text-[14px]"
+                    style={{ ['--px' as any]: `${px}px`, ['--pdx' as any]: `${(Math.random()-0.5)*80}px`, animation: `petal-fall 2s ${delay}s ease-out forwards` }}
+                  >
+                    ✨
+                  </div>
+                );
+              })}
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-fuchsia-500/80 to-indigo-500/80 backdrop-blur-md rounded-full border border-white/20 text-white text-[13px] font-medium animate-[slide-in-down_0.4s_ease-out]">
+                你 送出「跑车」🏎️ 全场围观
+              </div>
+            </>
+          )}
+
+          {activeGift.id === 'carnival' && (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-b from-[#1a0a2e]/90 via-[#2d1b4e]/85 to-[#0a0518]/95 backdrop-blur-sm" />
+              {Array.from({ length: 24 }).map((_, i) => {
+                const fx = (Math.random() - 0.5) * 380;
+                const fy = (Math.random() - 0.5) * 500;
+                const delay = Math.random() * 8;
+                const colors = ['#FFD166', '#FF4D6D', '#4ECDC4', '#F9A8D4', '#FBBF24'];
+                return (
+                  <div
+                    key={i}
+                    className="absolute left-1/2 top-1/2 text-[26px]"
+                    style={{ ['--fx' as any]: `${fx}px`, ['--fy' as any]: `${fy}px`, color: colors[i % colors.length], animation: `carnival-firework 1.6s ${delay}s ease-out infinite` }}
+                  >
+                    ✦
+                  </div>
+                );
+              })}
+              {Array.from({ length: 30 }).map((_, i) => {
+                const rx = (Math.random() - 0.5) * 400;
+                const delay = Math.random() * 6;
+                return (
+                  <div
+                    key={`r${i}`}
+                    className="absolute left-1/2 -top-4 w-1.5 h-6 rounded-full"
+                    style={{
+                      background: i % 2 ? 'linear-gradient(180deg,#FFD166,#FF4D6D)' : 'linear-gradient(180deg,#4ECDC4,#818cf8)',
+                      ['--rx' as any]: `${rx}px`,
+                      animation: `ribbon-drop 5s ${delay}s linear infinite`,
+                    }}
+                  />
+                );
+              })}
+              <div className="absolute left-1/2 top-1/2 -translate-y-1/2" style={{ animation: 'carnival-stage 10s ease-out forwards' }}>
+                <div className="relative">
+                  <div className="absolute inset-0 -m-8 rounded-full bg-gradient-radial from-amber-300/40 via-amber-500/10 to-transparent blur-2xl" style={{ animation: 'carnival-rotate 8s linear infinite' }} />
+                  <div className="text-[100px] leading-none drop-shadow-[0_0_40px_rgba(255,209,102,0.9)]">🎡</div>
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="text-[32px] font-black bg-gradient-to-b from-amber-200 via-yellow-300 to-amber-500 bg-clip-text text-transparent drop-shadow-[0_4px_20px_rgba(255,209,102,0.6)] tracking-widest">
+                    嘉年华
+                  </div>
+                  <div className="mt-2 inline-block px-3 py-1 bg-black/50 backdrop-blur-md rounded-full border border-amber-300/50 text-amber-100 text-[12px] font-medium">
+                    你 · 全网霸屏推送中
+                  </div>
+                </div>
+              </div>
+              <div className="absolute top-0 inset-x-0 py-2 bg-gradient-to-b from-amber-500/80 to-transparent text-center text-white text-[12px] font-medium animate-[slide-in-down_0.4s_ease-out]">
+                🎊 全平台通告：主播收到「嘉年华」
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
+
   );
 }
 
