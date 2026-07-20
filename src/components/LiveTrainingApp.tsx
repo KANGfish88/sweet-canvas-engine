@@ -1042,7 +1042,7 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
             </svg>
           </button>
           {/* 右二：礼物 */}
-          <button aria-label="礼物" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
+          <button onClick={() => setShowGiftSheet(true)} aria-label="礼物" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="8" width="18" height="4" rx="1" />
               <path d="M12 8v13" />
