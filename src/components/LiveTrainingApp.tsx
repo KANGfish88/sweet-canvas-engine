@@ -584,6 +584,23 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
   const [totalLikes, setTotalLikes] = useState(264000);
   const [isFollowing, setIsFollowing] = useState(false);
   const [likeBurst, setLikeBurst] = useState(0);
+  const [hearts, setHearts] = useState<Array<{ id: number; hx: number; hue: number; dur: number; rot: number }>>([]);
+  const spawnHearts = (count = 1) => {
+    const now = Date.now();
+    const batch = Array.from({ length: count }).map((_, i) => ({
+      id: now + i + Math.random(),
+      hx: (Math.random() - 0.5) * 60,
+      hue: Math.random() > 0.5 ? 340 : 350,
+      dur: 1600 + Math.random() * 800,
+      rot: (Math.random() - 0.5) * 30,
+    }));
+    setHearts(prev => [...prev, ...batch]);
+    setTotalLikes(v => v + count);
+    setLikeBurst(b => b + 1);
+    setTimeout(() => {
+      setHearts(prev => prev.filter(h => !batch.find(b => b.id === h.id)));
+    }, 2500);
+  };
   const [comments, setComments] = useState([]);
   const [isLivePaused, setIsLivePaused] = useState(false);
   
