@@ -179,6 +179,12 @@
   from { opacity: 0; transform: translateX(-12px); }
   to { opacity: 1; transform: translateX(0); }
 }
+@keyframes float-heart {
+  0% { opacity: 0; transform: translate(var(--hx, 0), 0) scale(0.6) rotate(var(--hr, 0deg)); }
+  15% { opacity: 1; transform: translate(calc(var(--hx, 0) * 0.4), -40px) scale(1) rotate(var(--hr, 0deg)); }
+  70% { opacity: 0.9; transform: translate(calc(var(--hx, 0) * 1.2), -200px) scale(1.05) rotate(var(--hr, 0deg)); }
+  100% { opacity: 0; transform: translate(calc(var(--hx, 0) * 1.6), -320px) scale(0.7) rotate(var(--hr, 0deg)); }
+}
 
 /* Archive list slim scrollbar */
 .archive-scroll::-webkit-scrollbar { width: 4px; }

@@ -584,6 +584,23 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
   const [totalLikes, setTotalLikes] = useState(264000);
   const [isFollowing, setIsFollowing] = useState(false);
   const [likeBurst, setLikeBurst] = useState(0);
+  const [hearts, setHearts] = useState<Array<{ id: number; hx: number; hue: number; dur: number; rot: number }>>([]);
+  const spawnHearts = (count = 1) => {
+    const now = Date.now();
+    const batch = Array.from({ length: count }).map((_, i) => ({
+      id: now + i + Math.random(),
+      hx: (Math.random() - 0.5) * 60,
+      hue: Math.random() > 0.5 ? 340 : 350,
+      dur: 1600 + Math.random() * 800,
+      rot: (Math.random() - 0.5) * 30,
+    }));
+    setHearts(prev => [...prev, ...batch]);
+    setTotalLikes(v => v + count);
+    setLikeBurst(b => b + 1);
+    setTimeout(() => {
+      setHearts(prev => prev.filter(h => !batch.find(b => b.id === h.id)));
+    }, 2500);
+  };
   const [comments, setComments] = useState([]);
   const [isLivePaused, setIsLivePaused] = useState(false);
   
@@ -890,24 +907,32 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
         )}
       </div>
 
-      {/* 右侧竖栏 — 点赞 */}
-      <div className="absolute right-3 top-[calc(env(safe-area-inset-top)+72px)] z-30 pointer-events-auto flex flex-col items-center">
-        <button
-          onClick={() => { setTotalLikes(v => v + 1); setLikeBurst(b => b + 1); }}
-          aria-label="点赞"
-          className="relative w-11 h-11 rounded-full bg-black/55 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.45)] active:scale-90 transition-transform"
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="#FF3B5C" stroke="none" className="drop-shadow-[0_0_6px_rgba(255,59,92,0.6)]">
-            <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" />
-          </svg>
-          {likeBurst > 0 && (
-            <span key={likeBurst} className="absolute -top-1 text-[10px] text-[#FF3B5C] font-bold animate-[slide-in-up_0.6s_ease-out]">+1</span>
-          )}
-        </button>
-        <span className="mt-1 text-[10px] font-semibold text-white tabular-nums font-display drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-          {totalLikes >= 10000 ? `${(totalLikes / 10000).toFixed(1)}万` : totalLikes.toLocaleString()}
-        </span>
+      {/* 飘心粒子层 */}
+      <div className="absolute left-4 bottom-[100px] z-40 pointer-events-none" aria-hidden>
+        {hearts.map(h => (
+          <div
+            key={h.id}
+            className="absolute bottom-0 left-0"
+            style={{
+              // @ts-ignore custom props
+              '--hx': `${h.hx}px`,
+              '--hr': `${h.rot}deg`,
+              animation: `float-heart ${h.dur}ms ease-out forwards`,
+            }}
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" style={{ filter: `drop-shadow(0 0 6px hsla(${h.hue},90%,60%,0.7))` }}>
+              <defs>
+                <linearGradient id={`hg-${h.id}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={`hsl(${h.hue},95%,72%)`} />
+                  <stop offset="100%" stopColor={`hsl(${h.hue},90%,50%)`} />
+                </linearGradient>
+              </defs>
+              <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" fill={`url(#hg-${h.id})`} />
+            </svg>
+          </div>
+        ))}
       </div>
+
 
 
 
@@ -1011,8 +1036,25 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
           <button onClick={() => setShowSkillSheet(true)} className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
             <Icons.RefreshCw size={16} />
           </button>
-          <button onClick={() => setMicState(!micState)} className={`h-12 w-12 rounded-full border backdrop-blur-xl flex items-center justify-center active:scale-95 transition-all ${micState ? 'bg-white/5 border-white/10 text-white/80 hover:bg-white/10' : 'bg-[#FF4D6D]/15 border-[#FF4D6D]/40 text-[#FF4D6D]'}`}>
-            {micState ? <Icons.Mic size={16} /> : <Icons.MicOff size={16} />}
+          <button
+            onClick={() => spawnHearts(1)}
+            onDoubleClick={() => spawnHearts(6)}
+            aria-label="点赞"
+            className="relative h-12 w-12 rounded-full bg-black/55 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.45)] active:scale-90 transition-transform"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24">
+              <defs>
+                <radialGradient id="heart-btn-grad" cx="50%" cy="40%" r="60%">
+                  <stop offset="0%" stopColor="#FF9CB4" />
+                  <stop offset="60%" stopColor="#FF4D6D" />
+                  <stop offset="100%" stopColor="#D6265A" />
+                </radialGradient>
+              </defs>
+              <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" fill="url(#heart-btn-grad)" className="drop-shadow-[0_0_8px_rgba(255,77,109,0.7)]" />
+            </svg>
+            {likeBurst > 0 && (
+              <span key={likeBurst} className="absolute inset-0 rounded-full border border-[#FF4D6D]/60 animate-[fade-in_0.5s_ease-out]" />
+            )}
           </button>
         </div>
       </div>
