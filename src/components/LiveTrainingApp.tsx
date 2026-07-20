@@ -760,7 +760,13 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
     if (!prompt) return;
     setPromptCountdown(12);
     setTopicPrompt(prompt);
+    setPromptExpanded(true);
   };
+
+  // 有新提示时自动展开
+  useEffect(() => {
+    if (topicPrompt) setPromptExpanded(true);
+  }, [topicPrompt]);
 
   const formatTime = (sec) => {
     const h = Math.floor(sec / 3600).toString().padStart(2, '0');
