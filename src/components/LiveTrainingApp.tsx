@@ -1318,17 +1318,17 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
           {activeGift.id === 'carnival' && (
             <>
-              <div className="absolute inset-0 bg-gradient-to-b from-[#1a0a2e]/90 via-[#2d1b4e]/85 to-[#0a0518]/95 backdrop-blur-sm" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#1a0a2e]/96 via-[#2d1b4e]/94 to-[#0a0518]/98 backdrop-blur-sm" />
               {Array.from({ length: 24 }).map((_, i) => {
                 const fx = (Math.random() - 0.5) * 380;
                 const fy = (Math.random() - 0.5) * 500;
-                const delay = Math.random() * 8;
+                const delay = Math.random() * 4;
                 const colors = ['#FFD166', '#FF4D6D', '#4ECDC4', '#F9A8D4', '#FBBF24'];
                 return (
                   <div
                     key={i}
                     className="absolute left-1/2 top-1/2 text-[26px]"
-                    style={{ ['--fx' as any]: `${fx}px`, ['--fy' as any]: `${fy}px`, color: colors[i % colors.length], animation: `carnival-firework 1.6s ${delay}s ease-out infinite` }}
+                    style={{ ['--fx' as any]: `${fx}px`, ['--fy' as any]: `${fy}px`, color: colors[i % colors.length], animation: `carnival-firework 0.8s ${delay}s ease-out infinite` }}
                   >
                     ✦
                   </div>
@@ -1336,7 +1336,7 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
               })}
               {Array.from({ length: 30 }).map((_, i) => {
                 const rx = (Math.random() - 0.5) * 400;
-                const delay = Math.random() * 6;
+                const delay = Math.random() * 3;
                 return (
                   <div
                     key={`r${i}`}
@@ -1344,14 +1344,14 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
                     style={{
                       background: i % 2 ? 'linear-gradient(180deg,#FFD166,#FF4D6D)' : 'linear-gradient(180deg,#4ECDC4,#818cf8)',
                       ['--rx' as any]: `${rx}px`,
-                      animation: `ribbon-drop 5s ${delay}s linear infinite`,
+                      animation: `ribbon-drop 2.5s ${delay}s linear infinite`,
                     }}
                   />
                 );
               })}
-              <div className="absolute left-1/2 top-1/2 -translate-y-1/2" style={{ animation: 'carnival-stage 10s ease-out forwards' }}>
+              <div className="absolute left-1/2 top-1/2 -translate-y-1/2" style={{ animation: 'carnival-stage 5s ease-out forwards' }}>
                 <div className="relative">
-                  <div className="absolute inset-0 -m-8 rounded-full bg-gradient-radial from-amber-300/40 via-amber-500/10 to-transparent blur-2xl" style={{ animation: 'carnival-rotate 8s linear infinite' }} />
+                  <div className="absolute inset-0 -m-8 rounded-full bg-gradient-radial from-amber-300/40 via-amber-500/10 to-transparent blur-2xl" style={{ animation: 'carnival-rotate 4s linear infinite' }} />
                   <div className="text-[100px] leading-none drop-shadow-[0_0_40px_rgba(255,209,102,0.9)]">🎡</div>
                 </div>
                 <div className="mt-4 text-center">
