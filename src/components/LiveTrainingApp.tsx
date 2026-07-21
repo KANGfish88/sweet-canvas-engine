@@ -1466,31 +1466,19 @@ function TrainingReport({ dateStr, durationStr, summary, suggestions, skills }) 
   return (
     <div className="px-4 space-y-5">
       {/* 一、总体评价 */}
-      <section className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] space-y-4">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-display font-bold tracking-[0.18em] text-[#FF7A9A]">SECTION 01</span>
-          <span className="h-[1px] flex-1 bg-gradient-to-r from-[#FF2B55]/40 to-transparent" />
-        </div>
+      <section className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] space-y-3">
         <h3 className="text-[16px] font-semibold text-white">一、总体评价</h3>
-        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 items-baseline">
-          <span className="text-[12px] text-white/50">训练时长</span>
-          <span className="text-[15px] font-mono text-white tabular-nums">{durationStr}</span>
-          <span className="text-[12px] text-white/50">日期</span>
-          <span className="text-[13px] text-white/70 font-mono tabular-nums">{dateStr}</span>
+        <div className="flex items-center gap-4 flex-wrap">
+          <span className="text-[12px] text-white/50">训练时长 <span className="text-[14px] font-mono text-white tabular-nums ml-1">{durationStr}</span></span>
+          <span className="text-[12px] text-white/50">日期 <span className="text-[13px] text-white/80 font-mono tabular-nums ml-1">{dateStr}</span></span>
         </div>
-        <div className="bg-[#0F0F0F] rounded-xl p-4 border border-[#262626]">
-          <p className="text-[14px] text-white leading-relaxed">
-            {summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
-          </p>
-        </div>
+        <p className="text-[14px] text-white leading-relaxed">
+          {summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
+        </p>
       </section>
 
       {/* 二、不同技能卡的表现情况 */}
       <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-display font-bold tracking-[0.18em] text-[#00F0FF]">SECTION 02</span>
-          <span className="h-[1px] flex-1 bg-gradient-to-r from-[#00F0FF]/40 to-transparent" />
-        </div>
         <h3 className="text-[16px] font-semibold text-white">二、不同技能卡的表现情况</h3>
 
         {(!skills || skills.length === 0) && (
