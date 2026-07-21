@@ -223,9 +223,6 @@ export default function App() {
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               trainSessions={trainSessions}
-              setTrainSessions={setTrainSessions}
-              favoriteSessions={favoriteSessions}
-              setFavoriteSessions={setFavoriteSessions}
               basicSettings={basicSettings}
               setBasicSettings={setBasicSettings}
               triggerToast={triggerToast}
