@@ -1690,15 +1690,15 @@ function ProfilePage({
           {/* 下：三列训练数据 */}
           <div className="grid grid-cols-3 pt-3 border-t border-white/[0.08] divide-x divide-white/[0.08]">
             {[
-              { val: trainSessions.length, unit: '场', label: '累计训练场次', color: '#FFFFFF' },
-              { val: (skillCardLibrary || []).length, unit: '张', label: '已沉淀技能卡', color: '#FF2B55' },
+              { val: trainSessions.length, unit: '场', label: '训练场次', color: '#FFFFFF' },
+              { val: (skillCardLibrary || []).length, unit: '张', label: '技能卡', color: '#FF2B55' },
               {
                 val: (() => {
                   const total = (trainSessions || []).reduce((s: number, x: any) => s + (x.duration || 0), 0);
                   return (total / 3600).toFixed(1);
                 })(),
                 unit: '小时',
-                label: '训练总时长',
+                label: '训练时长',
                 color: '#00F0FF',
               },
             ].map((s, i) => (
