@@ -225,6 +225,7 @@ export default function App() {
               trainSessions={trainSessions}
               basicSettings={basicSettings}
               setBasicSettings={setBasicSettings}
+              skillCardLibrary={skillCardLibrary}
               triggerToast={triggerToast}
             />
           )}
