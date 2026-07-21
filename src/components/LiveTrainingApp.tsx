@@ -223,9 +223,6 @@ export default function App() {
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               trainSessions={trainSessions}
-              setTrainSessions={setTrainSessions}
-              favoriteSessions={favoriteSessions}
-              setFavoriteSessions={setFavoriteSessions}
               basicSettings={basicSettings}
               setBasicSettings={setBasicSettings}
               triggerToast={triggerToast}
@@ -1498,17 +1495,12 @@ function ProfilePage({
   userProfile, 
   setUserProfile, 
   trainSessions, 
-  setTrainSessions, 
-  favoriteSessions, 
-  setFavoriteSessions, 
   basicSettings,
   setBasicSettings,
   triggerToast 
 }) {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [tempUsername, setTempUsername] = useState(userProfile.username);
-  const [calendarOffset, setCalendarOffset] = useState(0);
-  const [selectedArchiveId, setSelectedArchiveId] = useState(null);
   const [tagInput, setTagInput] = useState('');
 
   const addTag = (raw: string) => {
@@ -1530,70 +1522,6 @@ function ProfilePage({
       setTempUsername(userProfile.username);
     }
     setIsEditingUsername(false);
-  };
-
-  // 真实月份计算（基于 calendarOffset 与今天）
-  const today = new Date();
-  const viewDate = new Date(today.getFullYear(), today.getMonth() + calendarOffset, 1);
-  const viewYear = viewDate.getFullYear();
-  const viewMonth = viewDate.getMonth();
-
-  // 训练密度热力图：根据 trainSessions 按日期聚合
-  const densityMap = React.useMemo(() => {
-    const map: Record<string, number> = {};
-    trainSessions.forEach(s => {
-      // 兼容 session.date 形如 "2026年5月23日 14:30"，否则尝试 Date.parse
-      let key: string | null = null;
-      if (typeof s.date === 'string') {
-        const m = s.date.match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
-        if (m) key = `${m[1]}-${parseInt(m[2], 10)}-${parseInt(m[3], 10)}`;
-      }
-      if (!key && s.timestamp) {
-        const d = new Date(s.timestamp);
-        if (!isNaN(d.getTime())) key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-      }
-      if (key) map[key] = (map[key] || 0) + 1;
-    });
-    // demo 默认数据（仅当前月无任何训练时显示，便于预览热力图效果）
-    if (Object.keys(map).length === 0 && calendarOffset === 0) {
-      const y = today.getFullYear(), m = today.getMonth() + 1;
-      [[10,1],[13,1],[14,2],[15,3],[20,1],[23,1],[24,2]].forEach(([d,c]) => { map[`${y}-${m}-${d}`] = c; });
-    }
-    return map;
-  }, [trainSessions, calendarOffset]);
-
-  const getCalendarDays = () => {
-    const days: Array<{ blank?: boolean; dayNum?: number; density?: number; isToday?: boolean }> = [];
-    // 周一为一周起点：JS getDay() 周日=0，转换：(getDay()+6)%7
-    const firstWeekday = (new Date(viewYear, viewMonth, 1).getDay() + 6) % 7;
-    for (let i = 0; i < firstWeekday; i++) days.push({ blank: true });
-    const lastDay = new Date(viewYear, viewMonth + 1, 0).getDate();
-    for (let d = 1; d <= lastDay; d++) {
-      const density = densityMap[`${viewYear}-${viewMonth + 1}-${d}`] || 0;
-      const isToday = d === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear();
-      days.push({ dayNum: d, density, isToday });
-    }
-    return days;
-  };
-
-  const monthLabel = `${viewYear}年${viewMonth + 1}月`;
-
-  const toggleFavorite = (id) => {
-    if (favoriteSessions.includes(id)) {
-      setFavoriteSessions(prev => prev.filter(fid => fid !== id));
-      triggerToast("已取消收藏", "info");
-    } else {
-      setFavoriteSessions(prev => [...prev, id]);
-      triggerToast("已收藏记录", "success");
-    }
-  };
-
-  const deleteSession = (id) => {
-    if (window.confirm("确定删除这场训练记录吗？删除后无法恢复。")) {
-      setTrainSessions(prev => prev.filter(s => s.id !== id));
-      setFavoriteSessions(prev => prev.filter(fid => fid !== id));
-      triggerToast("已删除记录", "success");
-    }
   };
 
   return (
@@ -1630,11 +1558,10 @@ function ProfilePage({
                 <p className="text-[11px] text-white/40 font-body mt-0.5 tracking-wide">LIVE TRAINER · LV.2</p>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/5">
+            <div className="grid grid-cols-2 gap-2 pt-4 border-t border-white/5">
               {[
                 { val: trainSessions.length, label: '累计场次', color: '#FF4D6D' },
                 { val: userProfile.totalSkills, label: '掌握技能', color: '#4ECDC4' },
-                { val: favoriteSessions.length, label: '我的收藏', color: '#FFD166' },
               ].map((s, i) => (
                 <div key={i} className="text-center">
                   <p className="font-display text-[20px] font-bold tabular-nums" style={{ color: s.color }}>{s.val}</p>
@@ -1691,121 +1618,6 @@ function ProfilePage({
               </div>
             </div>
           </div>
-        </section>
-
-
-        {/* 训练日历 — 发光玻璃 */}
-        <section className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D]/20 to-[#4ECDC4]/20 rounded-3xl blur opacity-30 pointer-events-none"></div>
-          <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-5">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#4ECDC4] shadow-[0_0_8px_#4ECDC4]"></div>
-                <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider">训练日历</h3>
-              </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => setCalendarOffset(p => p - 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/50 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronLeft size={12} /></button>
-                <span className="text-[11px] text-white/70 font-medium min-w-[72px] text-center tabular-nums font-body">{monthLabel}</span>
-                <button onClick={() => setCalendarOffset(p => p + 1)} className="w-6 h-6 rounded-md bg-white/5 text-white/50 hover:bg-white/10 hover:text-white flex items-center justify-center transition-colors"><Icons.ChevronRight size={12} /></button>
-              </div>
-            </div>
-            <div className="grid grid-cols-7 gap-1.5 text-center mb-2">
-              {['一', '二', '三', '四', '五', '六', '日'].map(w => <span key={w} className="text-[10px] text-white/30 font-bold">{w}</span>)}
-            </div>
-            <div className="grid grid-cols-7 gap-1.5">
-              {getCalendarDays().map((cell, idx) => {
-                if (cell.blank) return <div key={idx} className="aspect-square" />;
-                const hasDensity = cell.density > 0;
-                let cls = 'text-white/20';
-                if (hasDensity) {
-                  cls = 'bg-white/5 border border-white/5 text-white/80';
-                  if (cell.density >= 3) cls = 'bg-[#4ECDC4]/15 border border-[#4ECDC4]/30 text-white shadow-[inset_0_0_10px_rgba(78,205,196,0.18)]';
-                  else if (cell.density === 2) cls = 'bg-[#4ECDC4]/10 border border-[#4ECDC4]/20 text-white';
-                }
-                if (cell.isToday) cls = 'bg-[#FF4D6D]/10 border-2 border-[#FF4D6D] text-white font-bold shadow-[inset_0_0_12px_rgba(255,77,109,0.2)]';
-                return (
-                  <div key={idx} className={`aspect-square rounded-lg flex items-center justify-center text-[11px] font-display tabular-nums transition-colors relative ${cls}`}>
-                    {cell.dayNum}
-                    {cell.isToday && <div className="absolute -top-1 -right-1 w-2 h-2 bg-[#FFD166] rounded-full border border-[#0F0F0F]" />}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* 训练档案 — 发光玻璃 */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="font-display text-[12px] font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <span className="w-1 h-4 bg-[#FF4D6D] rounded-full shadow-[0_0_6px_#FF4D6D]" />
-              训练档案
-            </h3>
-            <span className="text-[10px] text-[#4ECDC4] font-bold tracking-tighter font-display tabular-nums">{trainSessions.length} REC</span>
-          </div>
-
-          {trainSessions.length === 0 ? (
-            <div className="relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D]/10 to-[#4ECDC4]/10 rounded-2xl blur opacity-30 pointer-events-none" />
-              <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl py-8 text-center">
-                <p className="text-[13px] text-white font-medium mb-1 font-display">还没有训练记录</p>
-                <p className="text-[11px] text-white/40 font-body">去首页导入素材，开始第一场训练</p>
-              </div>
-            </div>
-          ) : (
-            <div className="max-h-[240px] overflow-y-auto pr-1 space-y-2.5 archive-scroll">
-              {trainSessions.map(session => {
-                const isExpanded = selectedArchiveId === session.id;
-                const isFav = favoriteSessions.includes(session.id);
-                return (
-                  <div key={session.id} className="relative group">
-                    {isExpanded && <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4ECDC4]/30 to-[#FF4D6D]/20 rounded-2xl blur opacity-40 pointer-events-none" />}
-                    <div className={`relative rounded-2xl border backdrop-blur-xl overflow-hidden transition-all ${isExpanded ? 'border-[#4ECDC4]/40 bg-white/[0.06]' : 'border-white/10 bg-white/5 hover:bg-white/[0.08]'}`}>
-                      <div onClick={() => setSelectedArchiveId(isExpanded ? null : session.id)} className="p-4 cursor-pointer flex items-center justify-between gap-2">
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <div className="flex items-center gap-1.5">
-                            <p className="text-[13px] font-display font-bold text-white truncate">{session.date}</p>
-                            {isFav && <span className="text-[#FFD166] text-[11px] shrink-0">✦</span>}
-                          </div>
-                          <p className="text-white/40 text-[11px] truncate font-body">时长 {session.durationStr} · {session.skillCards.join(' · ')}</p>
-                        </div>
-                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-colors ${isExpanded ? 'border-[#4ECDC4]/40 text-[#4ECDC4] bg-[#4ECDC4]/10' : 'border-white/10 text-white/40 group-hover:border-white/20 group-hover:text-white'}`}>
-                          {isExpanded ? <Icons.ChevronUp size={14} /> : <Icons.ChevronRight size={14} />}
-                        </div>
-                      </div>
-
-                      {isExpanded && (
-                        <div className="px-4 pb-4 pt-1 border-t border-white/5 space-y-3 animate-[fade-in_0.2s_ease-out]">
-                          <div>
-                            <h4 className="text-[10px] font-display font-bold text-[#4ECDC4] mb-1.5 uppercase tracking-widest">综合诊断</h4>
-                            <p className="text-[11px] text-white/70 leading-relaxed font-body">{session.summary}</p>
-                          </div>
-                          {session.suggestions?.length > 0 && (
-                            <div>
-                              <h4 className="text-[10px] font-display font-bold text-[#FFD166] mb-1.5 uppercase tracking-widest">改进建议</h4>
-                              <div className="space-y-1">
-                                {session.suggestions.map((item, idx) => (
-                                  <p key={idx} className="text-[11px] text-white/70 flex items-start gap-1.5 font-body leading-relaxed"><span className="text-[#FFD166] mt-0.5 shrink-0">›</span> {item}</p>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          <div className="flex gap-2 pt-1">
-                            <button onClick={() => toggleFavorite(session.id)} className={`flex-1 py-2 rounded-xl text-[12px] font-medium border flex items-center justify-center gap-1.5 backdrop-blur-md transition-colors ${isFav ? 'bg-[#FFD166]/10 border-[#FFD166]/30 text-[#FFD166]' : 'bg-white/5 border-white/10 text-white hover:bg-white/10'}`}>
-                              <Icons.Star size={12} fill={isFav ? 'currentColor' : 'none'} /> {isFav ? '已收藏' : '收藏'}
-                            </button>
-                            <button onClick={() => deleteSession(session.id)} className="px-3 py-2 rounded-xl border border-white/10 text-[#FF4D6D] bg-white/5 hover:bg-[#FF4D6D]/10 backdrop-blur-md transition-colors flex items-center justify-center">
-                              <Icons.Trash2 size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </section>
       </main>
     </div>
