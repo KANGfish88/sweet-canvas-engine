@@ -12,6 +12,120 @@ import {
 
 
 // ==========================================
+// DateWheelPicker — iOS 风格年月日滚轮日期选择器
+// ==========================================
+const ITEM_H = 32;
+function WheelColumn({ items, value, onChange, formatter = (v) => String(v) }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const timer = useRef<any>(null);
+  useEffect(() => {
+    const idx = items.indexOf(value);
+    if (ref.current && idx >= 0) {
+      ref.current.scrollTop = idx * ITEM_H;
+    }
+  }, [value, items]);
+  const handleScroll = () => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      if (!ref.current) return;
+      const idx = Math.round(ref.current.scrollTop / ITEM_H);
+      const clamped = Math.max(0, Math.min(items.length - 1, idx));
+      ref.current.scrollTo({ top: clamped * ITEM_H, behavior: 'smooth' });
+      const next = items[clamped];
+      if (next !== value) onChange(next);
+    }, 120);
+  };
+  return (
+    <div
+      ref={ref}
+      onScroll={handleScroll}
+      className="relative flex-1 h-[160px] overflow-y-scroll snap-y snap-mandatory scrollbar-none"
+      style={{ scrollSnapType: 'y mandatory', WebkitOverflowScrolling: 'touch' }}
+    >
+      <div style={{ height: ITEM_H * 2 }} />
+      {items.map((it) => (
+        <div
+          key={it}
+          className={`snap-center flex items-center justify-center text-[15px] font-mono tabular-nums transition-colors ${it === value ? 'text-white font-semibold' : 'text-white/35'}`}
+          style={{ height: ITEM_H }}
+        >
+          {formatter(it)}
+        </div>
+      ))}
+      <div style={{ height: ITEM_H * 2 }} />
+    </div>
+  );
+}
+function DateWheelPicker({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const now = new Date();
+  const initial = value ? new Date(value) : now;
+  const [y, setY] = useState(initial.getFullYear());
+  const [m, setM] = useState(initial.getMonth() + 1);
+  const [d, setD] = useState(initial.getDate());
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, [open]);
+
+  const years = Array.from({ length: 11 }, (_, i) => now.getFullYear() - 5 + i);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  useEffect(() => { if (d > daysInMonth) setD(daysInMonth); }, [daysInMonth]);
+
+  const confirm = () => {
+    const iso = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    onChange(iso);
+    setOpen(false);
+  };
+  const clear = () => {
+    onChange('');
+    setOpen(false);
+  };
+
+  const label = value ? value.replace(/-/g, '/') : '选择日期';
+
+  return (
+    <div ref={wrapRef} className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={`bg-[#1F2128] text-[11px] font-body border rounded-full px-3 py-1.5 outline-none cursor-pointer transition-colors ${value ? 'text-white border-[#FF2B55]/50' : 'text-white/60 border-white/10'}`}
+      >
+        {label}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-[260px] rounded-2xl bg-[#1A1C20]/98 backdrop-blur-xl border border-white/10 shadow-[0_16px_48px_rgba(0,0,0,0.6)] p-3 animate-[fade-in_0.15s_ease-out]">
+          <div className="relative flex gap-1">
+            {/* 中心高亮条 */}
+            <div className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[32px] rounded-lg bg-white/[0.06] border-y border-white/10" />
+            <WheelColumn items={years} value={y} onChange={setY} formatter={(v) => `${v}年`} />
+            <WheelColumn items={months} value={m} onChange={setM} formatter={(v) => `${v}月`} />
+            <WheelColumn items={days} value={d} onChange={setD} formatter={(v) => `${v}日`} />
+          </div>
+          <div className="mt-3 flex items-center gap-2">
+            <button
+              onClick={clear}
+              className="flex-1 py-2 rounded-full text-[12px] font-display text-white/70 bg-white/[0.05] border border-white/10 hover:bg-white/[0.08]"
+            >清空</button>
+            <button
+              onClick={confirm}
+              className="flex-1 py-2 rounded-full text-[12px] font-display font-semibold text-white bg-[#FF2B55] shadow-[0_0_16px_rgba(255,43,85,0.45)]"
+            >确定</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==========================================
 // 1. 图标库 (SVG Icons)
 // ==========================================
 const Icons = {
@@ -369,7 +483,7 @@ function HomePage({
                   <div className="flex-1 flex items-center px-2 min-w-0">
                     <input
                       type="text"
-                      placeholder="上传视频 / 图片 / 文档，或粘贴文字…"
+                      placeholder="可粘贴文字"
                       value={linkInput}
                       onChange={(e) => {
                         setLinkInput(e.target.value);
@@ -1867,17 +1981,8 @@ function ProfilePage({
 
 
             {viewMode === 'session' && (
-              <div className="flex items-center gap-1 ml-auto animate-[fade-in_0.2s_ease-out]">
-                <input
-                  type="date"
-                  value={dateFilter}
-                  onChange={(e) => setDateFilter(e.target.value)}
-                  onClick={(e) => { (e.currentTarget as any).showPicker?.(); }}
-                  className="date-pill bg-[#1F2128] text-white text-[11px] font-body border border-white/10 rounded-full px-3 py-1.5 outline-none focus:border-[#FF2B55]/50 [color-scheme:dark] cursor-pointer"
-                />
-                {dateFilter && (
-                  <button onClick={() => setDateFilter('')} className="text-white/40 hover:text-white text-[11px] px-2">清除</button>
-                )}
+              <div className="ml-auto animate-[fade-in_0.2s_ease-out]">
+                <DateWheelPicker value={dateFilter} onChange={setDateFilter} />
               </div>
             )}
           </div>
