@@ -1745,14 +1745,13 @@ function ProfilePage({
 
             {viewMode === 'session' && (
               <div className="flex items-center gap-1 ml-auto animate-[fade-in_0.2s_ease-out]">
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                    className="bg-[#1F2128] text-white text-[11px] font-body border border-white/10 rounded-full px-3 py-1.5 outline-none focus:border-[#FF2B55]/50 [color-scheme:dark]"
-                  />
-                </div>
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  onClick={(e) => { (e.currentTarget as any).showPicker?.(); }}
+                  className="date-pill bg-[#1F2128] text-white text-[11px] font-body border border-white/10 rounded-full px-3 py-1.5 outline-none focus:border-[#FF2B55]/50 [color-scheme:dark] cursor-pointer"
+                />
                 {dateFilter && (
                   <button onClick={() => setDateFilter('')} className="text-white/40 hover:text-white text-[11px] px-2">清除</button>
                 )}
