@@ -1561,11 +1561,10 @@ function ProfilePage({
                 <p className="text-[11px] text-white/40 font-body mt-0.5 tracking-wide">LIVE TRAINER · LV.2</p>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/5">
+            <div className="grid grid-cols-2 gap-2 pt-4 border-t border-white/5">
               {[
                 { val: trainSessions.length, label: '累计场次', color: '#FF4D6D' },
                 { val: userProfile.totalSkills, label: '掌握技能', color: '#4ECDC4' },
-                { val: favoriteSessions.length, label: '我的收藏', color: '#FFD166' },
               ].map((s, i) => (
                 <div key={i} className="text-center">
                   <p className="font-display text-[20px] font-bold tabular-nums" style={{ color: s.color }}>{s.val}</p>
