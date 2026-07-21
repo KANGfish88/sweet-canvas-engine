@@ -1856,7 +1856,7 @@ function ProfilePage({
                 return (
                   <button
                     key={s.id}
-                    onClick={() => triggerToast('诊断详情页正在开发中', 'info')}
+                    onClick={() => setDetailSession(s)}
                     className="w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 hover:border-[#00F0FF]/30 hover:shadow-[0_6px_24px_rgba(0,240,255,0.12)] transition-all"
                   >
                     <div className="flex items-center gap-2">
