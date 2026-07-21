@@ -1504,6 +1504,7 @@ function ProfilePage({
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [tempUsername, setTempUsername] = useState(userProfile.username);
   const [tagInput, setTagInput] = useState('');
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   // 视图 & 筛选
   const [viewMode, setViewMode] = useState<'skill' | 'session'>('skill');
@@ -1631,25 +1632,31 @@ function ProfilePage({
 
               {/* 动态标签气泡组 */}
               <div className="flex flex-wrap gap-1.5 items-center mt-2">
-                {basicSettings.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 pl-2 pr-1 h-[22px] rounded-full text-[11px] leading-none"
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#00F0FF',
-                    }}
-                  >
-                    {tag}
+                {basicSettings.tags.map(tag => {
+                  const isSel = selectedTag === tag;
+                  return (
                     <button
-                      onClick={() => removeTag(tag)}
-                      className="w-3.5 h-3.5 rounded-full hover:bg-white/15 flex items-center justify-center text-white/60"
+                      key={tag}
+                      onClick={() => {
+                        if (isSel) {
+                          removeTag(tag);
+                          setSelectedTag(null);
+                        } else {
+                          setSelectedTag(tag);
+                        }
+                      }}
+                      className="inline-flex items-center h-[22px] px-2.5 rounded-full text-[11px] leading-none transition-all"
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: `1px solid ${isSel ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)'}`,
+                        boxShadow: isSel ? '0 0 0 1px rgba(255,255,255,0.35)' : 'none',
+                        color: '#00F0FF',
+                      }}
                     >
-                      <Icons.X size={9} />
+                      {tag}
                     </button>
-                  </span>
-                ))}
+                  );
+                })}
                 <input
                   value={tagInput}
                   onChange={(e) => {
@@ -1663,8 +1670,8 @@ function ProfilePage({
                     }
                   }}
                   onBlur={() => tagInput && addTag(tagInput)}
-                  placeholder={basicSettings.tags.length ? '+' : '+ 标签'}
-                  className="min-w-[64px] w-[80px] h-[22px] bg-transparent border border-dashed border-white/20 rounded-full outline-none px-2 text-[11px] text-white placeholder:text-white/55 focus:border-[#00F0FF]/50"
+                  placeholder="+"
+                  className="w-[28px] h-[22px] bg-transparent border border-dashed border-white/20 rounded-full outline-none px-0 text-[12px] text-white text-center placeholder:text-white/55 placeholder:text-center focus:w-[80px] focus:px-2 focus:border-[#00F0FF]/50 transition-all"
                 />
               </div>
             </div>
@@ -1738,14 +1745,13 @@ function ProfilePage({
 
             {viewMode === 'session' && (
               <div className="flex items-center gap-1 ml-auto animate-[fade-in_0.2s_ease-out]">
-                <div className="relative">
-                  <input
-                    type="date"
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                    className="bg-[#1F2128] text-white text-[11px] font-body border border-white/10 rounded-full px-3 py-1.5 outline-none focus:border-[#FF2B55]/50 [color-scheme:dark]"
-                  />
-                </div>
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  onClick={(e) => { (e.currentTarget as any).showPicker?.(); }}
+                  className="date-pill bg-[#1F2128] text-white text-[11px] font-body border border-white/10 rounded-full px-3 py-1.5 outline-none focus:border-[#FF2B55]/50 [color-scheme:dark] cursor-pointer"
+                />
                 {dateFilter && (
                   <button onClick={() => setDateFilter('')} className="text-white/40 hover:text-white text-[11px] px-2">清除</button>
                 )}
@@ -1810,35 +1816,55 @@ function ProfilePage({
                 )}
               </div>
 
-              {/* 技能卡资产流 */}
-              <div className="space-y-2.5">
+              {/* 技能卡资产流 — 首页卡片样式，统一配色 */}
+              <div className="grid grid-cols-2 gap-3">
                 {cardsInAbility.length === 0 && (
-                  <div className="text-center py-8 text-white/25 text-[12px] font-body">暂无该维度技能卡</div>
+                  <div className="col-span-2 text-center py-8 text-white/25 text-[12px] font-body">暂无该维度技能卡</div>
                 )}
                 {cardsInAbility.map((card, i) => {
                   const num = i + 1;
                   const dimmed = focusedFootnotes && !focusedFootnotes.includes(num);
+                  const accent = '#FF2B55';
                   return (
-                    <button
+                    <div
                       key={card.id}
                       onClick={() => setDetailCard(card)}
-                      className={`relative w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 pl-12 hover:border-[#FF2B55]/30 hover:shadow-[0_6px_24px_rgba(255,43,85,0.15)] transition-all ${dimmed ? 'opacity-30' : 'opacity-100'}`}
+                      className={`relative p-[1px] rounded-3xl overflow-hidden cursor-pointer transition-all active:scale-[0.98] ${dimmed ? 'opacity-30' : 'opacity-100'}`}
+                      style={{ backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.12), transparent)` }}
                     >
-                      <div className="absolute top-3.5 left-3 w-5 h-5 rounded-full bg-[#FF2B55]/12 border border-[#FF2B55]/40 flex items-center justify-center font-display font-bold text-[10px] text-[#FF7A9A]">
+                      {/* 左上角上浮编号 */}
+                      <div
+                        className="absolute -top-1.5 -left-1.5 z-10 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px] text-white shadow-[0_4px_12px_rgba(255,43,85,0.5)]"
+                        style={{ background: accent, border: '2px solid #0F0F0F' }}
+                      >
                         {num}
                       </div>
-                      <h3 className="text-[13.5px] font-display font-semibold text-white line-clamp-1">{card.title}</h3>
-                      <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/55 font-body border border-white/5">{card.category || '综合'}</span>
-                        {(card.dimensions || []).slice(0, 2).map((d: string) => (
-                          <span key={d} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/55 font-body border border-white/5">{d}</span>
-                        ))}
-                        <span className="ml-auto text-[10.5px] text-white/70 font-body tabular-nums">
-                          训练 <span className="text-[#00F0FF]/85 font-semibold">{card.trainedSessions || 0}</span>/{card.targetSessions || 0}
-                        </span>
+                      <div className="bg-[#161616] p-4 rounded-[23px] h-full flex flex-col">
+                        <div className="flex items-start justify-between mb-3">
+                          <span
+                            className="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider"
+                            style={{ background: `${accent}22`, color: accent }}
+                          >
+                            {card.category || '综合技巧'}
+                          </span>
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: 5 }).map((_, k) => (
+                              <span key={k} className="w-1 h-1 rounded-full" style={{ background: k < (card.difficulty || 0) ? accent : 'rgba(255,255,255,0.12)' }} />
+                            ))}
+                          </div>
+                        </div>
+                        <h3 className="text-[13px] font-bold text-white mb-2 leading-tight line-clamp-2">{card.title}</h3>
+                        <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 mb-3 min-h-[32px]">
+                          {(card.keyPoints && card.keyPoints[0]) || ''}
+                        </p>
+                        <div className="border-t border-white/5 pt-2.5 flex items-center justify-between">
+                          <span className="text-[10px] text-white/30 italic">难度: {(card.difficulty || 0) > 3 ? '困难' : '简单'}</span>
+                          <span className="text-[10.5px] text-white/70 font-body tabular-nums">
+                            训练 <span className="font-semibold" style={{ color: accent }}>{card.trainedSessions || 0}</span>/{card.targetSessions || 0}
+                          </span>
+                        </div>
                       </div>
-                    </button>
-
+                    </div>
                   );
                 })}
               </div>
@@ -1851,31 +1877,24 @@ function ProfilePage({
                   {dateFilter ? '该时间段暂无训练记录' : '还没有训练记录，去开一场直播吧'}
                 </div>
               )}
-              {filteredSessions.map((s) => {
-                const score = sessionScore(s);
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => setDetailSession(s)}
-                    className="w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 hover:border-[#00F0FF]/30 hover:shadow-[0_6px_24px_rgba(0,240,255,0.12)] transition-all"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-display font-semibold text-white tabular-nums">{s.date}</span>
-                      <span className="text-[11px] text-white/40 font-body">时长 {s.durationStr || `${s.duration || 0}秒`}</span>
-                      <div className="ml-auto flex items-center gap-1">
-                        <span className="font-mono font-bold text-[18px] tabular-nums" style={{ color: score >= 80 ? '#00F0FF' : score >= 60 ? '#FFE380' : '#FF7A9A' }}>{score}</span>
-                        <span className="text-[10px] text-white/40">分</span>
-                        <span className="text-white/30 ml-1">›</span>
-                      </div>
-                    </div>
-                    <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-white/55 font-body">
-                      {(s.skillCards || []).map((c: string) => (
-                        <span key={c}>· {c}</span>
-                      ))}
-                    </div>
-                  </button>
-                );
-              })}
+              {filteredSessions.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setDetailSession(s)}
+                  className="w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 hover:border-[#00F0FF]/30 hover:shadow-[0_6px_24px_rgba(0,240,255,0.12)] transition-all"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-display font-semibold text-white tabular-nums">{s.date}</span>
+                    <span className="text-[11px] text-white/40 font-body">时长 {s.durationStr || `${s.duration || 0}秒`}</span>
+                    <span className="ml-auto text-white/30">›</span>
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-white/55 font-body">
+                    {(s.skillCards || []).map((c: string) => (
+                      <span key={c}>· {c}</span>
+                    ))}
+                  </div>
+                </button>
+              ))}
             </div>
           )}
         </section>
