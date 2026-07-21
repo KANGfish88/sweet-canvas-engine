@@ -1720,7 +1720,7 @@ function ProfilePage({
           <div className="flex items-center gap-2">
             <div className="relative flex items-center bg-[#1F2128] rounded-full p-1 border border-white/5 flex-1 max-w-[220px]">
               <div
-                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-gradient-to-r from-[#2D3039] to-[#1F2128] shadow-[0_2px_10px_rgba(255,43,85,0.25)] transition-all duration-300 ${viewMode === 'session' ? 'translate-x-full left-[4px]' : 'left-1'}`}
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-[#FF2B55] shadow-[0_0_16px_rgba(255,43,85,0.45)] transition-all duration-300 ${viewMode === 'session' ? 'left-[calc(50%+0px)]' : 'left-1'}`}
               />
               {[
                 { key: 'skill', label: '技能卡' },
@@ -1729,10 +1729,11 @@ function ProfilePage({
                 <button
                   key={t.key}
                   onClick={() => setViewMode(t.key as any)}
-                  className={`relative z-10 flex-1 py-1.5 text-[12px] font-display font-semibold tracking-wide transition-colors ${viewMode === t.key ? 'text-white' : 'text-white/40'}`}
+                  className={`relative z-10 flex-1 py-1.5 text-[12px] font-display font-semibold tracking-wide transition-colors ${viewMode === t.key ? 'text-white' : 'text-white/45'}`}
                 >{t.label}</button>
               ))}
             </div>
+
 
             {viewMode === 'session' && (
               <div className="flex items-center gap-1 ml-auto animate-[fade-in_0.2s_ease-out]">
