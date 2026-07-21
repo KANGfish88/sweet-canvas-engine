@@ -1956,10 +1956,10 @@ function ProfilePage({
                       onClick={() => setDetailCard(card)}
                       className={`relative rounded-3xl cursor-pointer transition-all active:scale-[0.98] ${dimmed ? 'opacity-30' : 'opacity-100'}`}
                     >
-                      {/* 左上角上浮编号 (不被卡片形状裁切) */}
+                      {/* 左上角上浮编号 — 与「阶段能力感知」的角标同款配色 */}
                       <div
-                        className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px] text-white shadow-[0_4px_12px_rgba(255,43,85,0.5)]"
-                        style={{ background: accent, border: '2px solid #0F0F0F' }}
+                        className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px]"
+                        style={{ background: 'rgba(255,43,85,0.18)', color: '#FF7A9A', border: '1.5px solid #0F0F0F' }}
                       >
                         {num}
                       </div>
