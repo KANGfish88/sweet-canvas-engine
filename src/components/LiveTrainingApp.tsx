@@ -590,7 +590,7 @@ function HomePage({
                       <button
                         onClick={(e) => { e.stopPropagation(); setSelectedDetailCard(card); }}
                         aria-label="查看详情"
-                        className="text-white/45 hover:text-white text-[13px] font-display font-bold leading-none tracking-tighter transition-colors px-1"
+                        className="text-white/60 hover:text-white text-[20px] font-display font-bold leading-none tracking-tighter transition-colors -mr-1 -mt-1 px-2 py-1"
                       >
                         &raquo;
                       </button>
@@ -1529,55 +1529,204 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
           {activeGift.id === 'carnival' && (
             <>
-              {/* Ribbons falling from the sky */}
-              {Array.from({ length: 28 }).map((_, i) => {
-                const rx = (Math.random() - 0.5) * 700;
-                const delay = Math.random() * 3;
-                const palette = [
-                  'linear-gradient(180deg,#A855F7,#FDE047)',
-                  'linear-gradient(180deg,#FDE047,#FF4D6D)',
-                  'linear-gradient(180deg,#FF4D6D,#A855F7)',
-                ];
+              {/* 全屏暗紫压暗遮罩 */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'radial-gradient(ellipse at center, rgba(10,8,20,0.15) 0%, rgba(10,8,20,0.55) 55%, rgba(6,4,14,0.85) 100%)',
+                  animation: 'carnival-vignette 4s ease-out forwards',
+                }}
+              />
+
+              {/* 金色光束（从中心向外放射） */}
+              {Array.from({ length: 12 }).map((_, i) => {
+                const rot = (i / 12) * 360;
                 return (
                   <div
-                    key={`r${i}`}
-                    className="absolute left-1/2 -top-6 w-1.5 h-6 rounded-full"
+                    key={`beam${i}`}
+                    className="absolute left-1/2 top-1/2 w-[10px] h-[520px] origin-bottom"
                     style={{
-                      background: palette[i % 3],
-                      ['--rx' as any]: `${rx}px`,
-                      animation: `ribbon-drop 3s ${delay}s linear infinite`,
+                      ['--rot' as any]: `${rot}deg`,
+                      background: 'linear-gradient(180deg, rgba(255,215,0,0) 0%, rgba(255,215,0,0.55) 45%, rgba(255,235,150,0.9) 100%)',
+                      filter: 'blur(2px)',
+                      animation: `carnival-beam 3.6s ${0.1 + (i % 4) * 0.05}s ease-out forwards`,
+                      mixBlendMode: 'screen',
                     }}
                   />
                 );
               })}
-              {/* Centered glowing icon */}
+
+              {/* 彩带下落 */}
+              {Array.from({ length: 36 }).map((_, i) => {
+                const rx = (Math.random() - 0.5) * 700;
+                const delay = Math.random() * 3;
+                const palette = [
+                  'linear-gradient(180deg,#FFD700,#FF2B55)',
+                  'linear-gradient(180deg,#00F0FF,#A855F7)',
+                  'linear-gradient(180deg,#FF2B55,#FDE047)',
+                  'linear-gradient(180deg,#FDE047,#00F0FF)',
+                ];
+                return (
+                  <div
+                    key={`r${i}`}
+                    className="absolute left-1/2 -top-6 w-1.5 h-7 rounded-full"
+                    style={{
+                      background: palette[i % palette.length],
+                      ['--rx' as any]: `${rx}px`,
+                      animation: `ribbon-drop 3.4s ${delay}s linear infinite`,
+                    }}
+                  />
+                );
+              })}
+
+              {/* 中央 3D 摩天轮 + 城堡舞台 */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="relative w-[220px] h-[220px] flex items-center justify-center" style={{ animation: 'carnival-stage 5s ease-out forwards' }}>
-                  <div className="absolute inset-0 rounded-full blur-3xl opacity-60" style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.55), transparent 65%)', animation: 'carnival-rotate 6s linear infinite' }} />
-                  <div className="absolute inset-0 rounded-full blur-3xl opacity-55" style={{ background: 'radial-gradient(circle at 70% 30%, rgba(253,224,71,0.55), transparent 60%)', animation: 'carnival-rotate 8s linear infinite reverse' }} />
-                  <div className="absolute inset-0 rounded-full blur-3xl opacity-55" style={{ background: 'radial-gradient(circle at 30% 70%, rgba(255,77,109,0.55), transparent 60%)', animation: 'carnival-rotate 10s linear infinite' }} />
-                  {Array.from({ length: 10 }).map((_, i) => {
-                    const angle = (i / 10) * Math.PI * 2;
-                    const r = 70 + Math.random() * 25;
-                    const fx = Math.cos(angle) * r;
-                    const fy = Math.sin(angle) * r;
-                    const colors = ['#A855F7', '#FDE047', '#FF4D6D'];
-                    const delay = Math.random() * 2;
+                <div
+                  className="relative w-[340px] h-[340px] flex items-end justify-center"
+                  style={{ animation: 'carnival-rise 4s cubic-bezier(0.22,1,0.36,1) forwards' }}
+                >
+                  {/* 光晕层 */}
+                  <div className="absolute inset-0 rounded-full blur-3xl opacity-80" style={{ background: 'radial-gradient(circle, rgba(255,215,0,0.45), transparent 60%)' }} />
+                  <div className="absolute inset-0 rounded-full blur-3xl opacity-60" style={{ background: 'radial-gradient(circle at 30% 40%, rgba(255,43,85,0.5), transparent 60%)' }} />
+                  <div className="absolute inset-0 rounded-full blur-3xl opacity-60" style={{ background: 'radial-gradient(circle at 70% 40%, rgba(0,240,255,0.5), transparent 60%)' }} />
+
+                  {/* 摩天轮 */}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-2 w-[240px] h-[240px]">
+                    {/* 轮辐旋转层 */}
+                    <div
+                      className="absolute inset-0"
+                      style={{ animation: 'wheel-spin 6s linear infinite' }}
+                    >
+                      {/* 8 条辐条 */}
+                      {Array.from({ length: 8 }).map((_, i) => (
+                        <div
+                          key={`sp${i}`}
+                          className="absolute left-1/2 top-1/2 h-[3px] w-[110px] -translate-y-1/2 origin-left rounded-full"
+                          style={{
+                            transform: `rotate(${(i / 8) * 360}deg)`,
+                            background: 'linear-gradient(90deg, rgba(255,215,0,0.9), rgba(255,255,255,0.6))',
+                            boxShadow: '0 0 8px rgba(255,215,0,0.8)',
+                          }}
+                        />
+                      ))}
+                      {/* 8 个座舱 */}
+                      {Array.from({ length: 8 }).map((_, i) => {
+                        const angle = (i / 8) * Math.PI * 2;
+                        const r = 108;
+                        const x = Math.cos(angle) * r;
+                        const y = Math.sin(angle) * r;
+                        const cabinColors = ['#FF2B55', '#00F0FF', '#FDE047', '#A855F7'];
+                        const c = cabinColors[i % cabinColors.length];
+                        return (
+                          <div
+                            key={`cab${i}`}
+                            className="absolute left-1/2 top-1/2 w-5 h-5 -translate-x-1/2 -translate-y-1/2 rounded-md"
+                            style={{
+                              transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                              background: `linear-gradient(180deg, ${c}, rgba(255,255,255,0.6))`,
+                              boxShadow: `0 0 14px ${c}, inset 0 0 6px rgba(255,255,255,0.6)`,
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                    {/* 外圈金环 */}
+                    <div
+                      className="absolute inset-0 rounded-full border-[3px]"
+                      style={{
+                        borderColor: 'rgba(255,215,0,0.85)',
+                        boxShadow: '0 0 20px rgba(255,215,0,0.7), inset 0 0 20px rgba(255,215,0,0.4)',
+                      }}
+                    />
+                    {/* 中心宝石 */}
+                    <div
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full"
+                      style={{
+                        background: 'radial-gradient(circle, #FFF 0%, #FDE047 40%, #FFD700 100%)',
+                        boxShadow: '0 0 20px #FFD700, 0 0 40px rgba(255,215,0,0.6)',
+                      }}
+                    />
+                  </div>
+
+                  {/* 城堡底座 */}
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-4 flex items-end gap-1">
+                    {/* 左尖塔 */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-b-[18px] border-l-transparent border-r-transparent" style={{ borderBottomColor: '#FF2B55', filter: 'drop-shadow(0 0 6px #FF2B55)' }} />
+                      <div className="w-5 h-14 rounded-t-sm" style={{ background: 'linear-gradient(180deg,#A855F7,#4C1D95)', boxShadow: 'inset 0 0 8px rgba(0,240,255,0.5)' }} />
+                    </div>
+                    {/* 主城堡 */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-0 h-0 border-l-[14px] border-r-[14px] border-b-[26px] border-l-transparent border-r-transparent" style={{ borderBottomColor: '#FFD700', filter: 'drop-shadow(0 0 10px #FFD700)' }} />
+                      <div className="w-14 h-20 rounded-t-md relative" style={{ background: 'linear-gradient(180deg,#7C3AED,#312E81)', boxShadow: 'inset 0 0 12px rgba(255,215,0,0.4)' }}>
+                        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-3 h-4 rounded-t-full" style={{ background: '#FDE047', boxShadow: '0 0 8px #FDE047' }} />
+                        <div className="absolute bottom-2 left-1 w-2 h-2 rounded-sm" style={{ background: '#00F0FF', boxShadow: '0 0 6px #00F0FF' }} />
+                        <div className="absolute bottom-2 right-1 w-2 h-2 rounded-sm" style={{ background: '#00F0FF', boxShadow: '0 0 6px #00F0FF' }} />
+                      </div>
+                    </div>
+                    {/* 右尖塔 */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-b-[18px] border-l-transparent border-r-transparent" style={{ borderBottomColor: '#00F0FF', filter: 'drop-shadow(0 0 6px #00F0FF)' }} />
+                      <div className="w-5 h-14 rounded-t-sm" style={{ background: 'linear-gradient(180deg,#A855F7,#4C1D95)', boxShadow: 'inset 0 0 8px rgba(255,43,85,0.5)' }} />
+                    </div>
+                  </div>
+
+                  {/* 火花粒子爆散 */}
+                  {Array.from({ length: 24 }).map((_, i) => {
+                    const angle = (i / 24) * Math.PI * 2;
+                    const r = 130 + Math.random() * 60;
+                    const sx = Math.cos(angle) * r;
+                    const sy = Math.sin(angle) * r;
+                    const colors = ['#FFD700', '#FF2B55', '#00F0FF', '#FDE047'];
+                    const c = colors[i % colors.length];
                     return (
                       <div
-                        key={i}
-                        className="absolute left-1/2 top-1/2 text-[16px]"
-                        style={{ ['--fx' as any]: `${fx}px`, ['--fy' as any]: `${fy}px`, color: colors[i % colors.length], animation: `carnival-firework 1.2s ${delay}s ease-out infinite` }}
-                      >
-                        ✦
-                      </div>
+                        key={`spk${i}`}
+                        className="absolute left-1/2 top-1/2 w-1.5 h-1.5 rounded-full"
+                        style={{
+                          ['--sx' as any]: `${sx}px`,
+                          ['--sy' as any]: `${sy}px`,
+                          background: c,
+                          boxShadow: `0 0 10px ${c}, 0 0 20px ${c}`,
+                          animation: `spark-burst 1.6s ${0.3 + Math.random() * 1.8}s ease-out infinite`,
+                        }}
+                      />
                     );
                   })}
-                  <div className="relative text-[88px] leading-none drop-shadow-[0_0_24px_rgba(253,224,71,0.7)]">🎡</div>
+                </div>
+              </div>
+
+              {/* 尊贵送礼横幅 */}
+              <div
+                className="absolute left-1/2 top-16 -translate-x-1/2 overflow-hidden rounded-full"
+                style={{ animation: 'banner-slide 4s ease-out forwards' }}
+              >
+                <div
+                  className="relative flex items-center gap-2 px-4 py-2 whitespace-nowrap"
+                  style={{
+                    background: 'linear-gradient(90deg, rgba(60,30,10,0.85), rgba(120,70,20,0.9), rgba(60,30,10,0.85))',
+                    border: '1px solid rgba(255,215,0,0.8)',
+                    boxShadow: '0 0 20px rgba(255,215,0,0.5), inset 0 0 12px rgba(255,215,0,0.3)',
+                  }}
+                >
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: 'linear-gradient(90deg,#FFD700,#FF8A00)', color: '#3a1e00' }}>LV.50</span>
+                  <span className="text-[12px] text-white/95 font-medium">科技发烧友</span>
+                  <span className="text-[12px] text-white/70">送出</span>
+                  <span className="text-[13px] font-bold" style={{ color: '#FFD700', textShadow: '0 0 8px rgba(255,215,0,0.8)' }}>嘉年华 ×1</span>
+                  {/* sweep 光效 */}
+                  <div
+                    className="absolute inset-y-0 w-1/3 pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)',
+                      animation: 'banner-sweep 2.4s 0.6s ease-in-out infinite',
+                      mixBlendMode: 'screen',
+                    }}
+                  />
                 </div>
               </div>
             </>
           )}
+
         </div>
       )}
     </div>
