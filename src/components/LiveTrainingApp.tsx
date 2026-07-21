@@ -607,6 +607,7 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
     }, 2500);
   };
   const [comments, setComments] = useState([]);
+  const [commentInput, setCommentInput] = useState('');
   const [isLivePaused, setIsLivePaused] = useState(false);
   
   const [micState, setMicState] = useState(true);
@@ -640,6 +641,20 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
   const canvasRef = useRef(null);
   const commentsEndRef = useRef(null);
   const mediaStreamRef = useRef(null);
+
+  const handleSendComment = () => {
+    const text = commentInput.trim();
+    if (!text) return;
+    setComments(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        text,
+        agent: { name: '主播', level: 30, avatar: '' },
+      },
+    ]);
+    setCommentInput('');
+  };
 
   // 初始化摄像头
   useEffect(() => {
@@ -942,9 +957,9 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
           {/* 关闭按钮 */}
           <button
-            onClick={() => setCurrentPage('home')}
+            onClick={() => { setIsLivePaused(true); setShowExitConfirm(true); }}
             className="w-8 h-8 rounded-full bg-black/35 backdrop-blur-md flex items-center justify-center active:scale-95 transition-transform"
-            aria-label="退出直播间"
+            aria-label="结束直播间"
           >
             <Icons.X size={16} className="text-white" />
           </button>
@@ -1111,64 +1126,81 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
       </div>
 
       {/* 底部控制 — 玻璃 */}
-      <div className="absolute bottom-0 inset-x-0 h-[88px] bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-between px-4 pb-safe z-30 pointer-events-auto">
-        <button onClick={() => { setIsLivePaused(true); setShowExitConfirm(true); }} className="h-12 w-12 rounded-full bg-[#FF4D6D] text-white flex flex-col items-center justify-center shadow-[0_0_20px_rgba(255,77,109,0.4)] active:scale-95 transition-transform">
-          <div className="w-3.5 h-3.5 bg-white rounded-sm mb-0.5" />
-          <span className="text-[8px] font-bold uppercase tracking-wide font-display">结束</span>
+      <div className="absolute bottom-0 inset-x-0 h-[88px] bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center gap-2 px-4 pb-safe z-30 pointer-events-auto">
+        {/* 左一：切换摄像头 */}
+        <button aria-label="切换摄像头" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform shrink-0"
+          style={{ background: 'rgba(0,0,0,0.35)' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
+            <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5" />
+            <circle cx="12" cy="12" r="3" />
+            <path d="m18 22-3-3 3-3" />
+            <path d="m6 2 3 3-3 3" />
+          </svg>
         </button>
-        <div className="flex items-center gap-2">
-          {/* 左一：切换摄像头 */}
-          <button aria-label="切换摄像头" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
-            style={{ background: 'rgba(0,0,0,0.35)' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
-              <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5" />
-              <circle cx="12" cy="12" r="3" />
-              <path d="m18 22-3-3 3-3" />
-              <path d="m6 2 3 3-3 3" />
-            </svg>
-          </button>
 
-          {/* 分享 */}
-          <button aria-label="分享" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
-            style={{ background: 'rgba(0,0,0,0.35)' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="18" cy="5" r="3" />
-              <circle cx="6" cy="12" r="3" />
-              <circle cx="18" cy="19" r="3" />
-              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-            </svg>
-          </button>
+        {/* 分享 */}
+        <button aria-label="分享" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform shrink-0"
+          style={{ background: 'rgba(0,0,0,0.35)' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+        </button>
 
-          {/* 礼物 — 视觉焦点 */}
-          <button onClick={() => setShowGiftSheet(true)} aria-label="礼物"
-            className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
-            style={{ background: 'linear-gradient(135deg,#FF007A 0%,#FF7200 100%)', boxShadow: '0 2px 8px rgba(255,0,122,0.4)' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="8" width="18" height="4" rx="1" />
-              <path d="M12 8v13" />
-              <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
-              <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5" />
-            </svg>
-          </button>
-
-          {/* 点赞 */}
+        {/* 评论输入框 */}
+        <div className="flex-1 relative">
+          <input
+            type="text"
+            value={commentInput}
+            onChange={(e) => setCommentInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSendComment()}
+            placeholder="说点什么..."
+            className="w-full h-[38px] rounded-[19px] bg-black/40 backdrop-blur-[8px] border border-white/[0.12] text-[13px] text-white placeholder:text-white/55 outline-none pl-[14px] pr-9"
+          />
           <button
-            onClick={() => spawnHearts(1)}
-            onDoubleClick={() => spawnHearts(6)}
-            aria-label="点赞"
-            className="relative h-[38px] w-[38px] rounded-full flex items-center justify-center transition-transform active:scale-[1.2]"
-            style={{ background: 'rgba(255,44,85,0.2)' }}
+            aria-label="表情"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-[18px] h-[18px] flex items-center justify-center text-white/40 hover:text-white/70 transition-colors"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24">
-              <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" fill="#FF2C55" />
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+              <line x1="9" y1="9" x2="9.01" y2="9" />
+              <line x1="15" y1="9" x2="15.01" y2="9" />
             </svg>
-            {likeBurst > 0 && (
-              <span key={likeBurst} className="absolute inset-0 rounded-full border border-[#FF2C55]/60 animate-[fade-in_0.5s_ease-out]" />
-            )}
           </button>
         </div>
+
+        {/* 礼物 — 视觉焦点 */}
+        <button onClick={() => setShowGiftSheet(true)} aria-label="礼物"
+          className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform shrink-0"
+          style={{ background: 'linear-gradient(135deg,#FF007A 0%,#FF7200 100%)', boxShadow: '0 2px 8px rgba(255,0,122,0.4)' }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="8" width="18" height="4" rx="1" />
+            <path d="M12 8v13" />
+            <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+            <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5" />
+          </svg>
+        </button>
+
+        {/* 点赞 */}
+        <button
+          onClick={() => spawnHearts(1)}
+          onDoubleClick={() => spawnHearts(6)}
+          aria-label="点赞"
+          className="relative h-[38px] w-[38px] rounded-full flex items-center justify-center transition-transform active:scale-[1.2] shrink-0"
+          style={{ background: 'rgba(255,44,85,0.2)' }}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24">
+            <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" fill="#FF2C55" />
+          </svg>
+          {likeBurst > 0 && (
+            <span key={likeBurst} className="absolute inset-0 rounded-full border border-[#FF2C55]/60 animate-[fade-in_0.5s_ease-out]" />
+          )}
+        </button>
       </div>
 
       {/* 5分钟小结弹窗 */}
