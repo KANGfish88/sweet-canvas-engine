@@ -1632,25 +1632,31 @@ function ProfilePage({
 
               {/* 动态标签气泡组 */}
               <div className="flex flex-wrap gap-1.5 items-center mt-2">
-                {basicSettings.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 pl-2 pr-1 h-[22px] rounded-full text-[11px] leading-none"
-                    style={{
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      color: '#00F0FF',
-                    }}
-                  >
-                    {tag}
+                {basicSettings.tags.map(tag => {
+                  const isSel = selectedTag === tag;
+                  return (
                     <button
-                      onClick={() => removeTag(tag)}
-                      className="w-3.5 h-3.5 rounded-full hover:bg-white/15 flex items-center justify-center text-white/60"
+                      key={tag}
+                      onClick={() => {
+                        if (isSel) {
+                          removeTag(tag);
+                          setSelectedTag(null);
+                        } else {
+                          setSelectedTag(tag);
+                        }
+                      }}
+                      className="inline-flex items-center h-[22px] px-2.5 rounded-full text-[11px] leading-none transition-all"
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: `1px solid ${isSel ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)'}`,
+                        boxShadow: isSel ? '0 0 0 1px rgba(255,255,255,0.35)' : 'none',
+                        color: '#00F0FF',
+                      }}
                     >
-                      <Icons.X size={9} />
+                      {tag}
                     </button>
-                  </span>
-                ))}
+                  );
+                })}
                 <input
                   value={tagInput}
                   onChange={(e) => {
@@ -1664,8 +1670,8 @@ function ProfilePage({
                     }
                   }}
                   onBlur={() => tagInput && addTag(tagInput)}
-                  placeholder={basicSettings.tags.length ? '+' : '+ 标签'}
-                  className="min-w-[64px] w-[80px] h-[22px] bg-transparent border border-dashed border-white/20 rounded-full outline-none px-2 text-[11px] text-white placeholder:text-white/55 focus:border-[#00F0FF]/50"
+                  placeholder="+"
+                  className="w-[28px] h-[22px] bg-transparent border border-dashed border-white/20 rounded-full outline-none px-0 text-[12px] text-white text-center placeholder:text-white/55 placeholder:text-center focus:w-[80px] focus:px-2 focus:border-[#00F0FF]/50 transition-all"
                 />
               </div>
             </div>
