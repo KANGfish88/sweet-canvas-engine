@@ -354,11 +354,22 @@ function HomePage({
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D] to-[#4ECDC4] rounded-2xl blur opacity-20 group-focus-within:opacity-50 transition duration-500" />
                 <div className="relative flex items-center bg-[#1A1A1A] rounded-2xl border border-white/10 p-1.5">
-                  <div className="flex-1 flex items-center px-3 min-w-0">
-                    <Icons.Link size={16} className={`mr-2 shrink-0 transition-colors ${linkInput ? 'text-[#4ECDC4]' : 'text-white/30'}`} />
+                  <label className="shrink-0 w-9 h-9 ml-1 rounded-xl inline-flex items-center justify-center bg-white/[0.06] border border-white/10 text-white/70 hover:text-[#4ECDC4] hover:border-[#4ECDC4]/40 cursor-pointer transition-colors" title="上传视频 / 图片 / 文档">
+                    <Icons.Upload size={16} />
+                    <input
+                      type="file"
+                      accept="video/*,image/*,.pdf,.doc,.docx,.txt,.md"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) { setLinkInput(f.name); if (parseState === 'error') setParseState('idle'); }
+                      }}
+                    />
+                  </label>
+                  <div className="flex-1 flex items-center px-2 min-w-0">
                     <input
                       type="text"
-                      placeholder="粘贴抖音视频分享链接..."
+                      placeholder="上传视频 / 图片 / 文档，或粘贴文字…"
                       value={linkInput}
                       onChange={(e) => {
                         setLinkInput(e.target.value);
