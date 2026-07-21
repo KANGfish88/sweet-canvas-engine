@@ -447,9 +447,9 @@ function HomePage({
               return (
                 <div
                   key={card.id}
-                  onClick={() => setSelectedDetailCard(card)}
-                  className="relative p-[1px] rounded-3xl overflow-hidden cursor-pointer transition-all active:scale-[0.98]"
-                  style={{ backgroundImage: `linear-gradient(135deg, ${isSelected ? accent + '66' : 'rgba(255,255,255,0.12)'}, transparent)` }}
+                  onClick={() => toggleSkillCardSelection(card.id)}
+                  className="relative p-[1px] rounded-3xl cursor-pointer transition-all active:scale-[0.98]"
+                  style={{ backgroundImage: `linear-gradient(135deg, ${isSelected ? accent + '99' : 'rgba(255,255,255,0.12)'}, transparent)`, boxShadow: isSelected ? `0 0 0 1px ${accent}66, 0 8px 24px ${accent}33` : undefined }}
                 >
                   <div className="bg-[#161616] p-4 rounded-[23px] h-full flex flex-col">
                     <div className="flex items-start justify-between mb-3">
@@ -459,28 +459,19 @@ function HomePage({
                       >
                         {card.category || "综合技巧"}
                       </span>
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <span key={i} className="w-1 h-1 rounded-full" style={{ background: i < card.difficulty ? '#FFD166' : 'rgba(255,255,255,0.12)' }} />
-                        ))}
-                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setSelectedDetailCard(card); }}
+                        aria-label="查看详情"
+                        className="text-white/45 hover:text-white text-[13px] font-display font-bold leading-none tracking-tighter transition-colors px-1"
+                      >
+                        &raquo;
+                      </button>
                     </div>
 
                     <h3 className="text-[13px] font-bold text-white mb-2 leading-tight">{card.title}</h3>
-                    <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 mb-3 min-h-[32px]">
+                    <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 min-h-[32px]">
                       {card.keyPoints[0]}
                     </p>
-
-                    <div className="border-t border-white/5 pt-2.5 flex items-center justify-between">
-                      <span className="text-[10px] text-white/30 italic">难度: {card.difficulty > 3 ? '困难' : '简单'}</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleSkillCardSelection(card.id); }}
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'border-transparent text-black' : 'border-white/30 bg-transparent'}`}
-                        style={isSelected ? { background: accent } : undefined}
-                      >
-                        {isSelected && <Icons.Check size={12} strokeWidth={3} />}
-                      </button>
-                    </div>
                   </div>
                 </div>
               );
