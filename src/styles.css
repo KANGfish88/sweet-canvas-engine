@@ -243,3 +243,41 @@
   20% { opacity: 1; }
   100% { opacity: 0.6; transform: translate(calc(var(--rx,0) + 30px), 900px) rotate(720deg); }
 }
+@keyframes carnival-vignette {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes carnival-beam {
+  0% { opacity: 0; transform: translate(-50%, -100%) scaleY(0.2) rotate(var(--rot,0deg)); }
+  30% { opacity: 0.9; transform: translate(-50%, -100%) scaleY(1) rotate(var(--rot,0deg)); }
+  100% { opacity: 0; transform: translate(-50%, -100%) scaleY(1.1) rotate(var(--rot,0deg)); }
+}
+@keyframes carnival-rise {
+  0% { opacity: 0; transform: translateY(120px) scale(0.4); }
+  25% { opacity: 1; transform: translateY(0) scale(1); }
+  85% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-40px) scale(1.06); }
+}
+@keyframes wheel-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes banner-slide {
+  0% { opacity: 0; transform: translate(-50%, 20px); }
+  15% { opacity: 1; transform: translate(-50%, 0); }
+  85% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -10px); }
+}
+@keyframes banner-sweep {
+  0% { transform: translateX(-120%); }
+  60% { transform: translateX(220%); }
+  100% { transform: translateX(220%); }
+}
+@keyframes spark-burst {
+  0% { opacity: 0; transform: translate(0,0) scale(0.3); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--sx,0), var(--sy,0)) scale(1.2); }
+}
+
