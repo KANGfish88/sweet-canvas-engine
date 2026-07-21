@@ -1633,9 +1633,9 @@ function ProfilePage({
                 {basicSettings.tags.map(tag => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 pl-2 pr-1 py-[2px] rounded-[12px] text-[12px]"
+                    className="inline-flex items-center gap-1 pl-2 pr-1 h-[22px] rounded-full text-[11px] leading-none"
                     style={{
-                      background: 'rgba(255,255,255,0.08)',
+                      background: 'rgba(255,255,255,0.05)',
                       border: '1px solid rgba(255,255,255,0.15)',
                       color: '#00F0FF',
                     }}
@@ -1653,7 +1653,7 @@ function ProfilePage({
                   value={tagInput}
                   onChange={(e) => {
                     const v = e.target.value;
-                    if (/[,，]$/.test(v)) { addTag(v.slice(0, -1)); } else { setTagInput(v); }
+                    if (/[,,]$/.test(v)) { addTag(v.slice(0, -1)); } else { setTagInput(v); }
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }
@@ -1663,26 +1663,27 @@ function ProfilePage({
                   }}
                   onBlur={() => tagInput && addTag(tagInput)}
                   placeholder={basicSettings.tags.length ? '+ 添加' : '+ 添加标签'}
-                  className="min-w-[64px] w-[80px] bg-transparent border-none outline-none px-1 py-[2px] text-[12px] text-white/85 placeholder:text-white/35"
+                  className="min-w-[64px] w-[80px] h-[22px] bg-transparent border border-dashed border-white/20 rounded-full outline-none px-2 text-[11px] text-white placeholder:text-white/55 focus:border-[#00F0FF]/50"
                 />
               </div>
             </div>
           </div>
 
-          {/* 人设描述 + 编辑按钮 */}
-          <div className="flex items-center gap-2">
-            <p className="flex-1 min-w-0 text-[13px] text-[#909399] truncate font-body">
-              <span className="text-white/50">设定人设：</span>
-              {basicSettings.persona || '还未设定人设，点击右侧编辑'}
+          {/* 人设描述 + 编辑按钮 (右上角图标形式，不挤压文字) */}
+          <div className="relative pr-8">
+            <p className="text-[13px] text-white/70 font-body leading-relaxed">
+              <span className="text-white/45">设定人设：</span>
+              {basicSettings.persona || '还未设定人设，点击右上角编辑'}
             </p>
             <button
               onClick={() => {
                 const next = window.prompt('编辑人设描述', basicSettings.persona || '');
                 if (next !== null) setBasicSettings(prev => ({ ...prev, persona: next }));
               }}
-              className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] text-white/85 bg-[#2A2D35] border border-white/[0.12] hover:border-white/25"
+              aria-label="编辑人设"
+              className="absolute top-0 right-0 w-7 h-7 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/8 transition-colors"
             >
-              编辑人设 <span className="text-[11px]">✏️</span>
+              <span className="text-[13px]">✏️</span>
             </button>
           </div>
 
@@ -1703,14 +1704,15 @@ function ProfilePage({
             ].map((s, i) => (
               <div key={i} className="text-center px-2">
                 <p className="text-[11px] text-[#909399] font-body">{s.label}</p>
-                <p className="mt-1 tabular-nums" style={{ color: s.color, fontFamily: '"DIN Alternate", ui-monospace, monospace' }}>
-                  <span className="text-[22px] font-bold">{s.val}</span>
-                  <span className="ml-1 text-[12px] text-[#909399]" style={{ fontFamily: 'inherit' }}>{s.unit}</span>
+                <p className="mt-1" style={{ color: s.color }}>
+                  <span className="text-[22px] font-bold tabular-nums tracking-tight" style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', letterSpacing: '-0.02em' }}>{s.val}</span>
+                  <span className="ml-1 text-[12px] text-[#909399] font-body">{s.unit}</span>
                 </p>
               </div>
             ))}
           </div>
         </section>
+
 
         {/* ============== 核心资产沉淀区 ============== */}
         <section className="space-y-3">
