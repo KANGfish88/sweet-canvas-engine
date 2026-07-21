@@ -1289,38 +1289,15 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
               <h2 className="text-[20px] font-semibold text-white">训练报告</h2>
               <p className="text-[12px] text-[#6B6B6B] mt-2">日期: {new Date().toISOString().slice(0, 10)}</p>
             </div>
-            <div className="px-4 space-y-6">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
-                  <span className="text-[12px] text-[#6B6B6B]">训练时长</span>
-                  <p className="text-[18px] font-mono text-white mt-1">{formatTime(liveSeconds)}</p>
-                </div>
-                <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
-                  <span className="text-[12px] text-[#6B6B6B]">训练技能</span>
-                  <p className="text-[14px] text-[#4ECDC4] font-medium mt-2 truncate">
-                    {activeSkillCards.length > 0 ? activeSkillCards[0].title.substring(1, 6) : '无'}
-                  </p>
-                </div>
-              </div>
-              <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
-                <h3 className="text-[16px] font-semibold text-white">综合诊断</h3>
-                <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333]">
-                  <span className="text-[12px] text-[#B3B3B3] font-medium mb-2 block">整体表现总结</span>
-                  <p className="text-[14px] text-[#FFFFFF] leading-relaxed">
-                    本次训练中，你积极调动了设定的技能卡，在开场环节表现自然流畅。评论区互动仍需加强，冷场时的应对可以更灵活。
-                  </p>
-                </div>
-              </div>
-              <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
-                <h3 className="text-[16px] font-semibold text-white">改进建议</h3>
-                <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333] space-y-3">
-                  <p className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2"><span className="text-[#FFD166]">•</span>开场时尝试用场景感带入</p>
-                  <p className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2"><span className="text-[#FFD166]">•</span>互动时先认同再展开回答</p>
-                  <p className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2"><span className="text-[#FFD166]">•</span>冷场时用“说到这个我突然想到...”自然过渡</p>
-                </div>
-              </div>
-            </div>
+            <TrainingReport
+              dateStr={new Date().toISOString().slice(0, 10)}
+              durationStr={formatTime(liveSeconds)}
+              summary={'本次训练中，你积极调动了设定的技能卡，在开场环节表现自然流畅。评论区互动仍需加强，冷场时的应对可以更灵活。'}
+              suggestions={['开场时尝试用场景感带入','互动时先认同再展开回答','冷场时用"说到这个我突然想到..."自然过渡']}
+              skills={activeSkillCards.map(c => ({ card: c }))}
+            />
           </div>
+
           <div className="fixed bottom-0 inset-x-0 p-4 bg-[#0F0F0F] border-t border-[#333333] flex gap-3 z-50 max-w-[430px] mx-auto">
             <button onClick={() => { setShowReportOverlay(false); setCurrentPath('/'); }} className="flex-1 py-3.5 rounded-xl bg-[#262626] text-white text-[14px] font-medium border border-[#333333]">放弃保存</button>
             <button onClick={saveAndExit} className="flex-1 py-3.5 rounded-xl bg-[#FF4D6D] text-white text-[14px] font-medium shadow-lg shadow-[#FF4D6D]/20">保存并退出</button>
@@ -1481,9 +1458,127 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 }
 
 // ==========================================
+// 5.9 训练报告内容组件（Live 结束 & 我的-场次详情 通用）
+// ==========================================
+function TrainingReport({ dateStr, durationStr, summary, suggestions, skills }) {
+  const [expanded, setExpanded] = useState({});
+  const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+  return (
+    <div className="px-4 space-y-5">
+      {/* 一、总体评价 */}
+      <section className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-display font-bold tracking-[0.18em] text-[#FF7A9A]">SECTION 01</span>
+          <span className="h-[1px] flex-1 bg-gradient-to-r from-[#FF2B55]/40 to-transparent" />
+        </div>
+        <h3 className="text-[16px] font-semibold text-white">一、总体评价</h3>
+        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 items-baseline">
+          <span className="text-[12px] text-white/50">训练时长</span>
+          <span className="text-[15px] font-mono text-white tabular-nums">{durationStr}</span>
+          <span className="text-[12px] text-white/50">日期</span>
+          <span className="text-[13px] text-white/70 font-mono tabular-nums">{dateStr}</span>
+        </div>
+        <div className="bg-[#0F0F0F] rounded-xl p-4 border border-[#262626]">
+          <p className="text-[14px] text-white leading-relaxed">
+            {summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
+          </p>
+        </div>
+      </section>
+
+      {/* 二、不同技能卡的表现情况 */}
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-display font-bold tracking-[0.18em] text-[#00F0FF]">SECTION 02</span>
+          <span className="h-[1px] flex-1 bg-gradient-to-r from-[#00F0FF]/40 to-transparent" />
+        </div>
+        <h3 className="text-[16px] font-semibold text-white">二、不同技能卡的表现情况</h3>
+
+        {(!skills || skills.length === 0) && (
+          <div className="bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A] text-center text-white/40 text-[12px]">
+            本场未挂载技能卡
+          </div>
+        )}
+
+        {(skills || []).map((s, idx) => {
+          const card = s.card;
+          const id = card?.id || `s-${idx}`;
+          const title = (card?.title || s.rawTitle || `技能卡 ${idx + 1}`).replace(/[「」]/g, '');
+          const isOpen = !!expanded[id];
+          const perf = s.performance
+            || `围绕「${title}」的目标，你在本场直播中有明确的执行意识，节奏基本稳定，但在关键触发点的处理上仍有波动。`;
+          const improve = s.improvement
+            || (suggestions && suggestions[idx])
+            || '下一步可以在类似情境中做 2-3 次刻意练习，重点关注节奏与情绪的连贯衔接。';
+          return (
+            <div key={id} className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden">
+              <div className="flex items-start justify-between gap-2 px-4 pt-4">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="shrink-0 w-6 h-6 rounded-full inline-flex items-center justify-center font-display font-bold text-[11px] bg-[#FF2B55]/20 text-[#FF7A9A]">
+                    {idx + 1}
+                  </span>
+                  <h4 className="text-[14px] font-semibold text-white truncate">{title}</h4>
+                </div>
+                {card && (
+                  <button
+                    onClick={() => toggle(id)}
+                    aria-label={isOpen ? '收起技能卡详情' : '展开技能卡详情'}
+                    className="shrink-0 w-7 h-7 rounded-full inline-flex items-center justify-center bg-white/[0.06] border border-white/10 text-white/70 hover:text-white transition-transform"
+                    style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                )}
+              </div>
+              <div className="px-4 pb-4 pt-3 space-y-3">
+                <p className="text-[13.5px] text-white leading-relaxed">{perf}</p>
+                <div className="bg-[#0F0F0F] border border-[#262626] rounded-xl p-3.5">
+                  <p className="text-[13.5px] text-white/85 leading-relaxed flex items-start gap-2">
+                    <span className="text-[#FFD166] mt-0.5">→</span>
+                    <span>{improve}</span>
+                  </p>
+                </div>
+              </div>
+              {isOpen && card && (
+                <div className="mx-3 mb-3 rounded-xl bg-[#050505] border border-[#1F1F1F] p-4 space-y-3 animate-[fade-in_0.2s_ease-out]">
+                  <div>
+                    <p className="text-[10px] font-display font-bold tracking-[0.2em] text-white/40 mb-1">SKILL CARD DETAIL</p>
+                    <h5 className="text-[14px] font-semibold text-white">{card.title}</h5>
+                    <p className="text-[11px] text-white/45 mt-0.5">维度：{(card.dimensions || []).join(' · ')}</p>
+                    {card.sourceVideo && <p className="text-[11px] text-white/45">视频标题：{card.sourceVideo}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-[11px] font-display font-bold tracking-[0.15em] text-white/50 uppercase">具体内容</p>
+                    <div className="space-y-2">
+                      {(card.keyPoints || []).map((p, i) => (
+                        <p key={`kp-${i}`} className="text-[13px] text-white/75 leading-relaxed">{i + 1}. {p}</p>
+                      ))}
+                      {(card.tips || []).map((t, i) => (
+                        <p key={`tp-${i}`} className="text-[13px] text-white/75 leading-relaxed flex items-start gap-1.5">
+                          <span className="text-[#FFD166] mt-0.5">•</span><span>{t}</span>
+                        </p>
+                      ))}
+                      {card.trainingGoal && (
+                        <p className="text-[13px] text-white/70 leading-relaxed border-t border-white/10 pt-2 mt-1">
+                          {card.trainingGoal}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </section>
+    </div>
+  );
+}
+
+// ==========================================
 // 6. 页面三：我的 (ProfilePage)
 // ==========================================
 function ProfilePage({ 
+
   userProfile, 
   setUserProfile, 
   trainSessions, 
@@ -1650,7 +1745,8 @@ function ProfilePage({
                   return (
                     <button
                       key={tag}
-                      onClick={() => setSelectedTag(isSel ? null : tag)}
+                      onClick={() => { if (!isSel) setSelectedTag(tag); }}
+                      onDoubleClick={() => { if (isSel) { removeTag(tag); setSelectedTag(null); } }}
                       className="inline-flex items-center h-[22px] px-2.5 rounded-full text-[11px] leading-none transition-all"
                       style={{
                         background: 'rgba(255,255,255,0.05)',
@@ -1860,10 +1956,10 @@ function ProfilePage({
                       onClick={() => setDetailCard(card)}
                       className={`relative rounded-3xl cursor-pointer transition-all active:scale-[0.98] ${dimmed ? 'opacity-30' : 'opacity-100'}`}
                     >
-                      {/* 左上角上浮编号 (不被卡片形状裁切) */}
+                      {/* 左上角上浮编号 — 与「阶段能力感知」的角标同款配色 */}
                       <div
-                        className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px] text-white shadow-[0_4px_12px_rgba(255,43,85,0.5)]"
-                        style={{ background: accent, border: '2px solid #0F0F0F' }}
+                        className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px]"
+                        style={{ background: 'rgba(255,43,85,0.18)', color: '#FF7A9A', border: '1.5px solid #0F0F0F' }}
                       >
                         {num}
                       </div>
@@ -1964,7 +2060,18 @@ function ProfilePage({
       {/* 训练报告 半屏 Modal — 结构与直播结束训练报告一致 */}
       {detailSession && (() => {
         const s = detailSession;
-        const firstSkill = (s.skillCards || [])[0];
+        // 通过短标题反查完整技能卡对象
+        const resolveCard = (short: string) => {
+          if (!short) return null;
+          return (skillCardLibrary || []).find(c => {
+            const clean = (c.title || '').replace(/[「」]/g, '');
+            return clean.includes(short) || short.includes(clean.substring(0, 4));
+          }) || null;
+        };
+        const skills = (s.skillCards || []).map((short: string) => ({
+          card: resolveCard(short),
+          rawTitle: short,
+        }));
         return (
           <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s]">
             <div className="absolute inset-0" onClick={() => setDetailSession(null)} />
@@ -1973,50 +2080,22 @@ function ProfilePage({
                 <div className="w-12 h-1.5 bg-[#333333] rounded-full" />
               </div>
               <div className="overflow-y-auto pb-6">
-                <div className="pt-2 pb-6 px-4 text-center">
+                <div className="pt-2 pb-4 px-4 text-center">
                   <h2 className="text-[20px] font-semibold text-white">训练报告</h2>
-                  <p className="text-[12px] text-[#6B6B6B] mt-2">日期: {(s.date || '').slice(0, 10)}</p>
                 </div>
-                <div className="px-4 space-y-6">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
-                      <span className="text-[12px] text-[#6B6B6B]">训练时长</span>
-                      <p className="text-[18px] font-mono text-white mt-1">{s.durationStr || `${s.duration || 0}秒`}</p>
-                    </div>
-                    <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
-                      <span className="text-[12px] text-[#6B6B6B]">训练技能</span>
-                      <p className="text-[14px] text-[#4ECDC4] font-medium mt-2 truncate">
-                        {firstSkill ? firstSkill.substring(1, 6) : '无'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
-                    <h3 className="text-[16px] font-semibold text-white">综合诊断</h3>
-                    <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333]">
-                      <span className="text-[12px] text-[#B3B3B3] font-medium mb-2 block">整体表现总结</span>
-                      <p className="text-[14px] text-[#FFFFFF] leading-relaxed">
-                        {s.summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
-                      </p>
-                    </div>
-                  </div>
-                  {(s.suggestions || []).length > 0 && (
-                    <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
-                      <h3 className="text-[16px] font-semibold text-white">改进建议</h3>
-                      <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333] space-y-3">
-                        {s.suggestions.map((sg: string, i: number) => (
-                          <p key={i} className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2">
-                            <span className="text-[#FFD166]">•</span>{sg}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <TrainingReport
+                  dateStr={(s.date || '').slice(0, 10)}
+                  durationStr={s.durationStr || `${s.duration || 0}秒`}
+                  summary={s.summary}
+                  suggestions={s.suggestions || []}
+                  skills={skills}
+                />
               </div>
             </div>
           </div>
         );
       })()}
+
 
       {/* 人设修改确认弹窗 */}
       {pendingPersona !== null && (
