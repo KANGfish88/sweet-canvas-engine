@@ -369,7 +369,7 @@ function HomePage({
                   <div className="flex-1 flex items-center px-2 min-w-0">
                     <input
                       type="text"
-                      placeholder="上传视频 / 图片 / 文档，或粘贴文字…"
+                      placeholder="可粘贴文字"
                       value={linkInput}
                       onChange={(e) => {
                         setLinkInput(e.target.value);
