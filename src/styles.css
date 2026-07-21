@@ -12,6 +12,8 @@
 }
 .font-display { font-family: 'Space Grotesk', system-ui, sans-serif; letter-spacing: -0.01em; }
 .font-body { font-family: 'DM Sans', system-ui, sans-serif; }
+.date-pill::-webkit-calendar-picker-indicator { opacity: 0; display: none; -webkit-appearance: none; }
+.date-pill::-webkit-inner-spin-button, .date-pill::-webkit-clear-button { display: none; }
 @keyframes ambient-drift {
   0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
   50% { transform: translate(18px, -22px) scale(1.12); opacity: 0.85; }
