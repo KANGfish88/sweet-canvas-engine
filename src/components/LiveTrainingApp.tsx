@@ -556,7 +556,6 @@ function HomePage({
           <div className="flex items-end justify-between">
             <div>
               <h2 className="text-[18px] font-bold text-white font-display">技能卡</h2>
-              <p className="text-[10px] text-white/40 uppercase tracking-[0.2em] font-display mt-1">Skillset Engine v2.0</p>
             </div>
             <div className="px-3 py-1 bg-[#4ECDC4]/10 border border-[#4ECDC4]/30 rounded-full">
               <span className="text-[#4ECDC4] text-[10px] font-bold tracking-wide">
@@ -1743,8 +1742,8 @@ function TrainingReport({ dateStr, durationStr, summary, suggestions, skills }) 
   return (
     <div className="px-4 space-y-5">
       {/* 一、总体评价 */}
+      <h3 className="text-[16px] font-semibold text-white">一、总体评价</h3>
       <section className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] space-y-3">
-        <h3 className="text-[16px] font-semibold text-white">一、总体评价</h3>
         <div className="flex items-center gap-4 flex-wrap">
           <span className="text-[12px] text-white/50">训练时长 <span className="text-[14px] font-mono text-white tabular-nums ml-1">{durationStr}</span></span>
           <span className="text-[12px] text-white/50">日期 <span className="text-[13px] text-white/80 font-mono tabular-nums ml-1">{dateStr}</span></span>
@@ -1754,9 +1753,9 @@ function TrainingReport({ dateStr, durationStr, summary, suggestions, skills }) 
         </p>
       </section>
 
-      {/* 二、不同技能卡的表现情况 */}
+      {/* 二、不同技能卡的分析 */}
+      <h3 className="text-[16px] font-semibold text-white">二、不同技能卡的分析</h3>
       <section className="space-y-3">
-        <h3 className="text-[16px] font-semibold text-white">二、不同技能卡的表现情况</h3>
 
         {(!skills || skills.length === 0) && (
           <div className="bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A] text-center text-white/40 text-[12px]">
