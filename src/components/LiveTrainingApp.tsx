@@ -1127,30 +1127,6 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
       {/* 底部控制 — 玻璃 */}
       <div className="absolute bottom-0 inset-x-0 h-[88px] bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center gap-2 px-4 pb-safe z-30 pointer-events-auto">
-        {/* 左一：切换摄像头 */}
-        <button aria-label="切换摄像头" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform shrink-0"
-          style={{ background: 'rgba(0,0,0,0.35)' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
-            <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5" />
-            <circle cx="12" cy="12" r="3" />
-            <path d="m18 22-3-3 3-3" />
-            <path d="m6 2 3 3-3 3" />
-          </svg>
-        </button>
-
-        {/* 分享 */}
-        <button aria-label="分享" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform shrink-0"
-          style={{ background: 'rgba(0,0,0,0.35)' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="18" cy="5" r="3" />
-            <circle cx="6" cy="12" r="3" />
-            <circle cx="18" cy="19" r="3" />
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-          </svg>
-        </button>
-
         {/* 评论输入框 */}
         <div className="flex-1 relative">
           <input
@@ -1173,6 +1149,18 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
             </svg>
           </button>
         </div>
+
+        {/* 切换摄像头 */}
+        <button aria-label="切换摄像头" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform shrink-0"
+          style={{ background: 'rgba(0,0,0,0.35)' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
+            <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5" />
+            <circle cx="12" cy="12" r="3" />
+            <path d="m18 22-3-3 3-3" />
+            <path d="m6 2 3 3-3 3" />
+          </svg>
+        </button>
 
         {/* 礼物 — 视觉焦点 */}
         <button onClick={() => setShowGiftSheet(true)} aria-label="礼物"
