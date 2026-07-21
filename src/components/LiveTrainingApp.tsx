@@ -1496,12 +1496,34 @@ function ProfilePage({
   const [tempUsername, setTempUsername] = useState(userProfile.username);
   const [tagInput, setTagInput] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const tagsRef = useRef<HTMLDivElement | null>(null);
+
+  // 人设行内编辑
+  const [isEditingPersona, setIsEditingPersona] = useState(false);
+  const [tempPersona, setTempPersona] = useState(basicSettings.persona || '');
+  const [pendingPersona, setPendingPersona] = useState<string | null>(null);
 
   // 视图 & 筛选
   const [viewMode, setViewMode] = useState<'skill' | 'session'>('skill');
   const [dateFilter, setDateFilter] = useState<string>(''); // yyyy-mm-dd
   const [detailCard, setDetailCard] = useState<any>(null);
   const [detailSession, setDetailSession] = useState<any>(null);
+
+  // 点击标签气泡以外区域，取消选中态
+  useEffect(() => {
+    if (!selectedTag) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (tagsRef.current && !tagsRef.current.contains(e.target as Node)) {
+        setSelectedTag(null);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, [selectedTag]);
 
   // 一级能力标签
   const ABILITIES = [
