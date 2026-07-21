@@ -1289,38 +1289,15 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
               <h2 className="text-[20px] font-semibold text-white">训练报告</h2>
               <p className="text-[12px] text-[#6B6B6B] mt-2">日期: {new Date().toISOString().slice(0, 10)}</p>
             </div>
-            <div className="px-4 space-y-6">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
-                  <span className="text-[12px] text-[#6B6B6B]">训练时长</span>
-                  <p className="text-[18px] font-mono text-white mt-1">{formatTime(liveSeconds)}</p>
-                </div>
-                <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
-                  <span className="text-[12px] text-[#6B6B6B]">训练技能</span>
-                  <p className="text-[14px] text-[#4ECDC4] font-medium mt-2 truncate">
-                    {activeSkillCards.length > 0 ? activeSkillCards[0].title.substring(1, 6) : '无'}
-                  </p>
-                </div>
-              </div>
-              <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
-                <h3 className="text-[16px] font-semibold text-white">综合诊断</h3>
-                <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333]">
-                  <span className="text-[12px] text-[#B3B3B3] font-medium mb-2 block">整体表现总结</span>
-                  <p className="text-[14px] text-[#FFFFFF] leading-relaxed">
-                    本次训练中，你积极调动了设定的技能卡，在开场环节表现自然流畅。评论区互动仍需加强，冷场时的应对可以更灵活。
-                  </p>
-                </div>
-              </div>
-              <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
-                <h3 className="text-[16px] font-semibold text-white">改进建议</h3>
-                <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333] space-y-3">
-                  <p className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2"><span className="text-[#FFD166]">•</span>开场时尝试用场景感带入</p>
-                  <p className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2"><span className="text-[#FFD166]">•</span>互动时先认同再展开回答</p>
-                  <p className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2"><span className="text-[#FFD166]">•</span>冷场时用“说到这个我突然想到...”自然过渡</p>
-                </div>
-              </div>
-            </div>
+            <TrainingReport
+              dateStr={new Date().toISOString().slice(0, 10)}
+              durationStr={formatTime(liveSeconds)}
+              summary={'本次训练中，你积极调动了设定的技能卡，在开场环节表现自然流畅。评论区互动仍需加强，冷场时的应对可以更灵活。'}
+              suggestions={['开场时尝试用场景感带入','互动时先认同再展开回答','冷场时用"说到这个我突然想到..."自然过渡']}
+              skills={activeSkillCards.map(c => ({ card: c }))}
+            />
           </div>
+
           <div className="fixed bottom-0 inset-x-0 p-4 bg-[#0F0F0F] border-t border-[#333333] flex gap-3 z-50 max-w-[430px] mx-auto">
             <button onClick={() => { setShowReportOverlay(false); setCurrentPath('/'); }} className="flex-1 py-3.5 rounded-xl bg-[#262626] text-white text-[14px] font-medium border border-[#333333]">放弃保存</button>
             <button onClick={saveAndExit} className="flex-1 py-3.5 rounded-xl bg-[#FF4D6D] text-white text-[14px] font-medium shadow-lg shadow-[#FF4D6D]/20">保存并退出</button>
