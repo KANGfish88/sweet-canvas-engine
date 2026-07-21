@@ -1884,52 +1884,43 @@ function ProfilePage({
         </section>
       </main>
 
-      {/* 技能卡详情 半屏 Modal */}
+      {/* 技能卡详情 半屏 Modal — 与首页样式一致 */}
       {detailCard && (
-        <>
-          <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s_ease-out]" onClick={() => setDetailCard(null)} />
-          <div className="fixed left-0 right-0 bottom-0 z-[61] rounded-t-3xl bg-[#161616] border-t border-white/10 max-h-[75vh] overflow-y-auto animate-[slide-up_0.3s_ease-out]">
-            <div className="sticky top-0 bg-[#161616]/95 backdrop-blur-xl px-5 pt-4 pb-3 border-b border-white/5">
-              <div className="w-10 h-1 rounded-full bg-white/15 mx-auto mb-3" />
-              <div className="flex items-start gap-3">
-                <h3 className="flex-1 font-display font-bold text-[16px] text-white leading-snug">{detailCard.title}</h3>
-                <button onClick={() => setDetailCard(null)} className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
-                  <Icons.X size={14} />
-                </button>
-              </div>
-              <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FF2B55]/15 text-[#FF7A9A] font-body">{detailCard.category || '综合'}</span>
-                {(detailCard.dimensions || []).map((d: string) => (
-                  <span key={d} className="text-[10px] px-1.5 py-0.5 rounded bg-[#00F0FF]/10 text-[#00F0FF]/80 font-body">{d}</span>
-                ))}
-              </div>
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s]">
+          <div className="absolute inset-0" onClick={() => setDetailCard(null)} />
+          <div className="w-full max-w-[430px] bg-[#1A1A1A] rounded-t-2xl border-t border-[#333333] z-10 flex flex-col max-h-[85vh] animate-[slide-in-up_0.25s_ease-out]">
+            <div className="py-3 flex justify-center cursor-pointer" onClick={() => setDetailCard(null)}>
+              <div className="w-12 h-1.5 bg-[#333333] rounded-full" />
             </div>
-            <div className="px-5 py-4 space-y-4">
-              {detailCard.sourceVideo && (
-                <div>
-                  <div className="text-[11px] font-display font-bold tracking-[0.15em] text-white/40 uppercase mb-1.5">视频标题</div>
-                  <div className="text-[13px] text-white/85 font-body">{detailCard.sourceVideo}</div>
-                </div>
-              )}
+            <div className="px-5 pb-8 overflow-y-auto space-y-6">
               <div>
-                <div className="text-[11px] font-display font-bold tracking-[0.15em] text-white/40 uppercase mb-1.5">具体内容</div>
-                <div className="rounded-xl bg-[#0F0F0F]/80 border border-white/[0.06] p-3 text-[13px] leading-relaxed text-white/80 font-body space-y-1.5">
-                  {[
-                    ...(detailCard.keyPoints || []),
-                    ...(detailCard.tips || []),
-                    detailCard.trainingGoal,
-                  ].filter(Boolean).map((line: string, i: number) => (
-                    <p key={i}>· {line}</p>
-                  ))}
-                </div>
+                <h2 className="text-[16px] font-semibold text-white mb-1">{detailCard.title}</h2>
+                <p className="text-[12px] text-[#B3B3B3]">维度：{(detailCard.dimensions || []).join(' · ')}</p>
+                <p className="text-[12px] text-[#B3B3B3]">视频标题：{detailCard.sourceVideo}</p>
               </div>
-              <div className="flex items-center justify-between text-[11px] text-white/40 font-body pt-1">
-                <span>训练进度 {detailCard.trainedSessions || 0}/{detailCard.targetSessions || 0}</span>
-                <span>难度 {'★'.repeat(detailCard.difficulty || 1)}</span>
+              <div className="space-y-3">
+                <h3 className="text-[14px] font-semibold text-white">具体内容</h3>
+                <div className="bg-[#0F0F0F] border border-[#333333] rounded-xl p-4 space-y-3">
+                  {(detailCard.keyPoints || []).map((point: string, idx: number) => (
+                    <p key={`kp-${idx}`} className="text-[14px] text-[#B3B3B3] leading-relaxed">
+                      {idx + 1}. {point}
+                    </p>
+                  ))}
+                  {(detailCard.tips || []).map((tip: string, idx: number) => (
+                    <p key={`tip-${idx}`} className="text-[14px] text-[#B3B3B3] leading-relaxed flex items-start gap-1.5">
+                      <span className="text-[#FFD166] mt-0.5">•</span> <span>{tip}</span>
+                    </p>
+                  ))}
+                  {detailCard.trainingGoal && (
+                    <p className="text-[14px] text-[#B3B3B3] leading-relaxed border-t border-[#333333] pt-3 mt-1">
+                      {detailCard.trainingGoal}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
 
       {/* 诊断详情 半屏 Modal */}
