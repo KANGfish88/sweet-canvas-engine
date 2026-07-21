@@ -1045,22 +1045,63 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
       {/* 评论区 */}
       <div className="absolute bottom-[80px] inset-x-4 h-[30vh] z-30 flex flex-col justify-end pointer-events-none">
-        <div className="overflow-y-auto space-y-2.5 pr-2 pb-2 scrollbar-none pointer-events-auto mask-image-bottom max-h-full">
+        <div className="overflow-y-auto pr-2 pb-2 scrollbar-none pointer-events-auto mask-image-bottom max-h-full" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {comments.map(c => {
             const isBuy = c.type === 'buy';
             const isGift = c.type === 'gift';
-            return (
-              <div key={c.id} className="flex items-start gap-2 max-w-[85%] animate-[slide-in-left_0.2s_ease-out]">
-                <div className={`rounded-2xl rounded-bl-none px-3 py-2 backdrop-blur-xl border ${
-                  isBuy ? 'bg-[#FF4D6D]/15 border-[#FF4D6D]/40' : isGift ? 'bg-[#FFD166]/15 border-[#FFD166]/40' : 'bg-white/5 border-white/10'
-                }`}>
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <span className="text-[9px] font-bold text-white/40 tracking-tight font-display">{c.agent.name}</span>
-                    <span className="px-1.5 py-0.5 rounded-sm bg-white/10 text-[7px] text-white/60 font-bold uppercase font-display">{c.agent.level}</span>
+            const lvNum = parseInt(String(c.agent.level).replace(/[^0-9]/g, ''), 10) || 1;
+            const badgeGradient =
+              lvNum >= 60 ? 'linear-gradient(90deg,#FFD700 0%,#FF1493 50%,#8A2BE2 100%)'
+              : lvNum >= 50 ? 'linear-gradient(90deg,#FF9800,#FF5722)'
+              : lvNum >= 30 ? 'linear-gradient(90deg,#9C27B0,#E91E63)'
+              : lvNum >= 10 ? 'linear-gradient(90deg,#2196F3,#00BCD4)'
+              : 'linear-gradient(90deg,#8A9EA7,#607D8B)';
+            const nameColor = lvNum >= 30 ? '#FFE380' : '#8CE2FF';
+
+            // 礼物横幅广播
+            if (isGift) {
+              return (
+                <div key={c.id} className="flex items-center justify-between max-w-[92%] rounded-xl animate-[slide-in-left_0.2s_ease-out]"
+                  style={{ background: 'linear-gradient(90deg, rgba(255,107,0,0.7) 0%, rgba(255,0,128,0.4) 100%)', padding: '6px 10px' }}>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="inline-flex items-center justify-center shrink-0"
+                      style={{ height: 14, borderRadius: 7, padding: '0 5px', background: badgeGradient, color: '#fff', fontWeight: 800, fontSize: 9, fontFamily: 'DIN Alternate, Roboto, sans-serif', letterSpacing: 0.3 }}
+                    >LV.{lvNum}</span>
+                    <span className="text-[12px] font-semibold truncate" style={{ color: nameColor }}>{c.agent.name}</span>
+                    <span className="text-[12px] text-white/95 shrink-0">送出 {c.text}</span>
                   </div>
-                  <p className={`text-[13px] leading-relaxed font-body ${isBuy ? 'text-[#FF4D6D] font-medium' : isGift ? 'text-[#FFD166] font-medium' : 'text-white'}`}>
-                    {c.text}
-                  </p>
+                  <div className="flex items-center gap-1 shrink-0 ml-2">
+                    <span className="text-[18px] leading-none">{c.agent.avatar}</span>
+                    <span style={{ color: '#FFE600', fontWeight: 800, fontStyle: 'italic', fontSize: 16, textShadow: '0 0 4px #FF0000', lineHeight: 1 }}>x{((c.id as number) % 88) + 6}</span>
+                  </div>
+                </div>
+              );
+            }
+
+            // 进房广播（借用 buy 类型作为系统广播示例）
+            if (isBuy) {
+              return (
+                <div key={c.id} className="flex items-center gap-1.5 max-w-[85%] rounded-xl animate-[slide-in-left_0.2s_ease-out]"
+                  style={{ background: 'rgba(0,0,0,0.25)', padding: '4px 10px' }}>
+                  <span className="inline-flex items-center justify-center shrink-0"
+                    style={{ height: 14, borderRadius: 7, padding: '0 5px', background: badgeGradient, color: '#fff', fontWeight: 800, fontSize: 9, fontFamily: 'DIN Alternate, Roboto, sans-serif', letterSpacing: 0.3 }}
+                  >LV.{lvNum}</span>
+                  <span style={{ color: '#8CE2FF', fontWeight: 600, fontSize: 13, lineHeight: 1.4 }}>{c.agent.name}</span>
+                  <span style={{ color: '#70E8A3', fontWeight: 500, fontSize: 13, lineHeight: 1.4 }}>进入了直播间</span>
+                </div>
+              );
+            }
+
+            // 普通弹幕
+            return (
+              <div key={c.id} className="flex max-w-[88%] animate-[slide-in-left_0.2s_ease-out]">
+                <div className="inline-flex items-baseline gap-1.5 rounded-xl"
+                  style={{ background: 'rgba(0,0,0,0.35)', padding: '4px 10px' }}>
+                  <span className="inline-flex items-center justify-center shrink-0 self-center"
+                    style={{ height: 14, borderRadius: 7, padding: '0 5px', background: badgeGradient, color: '#fff', fontWeight: 800, fontSize: 9, fontFamily: 'DIN Alternate, Roboto, sans-serif', letterSpacing: 0.3 }}
+                  >LV.{lvNum}</span>
+                  <span style={{ color: nameColor, fontWeight: 600, fontSize: 13, lineHeight: 1.4 }}>{c.agent.name}:</span>
+                  <span style={{ color: '#FFFFFF', fontWeight: 400, fontSize: 13, lineHeight: 1.4, wordBreak: 'break-word' }}>{c.text}</span>
                 </div>
               </div>
             );
