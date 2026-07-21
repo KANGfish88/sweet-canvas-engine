@@ -1662,7 +1662,7 @@ function ProfilePage({
                     }
                   }}
                   onBlur={() => tagInput && addTag(tagInput)}
-                  placeholder={basicSettings.tags.length ? '+ 添加' : '+ 添加标签'}
+                  placeholder={basicSettings.tags.length ? '+' : '+ 标签'}
                   className="min-w-[64px] w-[80px] h-[22px] bg-transparent border border-dashed border-white/20 rounded-full outline-none px-2 text-[11px] text-white placeholder:text-white/55 focus:border-[#00F0FF]/50"
                 />
               </div>
