@@ -1481,9 +1481,127 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 }
 
 // ==========================================
+// 5.9 训练报告内容组件（Live 结束 & 我的-场次详情 通用）
+// ==========================================
+function TrainingReport({ dateStr, durationStr, summary, suggestions, skills }) {
+  const [expanded, setExpanded] = useState({});
+  const toggle = (id) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
+  return (
+    <div className="px-4 space-y-5">
+      {/* 一、总体评价 */}
+      <section className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-display font-bold tracking-[0.18em] text-[#FF7A9A]">SECTION 01</span>
+          <span className="h-[1px] flex-1 bg-gradient-to-r from-[#FF2B55]/40 to-transparent" />
+        </div>
+        <h3 className="text-[16px] font-semibold text-white">一、总体评价</h3>
+        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 items-baseline">
+          <span className="text-[12px] text-white/50">训练时长</span>
+          <span className="text-[15px] font-mono text-white tabular-nums">{durationStr}</span>
+          <span className="text-[12px] text-white/50">日期</span>
+          <span className="text-[13px] text-white/70 font-mono tabular-nums">{dateStr}</span>
+        </div>
+        <div className="bg-[#0F0F0F] rounded-xl p-4 border border-[#262626]">
+          <p className="text-[14px] text-white leading-relaxed">
+            {summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
+          </p>
+        </div>
+      </section>
+
+      {/* 二、不同技能卡的表现情况 */}
+      <section className="space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-display font-bold tracking-[0.18em] text-[#00F0FF]">SECTION 02</span>
+          <span className="h-[1px] flex-1 bg-gradient-to-r from-[#00F0FF]/40 to-transparent" />
+        </div>
+        <h3 className="text-[16px] font-semibold text-white">二、不同技能卡的表现情况</h3>
+
+        {(!skills || skills.length === 0) && (
+          <div className="bg-[#1A1A1A] rounded-2xl p-6 border border-[#2A2A2A] text-center text-white/40 text-[12px]">
+            本场未挂载技能卡
+          </div>
+        )}
+
+        {(skills || []).map((s, idx) => {
+          const card = s.card;
+          const id = card?.id || `s-${idx}`;
+          const title = (card?.title || s.rawTitle || `技能卡 ${idx + 1}`).replace(/[「」]/g, '');
+          const isOpen = !!expanded[id];
+          const perf = s.performance
+            || `围绕「${title}」的目标，你在本场直播中有明确的执行意识，节奏基本稳定，但在关键触发点的处理上仍有波动。`;
+          const improve = s.improvement
+            || (suggestions && suggestions[idx])
+            || '下一步可以在类似情境中做 2-3 次刻意练习，重点关注节奏与情绪的连贯衔接。';
+          return (
+            <div key={id} className="bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] overflow-hidden">
+              <div className="flex items-start justify-between gap-2 px-4 pt-4">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="shrink-0 w-6 h-6 rounded-full inline-flex items-center justify-center font-display font-bold text-[11px] bg-[#FF2B55]/20 text-[#FF7A9A]">
+                    {idx + 1}
+                  </span>
+                  <h4 className="text-[14px] font-semibold text-white truncate">{title}</h4>
+                </div>
+                {card && (
+                  <button
+                    onClick={() => toggle(id)}
+                    aria-label={isOpen ? '收起技能卡详情' : '展开技能卡详情'}
+                    className="shrink-0 w-7 h-7 rounded-full inline-flex items-center justify-center bg-white/[0.06] border border-white/10 text-white/70 hover:text-white transition-transform"
+                    style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                )}
+              </div>
+              <div className="px-4 pb-4 pt-3 space-y-3">
+                <p className="text-[13.5px] text-white leading-relaxed">{perf}</p>
+                <div className="bg-[#0F0F0F] border border-[#262626] rounded-xl p-3.5">
+                  <p className="text-[13.5px] text-white/85 leading-relaxed flex items-start gap-2">
+                    <span className="text-[#FFD166] mt-0.5">→</span>
+                    <span>{improve}</span>
+                  </p>
+                </div>
+              </div>
+              {isOpen && card && (
+                <div className="mx-3 mb-3 rounded-xl bg-[#050505] border border-[#1F1F1F] p-4 space-y-3 animate-[fade-in_0.2s_ease-out]">
+                  <div>
+                    <p className="text-[10px] font-display font-bold tracking-[0.2em] text-white/40 mb-1">SKILL CARD DETAIL</p>
+                    <h5 className="text-[14px] font-semibold text-white">{card.title}</h5>
+                    <p className="text-[11px] text-white/45 mt-0.5">维度：{(card.dimensions || []).join(' · ')}</p>
+                    {card.sourceVideo && <p className="text-[11px] text-white/45">视频标题：{card.sourceVideo}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-[11px] font-display font-bold tracking-[0.15em] text-white/50 uppercase">具体内容</p>
+                    <div className="space-y-2">
+                      {(card.keyPoints || []).map((p, i) => (
+                        <p key={`kp-${i}`} className="text-[13px] text-white/75 leading-relaxed">{i + 1}. {p}</p>
+                      ))}
+                      {(card.tips || []).map((t, i) => (
+                        <p key={`tp-${i}`} className="text-[13px] text-white/75 leading-relaxed flex items-start gap-1.5">
+                          <span className="text-[#FFD166] mt-0.5">•</span><span>{t}</span>
+                        </p>
+                      ))}
+                      {card.trainingGoal && (
+                        <p className="text-[13px] text-white/70 leading-relaxed border-t border-white/10 pt-2 mt-1">
+                          {card.trainingGoal}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </section>
+    </div>
+  );
+}
+
+// ==========================================
 // 6. 页面三：我的 (ProfilePage)
 // ==========================================
 function ProfilePage({ 
+
   userProfile, 
   setUserProfile, 
   trainSessions, 
