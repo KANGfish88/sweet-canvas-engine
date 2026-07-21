@@ -844,70 +844,110 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
 
 
 
-      <div className="absolute top-safe pt-4 left-4 right-4 z-30 pointer-events-auto flex flex-col items-start gap-2">
-        {/* 第一行：主播名片（左，紧凑） + 技能卡（右，顶右，1/3 宽度） */}
-        <div className="w-full flex items-center justify-between gap-2">
-          {/* 主播信息浮层 — 紧凑 */}
-          <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl pl-1.5 pr-1.5 py-1 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] max-w-[240px]">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#FF9A9E] via-[#FECFEF] to-[#4ECDC4] opacity-85 blur-[1.5px] shrink-0 border border-white/20" />
-            <div className="flex flex-col justify-center min-w-0">
-              <span className="text-[11px] font-bold text-white truncate font-display leading-tight">主播名字</span>
-              <span className="text-[9px] text-white/55 font-body leading-tight tabular-nums">
-                {(totalLikes >= 10000 ? `${(totalLikes / 10000).toFixed(1)}万` : totalLikes.toLocaleString())} 本场点赞
+      <div className="absolute top-safe pt-3 left-3 right-3 z-30 pointer-events-auto flex items-start justify-between gap-2">
+        {/* 左列：主播胶囊 + 技能卡胶囊 + 直播中小胶囊 */}
+        <div className="flex flex-col items-start gap-1">
+          {/* 1.1 主播信息胶囊 */}
+          <div
+            className="h-9 flex items-center gap-2 bg-black/35 backdrop-blur-md border border-white/10 rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+            style={{ padding: '2px 8px 2px 2px' }}
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FF9A9E] via-[#FECFEF] to-[#4ECDC4] shrink-0 border border-white" />
+            <div className="flex flex-col justify-center min-w-0 max-w-[110px]">
+              <span className="text-[12px] font-semibold text-white truncate font-display leading-tight">主播名字</span>
+              <span className="text-[10px] text-white/75 font-body leading-tight tabular-nums truncate">
+                {(totalLikes >= 10000 ? `${(totalLikes / 10000).toFixed(1)}万` : totalLikes.toLocaleString())} 获赞
               </span>
             </div>
             <button
               onClick={() => setIsFollowing(!isFollowing)}
-              className="bg-[#FE2C55] hover:bg-[#FF4D6D] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md active:scale-95 transition-transform shrink-0"
+              className="h-[26px] w-11 rounded-[13px] text-white text-[11px] font-semibold shadow-md active:scale-95 transition-transform shrink-0"
+              style={{ background: isFollowing ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg,#FF2C55 0%,#E6123D 100%)', marginLeft: '2px' }}
             >
-              {isFollowing ? '已关注' : '关注'}
+              {isFollowing ? '已关注' : '+关注'}
             </button>
           </div>
 
-          {/* 技能卡胶囊 — 顶右，1/3 宽度 */}
+          {/* 1.2 技能卡胶囊（主播下方） */}
           <button
             onClick={() => setShowSkillSheet(true)}
-            className="w-1/3 min-w-0 bg-[#4ECDC4]/10 backdrop-blur-2xl border border-[#4ECDC4]/30 rounded-xl px-2 py-1.5 flex items-center justify-between gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)] hover:bg-[#4ECDC4]/15 transition-colors"
+            className="h-[22px] flex items-center gap-1 bg-black/35 backdrop-blur-md border border-white/15 rounded-full active:scale-95 transition-transform"
+            style={{ padding: '2px 8px', marginLeft: '4px' }}
           >
-            <div className="flex items-center gap-1 min-w-0">
-              <span className="text-[10px] shrink-0">🏷️</span>
-              <span className="text-[10px] text-[#4ECDC4] font-bold truncate font-display">
-                {activeSkillCards.length === 0
-                  ? '选择技能卡'
-                  : activeSkillCards.length === 1
-                    ? activeSkillCards[0].title.replace(/[「」]/g, '').substring(0, 4)
-                    : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 3)} +${activeSkillCards.length - 1}`}
-              </span>
-            </div>
-            <Icons.ChevronDown size={12} className="shrink-0 text-[#4ECDC4]" />
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="shrink-0">
+              <path d="M12 2l2.6 6.3L21 9l-5 4.7L17.5 21 12 17.5 6.5 21 8 13.7 3 9l6.4-.7L12 2z" fill="#FFE380" />
+            </svg>
+            <span className="text-[11px] font-medium truncate max-w-[90px]" style={{ color: '#FFE380' }}>
+              {activeSkillCards.length === 0
+                ? '选择技能卡'
+                : activeSkillCards.length === 1
+                  ? activeSkillCards[0].title.replace(/[「」]/g, '').substring(0, 5)
+                  : `${activeSkillCards[currentSkillIdx]?.title.replace(/[「」]/g, '').substring(0, 4)} +${activeSkillCards.length - 1}`}
+            </span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
           </button>
+
+          {/* 直播中 · 计时（保留） */}
+          <div
+            className="h-[22px] flex items-center gap-1.5 bg-black/35 backdrop-blur-md border border-white/10 rounded-full"
+            style={{ padding: '2px 8px', marginLeft: '4px' }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF2C55] animate-pulse shadow-[0_0_6px_#FF2C55] shrink-0" />
+            <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display leading-none">LIVE</span>
+            <span className="text-[10px] text-white/70 tabular-nums font-display leading-none">{formatTime(liveSeconds)}</span>
+          </div>
         </div>
 
-        {/* 第二行：直播中 + 时间 + 在线人数 */}
-        <div className="flex items-center justify-between gap-2 w-full">
-          <div className="bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-2 shadow-[0_4px_16px_rgba(0,0,0,0.4)] whitespace-nowrap">
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] animate-pulse shadow-[0_0_6px_#FF4D6D] shrink-0" />
-              <span className="text-[10px] text-white font-bold tracking-wide uppercase font-display">直播中</span>
-            </div>
-            <div className="w-[1px] h-3 bg-white/10" />
-            <span className="text-[10px] text-white/60 tabular-nums font-display">{formatTime(liveSeconds)}</span>
+        {/* 右列：观众头像叠层 + 在线人数 + 关闭 */}
+        <div className="flex items-center gap-2">
+          {/* 观众头像叠层 */}
+          <div className="flex items-center">
+            {[
+              'linear-gradient(135deg,#FF9A9E,#FAD0C4)',
+              'linear-gradient(135deg,#A18CD1,#FBC2EB)',
+              'linear-gradient(135deg,#4ECDC4,#556270)',
+            ].map((bg, i) => (
+              <div
+                key={i}
+                className="w-6 h-6 rounded-full shrink-0"
+                style={{
+                  background: bg,
+                  border: '1.5px solid rgba(255,255,255,0.8)',
+                  marginLeft: i === 0 ? 0 : -8,
+                  zIndex: 3 - i,
+                }}
+              />
+            ))}
           </div>
 
-          {/* 在线人数 胶囊 — 与直播中气泡同底色/圆角 */}
+          {/* 在线人数胶囊 */}
           {showViewerPill && (
-            <div className="shrink-0 bg-[#0F0F0F]/60 backdrop-blur-2xl border border-white/10 rounded-xl px-2.5 py-1.5 flex items-center gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.4)]">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/90 shrink-0">
+            <div
+              className="h-7 flex items-center gap-1 bg-black/30 backdrop-blur-md rounded-full"
+              style={{ padding: '0 10px' }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white shrink-0">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
                 <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
-              <span className="text-[11px] text-white font-semibold tabular-nums font-display leading-none">
+              <span className="text-[11px] text-white font-medium tabular-nums font-display leading-none">
                 {viewerCount.toLocaleString()}
               </span>
             </div>
           )}
+
+          {/* 关闭按钮 */}
+          <button
+            onClick={() => setCurrentPage('home')}
+            className="w-8 h-8 rounded-full bg-black/35 backdrop-blur-md flex items-center justify-center active:scale-95 transition-transform"
+            aria-label="退出直播间"
+          >
+            <Icons.X size={16} className="text-white" />
+          </button>
         </div>
       </div>
 
