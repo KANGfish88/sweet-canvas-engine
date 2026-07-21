@@ -1509,6 +1509,7 @@ function ProfilePage({
   const [viewMode, setViewMode] = useState<'skill' | 'session'>('skill');
   const [dateFilter, setDateFilter] = useState<string>(''); // yyyy-mm-dd
   const [detailCard, setDetailCard] = useState<any>(null);
+  const [detailSession, setDetailSession] = useState<any>(null);
 
   // 一级能力标签
   const ABILITIES = [
