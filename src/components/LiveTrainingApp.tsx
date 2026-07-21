@@ -338,11 +338,11 @@ function HomePage({
       <header className="px-5 pt-6 pb-4 flex items-center justify-between sticky top-0 z-40 bg-[#0F0F0F]/80 backdrop-blur-xl relative">
         <div>
           <h1 className="text-[24px] font-bold font-display tracking-tight leading-none">
-            <span className="text-[#FF4D6D]">播练</span><span className="text-white">营</span>
+            <span className="text-[#FF4D6D]">直播</span><span className="text-white">训练营</span>
           </h1>
           <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-display mt-1">Live Practice Camp</p>
         </div>
-        <img src={mascotImg} alt="播练营吉祥物" className="h-14 w-14 object-contain drop-shadow-[0_4px_16px_rgba(255,77,109,0.45)] absolute right-5 top-1/2 -translate-y-1/2" />
+        <img src={mascotImg} alt="直播训练营吉祥物" className="h-14 w-14 object-contain drop-shadow-[0_4px_16px_rgba(255,77,109,0.45)] absolute right-5 top-1/2 -translate-y-1/2" />
       </header>
 
       <main className="px-5 space-y-7 relative z-10">
