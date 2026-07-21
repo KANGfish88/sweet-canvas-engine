@@ -36,6 +36,9 @@ const Icons = {
   Camera: ({ size = 20, className = "" }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
   ),
+  Upload: ({ size = 20, className = "" }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+  ),
   Eye: ({ size = 20, className = "" }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
   ),
@@ -335,11 +338,11 @@ function HomePage({
       <header className="px-5 pt-6 pb-4 flex items-center justify-between sticky top-0 z-40 bg-[#0F0F0F]/80 backdrop-blur-xl relative">
         <div>
           <h1 className="text-[24px] font-bold font-display tracking-tight leading-none">
-            <span className="text-[#FF4D6D]">播练</span><span className="text-white">营</span>
+            <span className="text-[#FF4D6D]">直播</span><span className="text-white">训练营</span>
           </h1>
           <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-display mt-1">Live Practice Camp</p>
         </div>
-        <img src={mascotImg} alt="播练营吉祥物" className="h-14 w-14 object-contain drop-shadow-[0_4px_16px_rgba(255,77,109,0.45)] absolute right-5 top-1/2 -translate-y-1/2" />
+        <img src={mascotImg} alt="直播训练营吉祥物" className="h-14 w-14 object-contain drop-shadow-[0_4px_16px_rgba(255,77,109,0.45)] absolute right-5 top-1/2 -translate-y-1/2" />
       </header>
 
       <main className="px-5 space-y-7 relative z-10">
@@ -351,11 +354,22 @@ function HomePage({
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-[#FF4D6D] to-[#4ECDC4] rounded-2xl blur opacity-20 group-focus-within:opacity-50 transition duration-500" />
                 <div className="relative flex items-center bg-[#1A1A1A] rounded-2xl border border-white/10 p-1.5">
-                  <div className="flex-1 flex items-center px-3 min-w-0">
-                    <Icons.Link size={16} className={`mr-2 shrink-0 transition-colors ${linkInput ? 'text-[#4ECDC4]' : 'text-white/30'}`} />
+                  <label className="shrink-0 w-9 h-9 ml-1 rounded-xl inline-flex items-center justify-center bg-white/[0.06] border border-white/10 text-white/70 hover:text-[#4ECDC4] hover:border-[#4ECDC4]/40 cursor-pointer transition-colors" title="上传视频 / 图片 / 文档">
+                    <Icons.Upload size={16} />
+                    <input
+                      type="file"
+                      accept="video/*,image/*,.pdf,.doc,.docx,.txt,.md"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) { setLinkInput(f.name); if (parseState === 'error') setParseState('idle'); }
+                      }}
+                    />
+                  </label>
+                  <div className="flex-1 flex items-center px-2 min-w-0">
                     <input
                       type="text"
-                      placeholder="粘贴抖音视频分享链接..."
+                      placeholder="上传视频 / 图片 / 文档，或粘贴文字…"
                       value={linkInput}
                       onChange={(e) => {
                         setLinkInput(e.target.value);
@@ -1466,31 +1480,19 @@ function TrainingReport({ dateStr, durationStr, summary, suggestions, skills }) 
   return (
     <div className="px-4 space-y-5">
       {/* 一、总体评价 */}
-      <section className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] space-y-4">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-display font-bold tracking-[0.18em] text-[#FF7A9A]">SECTION 01</span>
-          <span className="h-[1px] flex-1 bg-gradient-to-r from-[#FF2B55]/40 to-transparent" />
-        </div>
+      <section className="bg-[#1A1A1A] rounded-2xl p-5 border border-[#2A2A2A] space-y-3">
         <h3 className="text-[16px] font-semibold text-white">一、总体评价</h3>
-        <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 items-baseline">
-          <span className="text-[12px] text-white/50">训练时长</span>
-          <span className="text-[15px] font-mono text-white tabular-nums">{durationStr}</span>
-          <span className="text-[12px] text-white/50">日期</span>
-          <span className="text-[13px] text-white/70 font-mono tabular-nums">{dateStr}</span>
+        <div className="flex items-center gap-4 flex-wrap">
+          <span className="text-[12px] text-white/50">训练时长 <span className="text-[14px] font-mono text-white tabular-nums ml-1">{durationStr}</span></span>
+          <span className="text-[12px] text-white/50">日期 <span className="text-[13px] text-white/80 font-mono tabular-nums ml-1">{dateStr}</span></span>
         </div>
-        <div className="bg-[#0F0F0F] rounded-xl p-4 border border-[#262626]">
-          <p className="text-[14px] text-white leading-relaxed">
-            {summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
-          </p>
-        </div>
+        <p className="text-[14px] text-white leading-relaxed">
+          {summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
+        </p>
       </section>
 
       {/* 二、不同技能卡的表现情况 */}
       <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-display font-bold tracking-[0.18em] text-[#00F0FF]">SECTION 02</span>
-          <span className="h-[1px] flex-1 bg-gradient-to-r from-[#00F0FF]/40 to-transparent" />
-        </div>
         <h3 className="text-[16px] font-semibold text-white">二、不同技能卡的表现情况</h3>
 
         {(!skills || skills.length === 0) && (
@@ -1687,12 +1689,8 @@ function ProfilePage({
       <div className="pointer-events-none absolute -top-20 -left-16 w-72 h-72 rounded-full bg-[#FF2B55]/10 blur-3xl animate-ambient" />
       <div className="pointer-events-none absolute top-40 -right-20 w-72 h-72 rounded-full bg-[#00F0FF]/10 blur-3xl animate-ambient" style={{ animationDelay: '-4s' }} />
 
-      <header className="px-5 pt-5 pb-3 sticky top-0 z-40 bg-[#0F0F0F]/85 backdrop-blur-xl">
-        <h1 className="font-display text-[22px] font-bold text-white tracking-tight">我的</h1>
-        <p className="text-[11px] text-white/40 font-body mt-0.5">Personal Archive</p>
-      </header>
+      <main className="px-4 pt-6 space-y-4 relative z-10">
 
-      <main className="px-4 pt-2 space-y-4 relative z-10">
         {/* 主播个人信息头部卡片 */}
         <section
           className="rounded-2xl p-4 bg-[#1A1C20] border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.45)] space-y-4"
@@ -1838,7 +1836,7 @@ function ProfilePage({
               <div key={i} className="text-center px-2">
                 <p className="text-[11px] text-[#909399] font-body">{s.label}</p>
                 <p className="mt-1" style={{ color: s.color }}>
-                  <span className="text-[22px] font-bold tabular-nums tracking-tight" style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', letterSpacing: '-0.02em' }}>{s.val}</span>
+                  <span className="text-[22px] font-display font-bold tabular-nums tracking-tight">{s.val}</span>
                   <span className="ml-1 text-[12px] text-[#909399] font-body">{s.unit}</span>
                 </p>
               </div>
