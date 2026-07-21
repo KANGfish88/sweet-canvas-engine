@@ -1923,89 +1923,60 @@ function ProfilePage({
         </div>
       )}
 
-      {/* 诊断详情 半屏 Modal */}
+      {/* 训练报告 半屏 Modal — 结构与直播结束训练报告一致 */}
       {detailSession && (() => {
         const s = detailSession;
-        const sc = s.scores || {};
-        const score = sessionScore(s);
-        const scoreColor = score >= 80 ? '#00F0FF' : score >= 60 ? '#FFE380' : '#FF7A9A';
-        const dims: { label: string; val: number }[] = [
-          { label: '节奏掌控', val: sc.rhythm ?? 0 },
-          { label: '互动频率', val: sc.interaction ?? 0 },
-          { label: '话题张力', val: sc.topic ?? 0 },
-        ];
+        const firstSkill = (s.skillCards || [])[0];
         return (
-          <>
-            <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s_ease-out]" onClick={() => setDetailSession(null)} />
-            <div className="fixed left-0 right-0 bottom-0 z-[61] rounded-t-3xl bg-[#161616] border-t border-white/10 max-h-[82vh] overflow-y-auto animate-[slide-up_0.3s_ease-out]">
-              <div className="sticky top-0 bg-[#161616]/95 backdrop-blur-xl px-5 pt-4 pb-3 border-b border-white/5">
-                <div className="w-10 h-1 rounded-full bg-white/15 mx-auto mb-3" />
-                <div className="flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-bold text-[16px] text-white leading-snug">诊断详情</h3>
-                    <p className="text-[11px] text-white/45 font-body mt-1 tabular-nums">{s.date} · 时长 {s.durationStr || `${s.duration || 0}秒`}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-mono font-bold text-[26px] leading-none tabular-nums" style={{ color: scoreColor }}>{score}</div>
-                    <div className="text-[10px] text-white/40 mt-0.5">综合分</div>
-                  </div>
-                  <button onClick={() => setDetailSession(null)} className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
-                    <Icons.X size={14} />
-                  </button>
-                </div>
+          <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s]">
+            <div className="absolute inset-0" onClick={() => setDetailSession(null)} />
+            <div className="w-full max-w-[430px] bg-[#0F0F0F] rounded-t-2xl border-t border-[#333333] z-10 flex flex-col max-h-[88vh] animate-[slide-in-up_0.25s_ease-out]">
+              <div className="py-3 flex justify-center cursor-pointer" onClick={() => setDetailSession(null)}>
+                <div className="w-12 h-1.5 bg-[#333333] rounded-full" />
               </div>
-              <div className="px-5 py-4 space-y-5">
-                {(s.skillCards || []).length > 0 && (
-                  <div>
-                    <p className="text-[12px] text-white/50 font-body mb-2">本场技能卡</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {s.skillCards.map((c: string) => (
-                        <span key={c} className="text-[11px] px-2 py-1 rounded-full bg-white/[0.06] border border-white/10 text-white/80 font-body">{c}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <p className="text-[12px] text-white/50 font-body mb-2">维度评分</p>
-                  <div className="space-y-2.5">
-                    {dims.map((d) => (
-                      <div key={d.label}>
-                        <div className="flex justify-between text-[12px] mb-1">
-                          <span className="text-white/70">{d.label}</span>
-                          <span className="text-[#FFD166] tabular-nums">{d.val}/10</span>
-                        </div>
-                        <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-[#FFD166] to-[#FF7A9A] rounded-full" style={{ width: `${(d.val || 0) * 10}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              <div className="overflow-y-auto pb-6">
+                <div className="pt-2 pb-6 px-4 text-center">
+                  <h2 className="text-[20px] font-semibold text-white">训练报告</h2>
+                  <p className="text-[12px] text-[#6B6B6B] mt-2">日期: {(s.date || '').slice(0, 10)}</p>
                 </div>
-
-                {s.summary && (
-                  <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
-                    <p className="text-[12px] text-[#00F0FF] font-body mb-1.5">整体表现总结</p>
-                    <p className="text-[13px] text-white/85 leading-relaxed font-body">{s.summary}</p>
-                  </div>
-                )}
-
-                {(s.suggestions || []).length > 0 && (
-                  <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
-                    <p className="text-[12px] text-[#FFD166] font-body mb-2">改进建议</p>
-                    <div className="space-y-2">
-                      {s.suggestions.map((sg: string, i: number) => (
-                        <p key={i} className="text-[13px] text-white/85 leading-relaxed font-body flex items-start gap-2">
-                          <span className="text-[#FFD166] mt-[2px]">•</span>
-                          <span className="flex-1">{sg}</span>
-                        </p>
-                      ))}
+                <div className="px-4 space-y-6">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
+                      <span className="text-[12px] text-[#6B6B6B]">训练时长</span>
+                      <p className="text-[18px] font-mono text-white mt-1">{s.durationStr || `${s.duration || 0}秒`}</p>
+                    </div>
+                    <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
+                      <span className="text-[12px] text-[#6B6B6B]">训练技能</span>
+                      <p className="text-[14px] text-[#4ECDC4] font-medium mt-2 truncate">
+                        {firstSkill ? firstSkill.substring(1, 6) : '无'}
+                      </p>
                     </div>
                   </div>
-                )}
+                  <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
+                    <h3 className="text-[16px] font-semibold text-white">综合诊断</h3>
+                    <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333]">
+                      <span className="text-[12px] text-[#B3B3B3] font-medium mb-2 block">整体表现总结</span>
+                      <p className="text-[14px] text-[#FFFFFF] leading-relaxed">
+                        {s.summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
+                      </p>
+                    </div>
+                  </div>
+                  {(s.suggestions || []).length > 0 && (
+                    <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
+                      <h3 className="text-[16px] font-semibold text-white">改进建议</h3>
+                      <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333] space-y-3">
+                        {s.suggestions.map((sg: string, i: number) => (
+                          <p key={i} className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2">
+                            <span className="text-[#FFD166]">•</span>{sg}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </>
+          </div>
         );
       })()}
     </div>
