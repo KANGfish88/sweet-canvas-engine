@@ -1504,6 +1504,7 @@ function ProfilePage({
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [tempUsername, setTempUsername] = useState(userProfile.username);
   const [tagInput, setTagInput] = useState('');
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   // 视图 & 筛选
   const [viewMode, setViewMode] = useState<'skill' | 'session'>('skill');
