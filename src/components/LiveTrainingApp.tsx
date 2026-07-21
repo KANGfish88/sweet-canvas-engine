@@ -1821,22 +1821,23 @@ function ProfilePage({
                     <button
                       key={card.id}
                       onClick={() => setDetailCard(card)}
-                      className={`relative w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 pl-11 hover:border-[#FF2B55]/30 hover:shadow-[0_6px_24px_rgba(255,43,85,0.15)] transition-all ${dimmed ? 'opacity-30' : 'opacity-100'}`}
+                      className={`relative w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 pl-12 hover:border-[#FF2B55]/30 hover:shadow-[0_6px_24px_rgba(255,43,85,0.15)] transition-all ${dimmed ? 'opacity-30' : 'opacity-100'}`}
                     >
-                      <div className="absolute top-3 left-3 w-6 h-6 rounded-full bg-[#0F0F0F] border border-[#FF2B55]/50 flex items-center justify-center font-display font-bold text-[11px] text-[#FF7A9A] shadow-[0_0_8px_rgba(255,43,85,0.35)]">
+                      <div className="absolute top-3.5 left-3 w-5 h-5 rounded-full bg-[#FF2B55]/12 border border-[#FF2B55]/40 flex items-center justify-center font-display font-bold text-[10px] text-[#FF7A9A]">
                         {num}
                       </div>
                       <h3 className="text-[13.5px] font-display font-semibold text-white line-clamp-1">{card.title}</h3>
-                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50 font-body">{card.category || '综合'}</span>
+                      <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/55 font-body border border-white/5">{card.category || '综合'}</span>
                         {(card.dimensions || []).slice(0, 2).map((d: string) => (
-                          <span key={d} className="text-[10px] px-1.5 py-0.5 rounded bg-[#00F0FF]/10 text-[#00F0FF]/80 font-body">{d}</span>
+                          <span key={d} className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/55 font-body border border-white/5">{d}</span>
                         ))}
-                        <span className="ml-auto text-[10px] text-white/40 font-body tabular-nums">
-                          训练 {card.trainedSessions || 0}/{card.targetSessions || 0}
+                        <span className="ml-auto text-[10.5px] text-white/70 font-body tabular-nums">
+                          训练 <span className="text-[#00F0FF]/85 font-semibold">{card.trainedSessions || 0}</span>/{card.targetSessions || 0}
                         </span>
                       </div>
                     </button>
+
                   );
                 })}
               </div>
