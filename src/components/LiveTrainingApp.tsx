@@ -1583,85 +1583,132 @@ function ProfilePage({
       </header>
 
       <main className="px-4 pt-2 space-y-4 relative z-10">
-        {/* 个人信息 + 基础设置 合并卡片 */}
-        <section className="relative rounded-2xl p-[1px] bg-gradient-to-br from-[#FF2B55]/40 via-white/5 to-[#00F0FF]/40 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          <div className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl p-4 space-y-5">
-            <div className="flex items-center gap-3.5">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#FF2B55] to-[#00F0FF] p-[2px] shadow-[0_0_20px_rgba(255,43,85,0.3)]">
-                <div className="w-full h-full bg-[#161616] rounded-[14px] flex items-center justify-center font-display font-bold text-[18px] text-white">
-                  {userProfile.username.charAt(0)}
+        {/* 主播个人信息头部卡片 */}
+        <section
+          className="rounded-2xl p-4 bg-[#1A1C20] border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.45)] space-y-4"
+        >
+          {/* 上：头像 + 昵称 + 标签气泡 + 编辑按钮 */}
+          <div className="flex items-start gap-3">
+            {/* 头像 + 霓虹外框 + LV角标 */}
+            <div className="relative shrink-0">
+              <div
+                className="w-14 h-14 rounded-full p-[2px]"
+                style={{
+                  background: 'linear-gradient(135deg, #FF2B55, #9B51E0)',
+                  boxShadow: '0 0 8px rgba(255,43,85,0.4)',
+                }}
+              >
+                <div className="w-full h-full rounded-full bg-[#1A1C20] flex items-center justify-center font-display font-bold text-[18px] text-white">
+                  {userProfile.username.charAt(0) || '主'}
                 </div>
               </div>
-              <div className="flex-1 min-w-0">
-                {isEditingUsername ? (
-                  <input type="text" value={tempUsername} onChange={(e) => setTempUsername(e.target.value)} onBlur={handleSaveUsername} onKeyDown={(e) => e.key === 'Enter' && handleSaveUsername()} autoFocus className="bg-[#0F0F0F] border border-white/15 text-[15px] px-2.5 py-1.5 rounded-lg text-white outline-none w-full font-body" />
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-display text-[17px] font-semibold text-white truncate">@{userProfile.username}</h2>
-                    <button onClick={() => setIsEditingUsername(true)} className="text-white/40 hover:text-white text-[12px]">✏️</button>
-                  </div>
-                )}
-                <p className="text-[11px] text-white/40 font-body mt-0.5 tracking-wide">LIVE TRAINER · LV.2</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 pt-4 border-t border-white/5">
-              {[
-                { val: trainSessions.length, label: '累计场次', color: '#FF2B55' },
-                { val: (skillCardLibrary || []).length, label: '掌握技能', color: '#00F0FF' },
-              ].map((s, i) => (
-                <div key={i} className="text-center">
-                  <p className="font-display text-[20px] font-bold tabular-nums" style={{ color: s.color }}>{s.val}</p>
-                  <p className="text-[11px] text-white/40 mt-0.5 font-body">{s.label}</p>
-                </div>
-              ))}
+              <span className="absolute -bottom-1 -right-1 px-1.5 py-[1px] rounded-full text-[9px] font-bold text-white bg-gradient-to-r from-[#FF2B55] to-[#9B51E0] border border-[#1A1C20]">
+                Lv.2
+              </span>
             </div>
 
-            <div className="pt-4 border-t border-white/5 space-y-4">
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">人设设定</label>
-                <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-3 focus-within:border-[#00F0FF]/40 transition-colors">
+            {/* 昵称 + 标签气泡 */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                {isEditingUsername ? (
                   <input
                     type="text"
-                    value={basicSettings.persona}
-                    onChange={(e) => setBasicSettings(prev => ({ ...prev, persona: e.target.value }))}
-                    placeholder="用一句话描述你的人设，如'简约通勤穿搭博主'"
-                    className="w-full bg-transparent border-none outline-none p-0 text-[13px] text-white/85 placeholder:text-white/25"
+                    value={tempUsername}
+                    onChange={(e) => setTempUsername(e.target.value)}
+                    onBlur={handleSaveUsername}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSaveUsername()}
+                    autoFocus
+                    className="bg-[#0F0F0F] border border-white/15 text-[16px] px-2 py-1 rounded-lg text-white outline-none flex-1 font-body"
                   />
-                </div>
+                ) : (
+                  <>
+                    <h2 className="font-display text-[18px] font-semibold text-white truncate">{userProfile.username || '主播'}</h2>
+                    <button onClick={() => setIsEditingUsername(true)} className="text-white/40 hover:text-white text-[12px]">✏️</button>
+                  </>
+                )}
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">标签</label>
-                <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-2.5 focus-within:border-[#00F0FF]/40 transition-colors">
-                  <div className="flex flex-wrap gap-1.5 items-center">
-                    {basicSettings.tags.map(tag => (
-                      <span key={tag} className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-[#00F0FF]/10 border border-[#00F0FF]/40 text-[#00F0FF] text-[12px] font-medium">
-                        {tag}
-                        <button onClick={() => removeTag(tag)} className="w-4 h-4 rounded-full hover:bg-[#00F0FF]/25 flex items-center justify-center">
-                          <Icons.X size={10} />
-                        </button>
-                      </span>
-                    ))}
-                    <input
-                      value={tagInput}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        if (/[,，]$/.test(v)) { addTag(v.slice(0, -1)); } else { setTagInput(v); }
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }
-                        else if (e.key === 'Backspace' && !tagInput && basicSettings.tags.length) {
-                          removeTag(basicSettings.tags[basicSettings.tags.length - 1]);
-                        }
-                      }}
-                      onBlur={() => tagInput && addTag(tagInput)}
-                      placeholder={basicSettings.tags.length ? '继续添加…' : '输入标签后按回车 / 逗号添加'}
-                      className="flex-1 min-w-[120px] bg-transparent border-none outline-none px-2 py-1 text-[13px] text-white/85 placeholder:text-white/25"
-                    />
-                  </div>
-                </div>
+              {/* 动态标签气泡组 */}
+              <div className="flex flex-wrap gap-1.5 items-center mt-2">
+                {basicSettings.tags.map(tag => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 pl-2 pr-1 py-[2px] rounded-[12px] text-[12px]"
+                    style={{
+                      background: 'rgba(255,255,255,0.08)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      color: '#00F0FF',
+                    }}
+                  >
+                    {tag}
+                    <button
+                      onClick={() => removeTag(tag)}
+                      className="w-3.5 h-3.5 rounded-full hover:bg-white/15 flex items-center justify-center text-white/60"
+                    >
+                      <Icons.X size={9} />
+                    </button>
+                  </span>
+                ))}
+                <input
+                  value={tagInput}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (/[,，]$/.test(v)) { addTag(v.slice(0, -1)); } else { setTagInput(v); }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }
+                    else if (e.key === 'Backspace' && !tagInput && basicSettings.tags.length) {
+                      removeTag(basicSettings.tags[basicSettings.tags.length - 1]);
+                    }
+                  }}
+                  onBlur={() => tagInput && addTag(tagInput)}
+                  placeholder={basicSettings.tags.length ? '+ 添加' : '+ 添加标签'}
+                  className="min-w-[64px] w-[80px] bg-transparent border-none outline-none px-1 py-[2px] text-[12px] text-white/85 placeholder:text-white/35"
+                />
               </div>
             </div>
+          </div>
+
+          {/* 人设描述 + 编辑按钮 */}
+          <div className="flex items-center gap-2">
+            <p className="flex-1 min-w-0 text-[13px] text-[#909399] truncate font-body">
+              <span className="text-white/50">设定人设：</span>
+              {basicSettings.persona || '还未设定人设，点击右侧编辑'}
+            </p>
+            <button
+              onClick={() => {
+                const next = window.prompt('编辑人设描述', basicSettings.persona || '');
+                if (next !== null) setBasicSettings(prev => ({ ...prev, persona: next }));
+              }}
+              className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] text-white/85 bg-[#2A2D35] border border-white/[0.12] hover:border-white/25"
+            >
+              编辑人设 <span className="text-[11px]">✏️</span>
+            </button>
+          </div>
+
+          {/* 下：三列训练数据 */}
+          <div className="grid grid-cols-3 pt-3 border-t border-white/[0.08] divide-x divide-white/[0.08]">
+            {[
+              { val: trainSessions.length, unit: '场', label: '累计训练场次', color: '#FFFFFF' },
+              { val: (skillCardLibrary || []).length, unit: '张', label: '已沉淀技能卡', color: '#FF2B55' },
+              {
+                val: (() => {
+                  const total = (trainSessions || []).reduce((s: number, x: any) => s + (x.duration || 0), 0);
+                  return (total / 3600).toFixed(1);
+                })(),
+                unit: '小时',
+                label: '训练总时长',
+                color: '#00F0FF',
+              },
+            ].map((s, i) => (
+              <div key={i} className="text-center px-2">
+                <p className="text-[11px] text-[#909399] font-body">{s.label}</p>
+                <p className="mt-1 tabular-nums" style={{ color: s.color, fontFamily: '"DIN Alternate", ui-monospace, monospace' }}>
+                  <span className="text-[22px] font-bold">{s.val}</span>
+                  <span className="ml-1 text-[12px] text-[#909399]" style={{ fontFamily: 'inherit' }}>{s.unit}</span>
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 
