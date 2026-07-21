@@ -2017,6 +2017,36 @@ function ProfilePage({
           </div>
         );
       })()}
+
+      {/* 人设修改确认弹窗 */}
+      {pendingPersona !== null && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-[fade-in_0.15s]">
+          <div className="w-[86%] max-w-[340px] bg-[#161616] rounded-2xl border border-white/10 p-5 shadow-2xl animate-[slide-in-up_0.2s_ease-out]">
+            <h3 className="text-[15px] font-display font-semibold text-white">保存人设修改？</h3>
+            <p className="mt-2 text-[12px] text-white/50 font-body">原：<span className="text-white/70">{basicSettings.persona || '（空）'}</span></p>
+            <p className="mt-1 text-[12px] text-white/50 font-body">新：<span className="text-[#00F0FF]">{pendingPersona || '（空）'}</span></p>
+            <div className="mt-5 flex gap-2">
+              <button
+                onClick={() => {
+                  setTempPersona(basicSettings.persona || '');
+                  setPendingPersona(null);
+                  setIsEditingPersona(false);
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-white/80 text-[13px] font-medium"
+              >取消</button>
+              <button
+                onClick={() => {
+                  setBasicSettings(prev => ({ ...prev, persona: pendingPersona! }));
+                  triggerToast('人设已更新', 'success');
+                  setPendingPersona(null);
+                  setIsEditingPersona(false);
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-[#FF2B55] text-white text-[13px] font-semibold shadow-[0_6px_20px_rgba(255,43,85,0.35)]"
+              >保存</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
