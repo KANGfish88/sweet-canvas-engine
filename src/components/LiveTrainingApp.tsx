@@ -1836,7 +1836,7 @@ function ProfilePage({
               <div key={i} className="text-center px-2">
                 <p className="text-[11px] text-[#909399] font-body">{s.label}</p>
                 <p className="mt-1" style={{ color: s.color }}>
-                  <span className="text-[22px] font-bold tabular-nums tracking-tight" style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace', letterSpacing: '-0.02em' }}>{s.val}</span>
+                  <span className="text-[22px] font-display font-bold tabular-nums tracking-tight">{s.val}</span>
                   <span className="ml-1 text-[12px] text-[#909399] font-body">{s.unit}</span>
                 </p>
               </div>
