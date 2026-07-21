@@ -447,9 +447,9 @@ function HomePage({
               return (
                 <div
                   key={card.id}
-                  onClick={() => setSelectedDetailCard(card)}
-                  className="relative p-[1px] rounded-3xl overflow-hidden cursor-pointer transition-all active:scale-[0.98]"
-                  style={{ backgroundImage: `linear-gradient(135deg, ${isSelected ? accent + '66' : 'rgba(255,255,255,0.12)'}, transparent)` }}
+                  onClick={() => toggleSkillCardSelection(card.id)}
+                  className="relative p-[1px] rounded-3xl cursor-pointer transition-all active:scale-[0.98]"
+                  style={{ backgroundImage: `linear-gradient(135deg, ${isSelected ? accent + '99' : 'rgba(255,255,255,0.12)'}, transparent)`, boxShadow: isSelected ? `0 0 0 1px ${accent}66, 0 8px 24px ${accent}33` : undefined }}
                 >
                   <div className="bg-[#161616] p-4 rounded-[23px] h-full flex flex-col">
                     <div className="flex items-start justify-between mb-3">
@@ -459,28 +459,19 @@ function HomePage({
                       >
                         {card.category || "综合技巧"}
                       </span>
-                      <div className="flex gap-0.5">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <span key={i} className="w-1 h-1 rounded-full" style={{ background: i < card.difficulty ? '#FFD166' : 'rgba(255,255,255,0.12)' }} />
-                        ))}
-                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setSelectedDetailCard(card); }}
+                        aria-label="查看详情"
+                        className="text-white/45 hover:text-white text-[13px] font-display font-bold leading-none tracking-tighter transition-colors px-1"
+                      >
+                        &raquo;
+                      </button>
                     </div>
 
                     <h3 className="text-[13px] font-bold text-white mb-2 leading-tight">{card.title}</h3>
-                    <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 mb-3 min-h-[32px]">
+                    <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 min-h-[32px]">
                       {card.keyPoints[0]}
                     </p>
-
-                    <div className="border-t border-white/5 pt-2.5 flex items-center justify-between">
-                      <span className="text-[10px] text-white/30 italic">难度: {card.difficulty > 3 ? '困难' : '简单'}</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleSkillCardSelection(card.id); }}
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'border-transparent text-black' : 'border-white/30 bg-transparent'}`}
-                        style={isSelected ? { background: accent } : undefined}
-                      >
-                        {isSelected && <Icons.Check size={12} strokeWidth={3} />}
-                      </button>
-                    </div>
                   </div>
                 </div>
               );
@@ -1505,12 +1496,34 @@ function ProfilePage({
   const [tempUsername, setTempUsername] = useState(userProfile.username);
   const [tagInput, setTagInput] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const tagsRef = useRef<HTMLDivElement | null>(null);
+
+  // 人设行内编辑
+  const [isEditingPersona, setIsEditingPersona] = useState(false);
+  const [tempPersona, setTempPersona] = useState(basicSettings.persona || '');
+  const [pendingPersona, setPendingPersona] = useState<string | null>(null);
 
   // 视图 & 筛选
   const [viewMode, setViewMode] = useState<'skill' | 'session'>('skill');
   const [dateFilter, setDateFilter] = useState<string>(''); // yyyy-mm-dd
   const [detailCard, setDetailCard] = useState<any>(null);
   const [detailSession, setDetailSession] = useState<any>(null);
+
+  // 点击标签气泡以外区域，取消选中态
+  useEffect(() => {
+    if (!selectedTag) return;
+    const handler = (e: MouseEvent | TouchEvent) => {
+      if (tagsRef.current && !tagsRef.current.contains(e.target as Node)) {
+        setSelectedTag(null);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
+  }, [selectedTag]);
 
   // 一级能力标签
   const ABILITIES = [
@@ -1631,20 +1644,13 @@ function ProfilePage({
               </div>
 
               {/* 动态标签气泡组 */}
-              <div className="flex flex-wrap gap-1.5 items-center mt-2">
+              <div ref={tagsRef} className="flex flex-wrap gap-1.5 items-center mt-2">
                 {basicSettings.tags.map(tag => {
                   const isSel = selectedTag === tag;
                   return (
                     <button
                       key={tag}
-                      onClick={() => {
-                        if (isSel) {
-                          removeTag(tag);
-                          setSelectedTag(null);
-                        } else {
-                          setSelectedTag(tag);
-                        }
-                      }}
+                      onClick={() => setSelectedTag(isSel ? null : tag)}
                       className="inline-flex items-center h-[22px] px-2.5 rounded-full text-[11px] leading-none transition-all"
                       style={{
                         background: 'rgba(255,255,255,0.05)',
@@ -1665,8 +1671,9 @@ function ProfilePage({
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }
-                    else if (e.key === 'Backspace' && !tagInput && basicSettings.tags.length) {
-                      removeTag(basicSettings.tags[basicSettings.tags.length - 1]);
+                    else if (e.key === 'Backspace' && !tagInput) {
+                      if (selectedTag) { removeTag(selectedTag); setSelectedTag(null); }
+                      else if (basicSettings.tags.length) removeTag(basicSettings.tags[basicSettings.tags.length - 1]);
                     }
                   }}
                   onBlur={() => tagInput && addTag(tagInput)}
@@ -1677,22 +1684,44 @@ function ProfilePage({
             </div>
           </div>
 
-          {/* 人设描述 + 编辑按钮 (右上角图标形式，不挤压文字) */}
-          <div className="relative pr-8">
-            <p className="text-[13px] text-white/70 font-body leading-relaxed">
-              <span className="text-white/45">人设：</span>
-              {basicSettings.persona || '还未设定人设，点击右上角编辑'}
-            </p>
-            <button
-              onClick={() => {
-                const next = window.prompt('编辑人设描述', basicSettings.persona || '');
-                if (next !== null) setBasicSettings(prev => ({ ...prev, persona: next }));
-              }}
-              aria-label="编辑人设"
-              className="absolute top-0 right-0 w-7 h-7 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/8 transition-colors"
-            >
-              <span className="text-[13px]">✏️</span>
-            </button>
+          {/* 人设描述 — 双击"人设："后的文字进入行内编辑 */}
+          <div className="relative">
+            {isEditingPersona ? (
+              <div className="flex items-start gap-2">
+                <span className="text-[13px] text-white/45 font-body leading-relaxed pt-[6px] shrink-0">人设：</span>
+                <input
+                  autoFocus
+                  type="text"
+                  value={tempPersona}
+                  onChange={(e) => setTempPersona(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { (e.currentTarget as HTMLInputElement).blur(); }
+                    else if (e.key === 'Escape') { setTempPersona(basicSettings.persona || ''); setIsEditingPersona(false); }
+                  }}
+                  onBlur={() => {
+                    const changed = tempPersona !== (basicSettings.persona || '');
+                    if (changed) {
+                      setPendingPersona(tempPersona);
+                    } else {
+                      setIsEditingPersona(false);
+                    }
+                  }}
+                  placeholder="输入你的直播人设描述"
+                  className="flex-1 min-w-0 bg-[#0F0F0F] border border-[#00F0FF]/40 rounded-lg px-2 py-1 text-[13px] text-white outline-none font-body focus:border-[#00F0FF]/70"
+                />
+              </div>
+            ) : (
+              <p
+                onDoubleClick={() => { setTempPersona(basicSettings.persona || ''); setIsEditingPersona(true); }}
+                className="text-[13px] text-white/70 font-body leading-relaxed cursor-text select-none"
+                title="双击编辑"
+              >
+                <span className="text-white/45">人设：</span>
+                <span className="hover:text-white transition-colors">
+                  {basicSettings.persona || '还未设定人设，双击此处编辑'}
+                </span>
+              </p>
+            )}
           </div>
 
           {/* 下：三列训练数据 */}
@@ -1829,39 +1858,32 @@ function ProfilePage({
                     <div
                       key={card.id}
                       onClick={() => setDetailCard(card)}
-                      className={`relative p-[1px] rounded-3xl overflow-hidden cursor-pointer transition-all active:scale-[0.98] ${dimmed ? 'opacity-30' : 'opacity-100'}`}
-                      style={{ backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.12), transparent)` }}
+                      className={`relative rounded-3xl cursor-pointer transition-all active:scale-[0.98] ${dimmed ? 'opacity-30' : 'opacity-100'}`}
                     >
-                      {/* 左上角上浮编号 */}
+                      {/* 左上角上浮编号 (不被卡片形状裁切) */}
                       <div
-                        className="absolute -top-1.5 -left-1.5 z-10 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px] text-white shadow-[0_4px_12px_rgba(255,43,85,0.5)]"
+                        className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px] text-white shadow-[0_4px_12px_rgba(255,43,85,0.5)]"
                         style={{ background: accent, border: '2px solid #0F0F0F' }}
                       >
                         {num}
                       </div>
-                      <div className="bg-[#161616] p-4 rounded-[23px] h-full flex flex-col">
-                        <div className="flex items-start justify-between mb-3">
-                          <span
-                            className="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider"
-                            style={{ background: `${accent}22`, color: accent }}
-                          >
-                            {card.category || '综合技巧'}
-                          </span>
-                          <div className="flex gap-0.5">
-                            {Array.from({ length: 5 }).map((_, k) => (
-                              <span key={k} className="w-1 h-1 rounded-full" style={{ background: k < (card.difficulty || 0) ? accent : 'rgba(255,255,255,0.12)' }} />
-                            ))}
+                      <div
+                        className="p-[1px] rounded-3xl"
+                        style={{ backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.12), transparent)` }}
+                      >
+                        <div className="bg-[#161616] p-4 rounded-[23px] h-full flex flex-col">
+                          <div className="flex items-start justify-between mb-3">
+                            <span
+                              className="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider"
+                              style={{ background: `${accent}22`, color: accent }}
+                            >
+                              {card.category || '综合技巧'}
+                            </span>
                           </div>
-                        </div>
-                        <h3 className="text-[13px] font-bold text-white mb-2 leading-tight line-clamp-2">{card.title}</h3>
-                        <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 mb-3 min-h-[32px]">
-                          {(card.keyPoints && card.keyPoints[0]) || ''}
-                        </p>
-                        <div className="border-t border-white/5 pt-2.5 flex items-center justify-between">
-                          <span className="text-[10px] text-white/30 italic">难度: {(card.difficulty || 0) > 3 ? '困难' : '简单'}</span>
-                          <span className="text-[10.5px] text-white/70 font-body tabular-nums">
-                            训练 <span className="font-semibold" style={{ color: accent }}>{card.trainedSessions || 0}</span>/{card.targetSessions || 0}
-                          </span>
+                          <h3 className="text-[13px] font-bold text-white mb-2 leading-tight line-clamp-2">{card.title}</h3>
+                          <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 min-h-[32px]">
+                            {(card.keyPoints && card.keyPoints[0]) || ''}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -1900,139 +1922,131 @@ function ProfilePage({
         </section>
       </main>
 
-      {/* 技能卡详情 半屏 Modal */}
+      {/* 技能卡详情 半屏 Modal — 与首页样式一致 */}
       {detailCard && (
-        <>
-          <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s_ease-out]" onClick={() => setDetailCard(null)} />
-          <div className="fixed left-0 right-0 bottom-0 z-[61] rounded-t-3xl bg-[#161616] border-t border-white/10 max-h-[75vh] overflow-y-auto animate-[slide-up_0.3s_ease-out]">
-            <div className="sticky top-0 bg-[#161616]/95 backdrop-blur-xl px-5 pt-4 pb-3 border-b border-white/5">
-              <div className="w-10 h-1 rounded-full bg-white/15 mx-auto mb-3" />
-              <div className="flex items-start gap-3">
-                <h3 className="flex-1 font-display font-bold text-[16px] text-white leading-snug">{detailCard.title}</h3>
-                <button onClick={() => setDetailCard(null)} className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
-                  <Icons.X size={14} />
-                </button>
-              </div>
-              <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FF2B55]/15 text-[#FF7A9A] font-body">{detailCard.category || '综合'}</span>
-                {(detailCard.dimensions || []).map((d: string) => (
-                  <span key={d} className="text-[10px] px-1.5 py-0.5 rounded bg-[#00F0FF]/10 text-[#00F0FF]/80 font-body">{d}</span>
-                ))}
-              </div>
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s]">
+          <div className="absolute inset-0" onClick={() => setDetailCard(null)} />
+          <div className="w-full max-w-[430px] bg-[#1A1A1A] rounded-t-2xl border-t border-[#333333] z-10 flex flex-col max-h-[85vh] animate-[slide-in-up_0.25s_ease-out]">
+            <div className="py-3 flex justify-center cursor-pointer" onClick={() => setDetailCard(null)}>
+              <div className="w-12 h-1.5 bg-[#333333] rounded-full" />
             </div>
-            <div className="px-5 py-4 space-y-4">
-              {detailCard.sourceVideo && (
-                <div>
-                  <div className="text-[11px] font-display font-bold tracking-[0.15em] text-white/40 uppercase mb-1.5">视频标题</div>
-                  <div className="text-[13px] text-white/85 font-body">{detailCard.sourceVideo}</div>
-                </div>
-              )}
+            <div className="px-5 pb-8 overflow-y-auto space-y-6">
               <div>
-                <div className="text-[11px] font-display font-bold tracking-[0.15em] text-white/40 uppercase mb-1.5">具体内容</div>
-                <div className="rounded-xl bg-[#0F0F0F]/80 border border-white/[0.06] p-3 text-[13px] leading-relaxed text-white/80 font-body space-y-1.5">
-                  {[
-                    ...(detailCard.keyPoints || []),
-                    ...(detailCard.tips || []),
-                    detailCard.trainingGoal,
-                  ].filter(Boolean).map((line: string, i: number) => (
-                    <p key={i}>· {line}</p>
-                  ))}
-                </div>
+                <h2 className="text-[16px] font-semibold text-white mb-1">{detailCard.title}</h2>
+                <p className="text-[12px] text-[#B3B3B3]">维度：{(detailCard.dimensions || []).join(' · ')}</p>
+                <p className="text-[12px] text-[#B3B3B3]">视频标题：{detailCard.sourceVideo}</p>
               </div>
-              <div className="flex items-center justify-between text-[11px] text-white/40 font-body pt-1">
-                <span>训练进度 {detailCard.trainedSessions || 0}/{detailCard.targetSessions || 0}</span>
-                <span>难度 {'★'.repeat(detailCard.difficulty || 1)}</span>
+              <div className="space-y-3">
+                <h3 className="text-[14px] font-semibold text-white">具体内容</h3>
+                <div className="bg-[#0F0F0F] border border-[#333333] rounded-xl p-4 space-y-3">
+                  {(detailCard.keyPoints || []).map((point: string, idx: number) => (
+                    <p key={`kp-${idx}`} className="text-[14px] text-[#B3B3B3] leading-relaxed">
+                      {idx + 1}. {point}
+                    </p>
+                  ))}
+                  {(detailCard.tips || []).map((tip: string, idx: number) => (
+                    <p key={`tip-${idx}`} className="text-[14px] text-[#B3B3B3] leading-relaxed flex items-start gap-1.5">
+                      <span className="text-[#FFD166] mt-0.5">•</span> <span>{tip}</span>
+                    </p>
+                  ))}
+                  {detailCard.trainingGoal && (
+                    <p className="text-[14px] text-[#B3B3B3] leading-relaxed border-t border-[#333333] pt-3 mt-1">
+                      {detailCard.trainingGoal}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
 
-      {/* 诊断详情 半屏 Modal */}
+      {/* 训练报告 半屏 Modal — 结构与直播结束训练报告一致 */}
       {detailSession && (() => {
         const s = detailSession;
-        const sc = s.scores || {};
-        const score = sessionScore(s);
-        const scoreColor = score >= 80 ? '#00F0FF' : score >= 60 ? '#FFE380' : '#FF7A9A';
-        const dims: { label: string; val: number }[] = [
-          { label: '节奏掌控', val: sc.rhythm ?? 0 },
-          { label: '互动频率', val: sc.interaction ?? 0 },
-          { label: '话题张力', val: sc.topic ?? 0 },
-        ];
+        const firstSkill = (s.skillCards || [])[0];
         return (
-          <>
-            <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s_ease-out]" onClick={() => setDetailSession(null)} />
-            <div className="fixed left-0 right-0 bottom-0 z-[61] rounded-t-3xl bg-[#161616] border-t border-white/10 max-h-[82vh] overflow-y-auto animate-[slide-up_0.3s_ease-out]">
-              <div className="sticky top-0 bg-[#161616]/95 backdrop-blur-xl px-5 pt-4 pb-3 border-b border-white/5">
-                <div className="w-10 h-1 rounded-full bg-white/15 mx-auto mb-3" />
-                <div className="flex items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-bold text-[16px] text-white leading-snug">诊断详情</h3>
-                    <p className="text-[11px] text-white/45 font-body mt-1 tabular-nums">{s.date} · 时长 {s.durationStr || `${s.duration || 0}秒`}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-mono font-bold text-[26px] leading-none tabular-nums" style={{ color: scoreColor }}>{score}</div>
-                    <div className="text-[10px] text-white/40 mt-0.5">综合分</div>
-                  </div>
-                  <button onClick={() => setDetailSession(null)} className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
-                    <Icons.X size={14} />
-                  </button>
-                </div>
+          <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s]">
+            <div className="absolute inset-0" onClick={() => setDetailSession(null)} />
+            <div className="w-full max-w-[430px] bg-[#0F0F0F] rounded-t-2xl border-t border-[#333333] z-10 flex flex-col max-h-[88vh] animate-[slide-in-up_0.25s_ease-out]">
+              <div className="py-3 flex justify-center cursor-pointer" onClick={() => setDetailSession(null)}>
+                <div className="w-12 h-1.5 bg-[#333333] rounded-full" />
               </div>
-              <div className="px-5 py-4 space-y-5">
-                {(s.skillCards || []).length > 0 && (
-                  <div>
-                    <p className="text-[12px] text-white/50 font-body mb-2">本场技能卡</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {s.skillCards.map((c: string) => (
-                        <span key={c} className="text-[11px] px-2 py-1 rounded-full bg-white/[0.06] border border-white/10 text-white/80 font-body">{c}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <p className="text-[12px] text-white/50 font-body mb-2">维度评分</p>
-                  <div className="space-y-2.5">
-                    {dims.map((d) => (
-                      <div key={d.label}>
-                        <div className="flex justify-between text-[12px] mb-1">
-                          <span className="text-white/70">{d.label}</span>
-                          <span className="text-[#FFD166] tabular-nums">{d.val}/10</span>
-                        </div>
-                        <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                          <div className="h-full bg-gradient-to-r from-[#FFD166] to-[#FF7A9A] rounded-full" style={{ width: `${(d.val || 0) * 10}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              <div className="overflow-y-auto pb-6">
+                <div className="pt-2 pb-6 px-4 text-center">
+                  <h2 className="text-[20px] font-semibold text-white">训练报告</h2>
+                  <p className="text-[12px] text-[#6B6B6B] mt-2">日期: {(s.date || '').slice(0, 10)}</p>
                 </div>
-
-                {s.summary && (
-                  <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
-                    <p className="text-[12px] text-[#00F0FF] font-body mb-1.5">整体表现总结</p>
-                    <p className="text-[13px] text-white/85 leading-relaxed font-body">{s.summary}</p>
-                  </div>
-                )}
-
-                {(s.suggestions || []).length > 0 && (
-                  <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4">
-                    <p className="text-[12px] text-[#FFD166] font-body mb-2">改进建议</p>
-                    <div className="space-y-2">
-                      {s.suggestions.map((sg: string, i: number) => (
-                        <p key={i} className="text-[13px] text-white/85 leading-relaxed font-body flex items-start gap-2">
-                          <span className="text-[#FFD166] mt-[2px]">•</span>
-                          <span className="flex-1">{sg}</span>
-                        </p>
-                      ))}
+                <div className="px-4 space-y-6">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
+                      <span className="text-[12px] text-[#6B6B6B]">训练时长</span>
+                      <p className="text-[18px] font-mono text-white mt-1">{s.durationStr || `${s.duration || 0}秒`}</p>
+                    </div>
+                    <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
+                      <span className="text-[12px] text-[#6B6B6B]">训练技能</span>
+                      <p className="text-[14px] text-[#4ECDC4] font-medium mt-2 truncate">
+                        {firstSkill ? firstSkill.substring(1, 6) : '无'}
+                      </p>
                     </div>
                   </div>
-                )}
+                  <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
+                    <h3 className="text-[16px] font-semibold text-white">综合诊断</h3>
+                    <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333]">
+                      <span className="text-[12px] text-[#B3B3B3] font-medium mb-2 block">整体表现总结</span>
+                      <p className="text-[14px] text-[#FFFFFF] leading-relaxed">
+                        {s.summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
+                      </p>
+                    </div>
+                  </div>
+                  {(s.suggestions || []).length > 0 && (
+                    <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
+                      <h3 className="text-[16px] font-semibold text-white">改进建议</h3>
+                      <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333] space-y-3">
+                        {s.suggestions.map((sg: string, i: number) => (
+                          <p key={i} className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2">
+                            <span className="text-[#FFD166]">•</span>{sg}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </>
+          </div>
         );
       })()}
+
+      {/* 人设修改确认弹窗 */}
+      {pendingPersona !== null && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-[fade-in_0.15s]">
+          <div className="w-[86%] max-w-[340px] bg-[#161616] rounded-2xl border border-white/10 p-5 shadow-2xl animate-[slide-in-up_0.2s_ease-out]">
+            <h3 className="text-[15px] font-display font-semibold text-white">保存人设修改？</h3>
+            <p className="mt-2 text-[12px] text-white/50 font-body">原：<span className="text-white/70">{basicSettings.persona || '（空）'}</span></p>
+            <p className="mt-1 text-[12px] text-white/50 font-body">新：<span className="text-[#00F0FF]">{pendingPersona || '（空）'}</span></p>
+            <div className="mt-5 flex gap-2">
+              <button
+                onClick={() => {
+                  setTempPersona(basicSettings.persona || '');
+                  setPendingPersona(null);
+                  setIsEditingPersona(false);
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] border border-white/10 text-white/80 text-[13px] font-medium"
+              >取消</button>
+              <button
+                onClick={() => {
+                  setBasicSettings(prev => ({ ...prev, persona: pendingPersona! }));
+                  triggerToast('人设已更新', 'success');
+                  setPendingPersona(null);
+                  setIsEditingPersona(false);
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-[#FF2B55] text-white text-[13px] font-semibold shadow-[0_6px_20px_rgba(255,43,85,0.35)]"
+              >保存</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
