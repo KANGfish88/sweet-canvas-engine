@@ -1498,11 +1498,45 @@ function ProfilePage({
   trainSessions, 
   basicSettings,
   setBasicSettings,
+  skillCardLibrary,
   triggerToast 
 }) {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [tempUsername, setTempUsername] = useState(userProfile.username);
   const [tagInput, setTagInput] = useState('');
+
+  // 视图 & 筛选
+  const [viewMode, setViewMode] = useState<'skill' | 'session'>('skill');
+  const [dateFilter, setDateFilter] = useState<string>(''); // yyyy-mm-dd
+  const [detailCard, setDetailCard] = useState<any>(null);
+
+  // 一级能力标签
+  const ABILITIES = [
+    { key: '人设表达', match: ['人设', '开场', '风格'] },
+    { key: '互动共情', match: ['互动停留', '互动', '共情', '停留'] },
+    { key: '节奏控场', match: ['氛围防御', '节奏', '控场', '冷场'] },
+    { key: '礼物转化', match: ['促单转化', '礼物', '转化', '促单'] },
+    { key: '粉丝运维', match: ['粉丝', '运维', '复购'] },
+  ];
+  const [activeAbility, setActiveAbility] = useState(ABILITIES[1].key);
+  const [focusedFootnotes, setFocusedFootnotes] = useState<number[] | null>(null);
+
+  const classifyCard = (card: any): string => {
+    const hay = `${card.category || ''} ${(card.dimensions || []).join(' ')} ${card.title || ''}`;
+    for (const ab of ABILITIES) {
+      if (ab.match.some(m => hay.includes(m))) return ab.key;
+    }
+    return ABILITIES[0].key;
+  };
+  const cardsInAbility = (skillCardLibrary || []).filter(c => classifyCard(c) === activeAbility);
+
+  const pathSentenceByAbility: Record<string, string> = {
+    '人设表达': '你正在打磨稳定连贯的开场人设',
+    '互动共情': '你正在练习把评论接成持续对话',
+    '节奏控场': '你正在训练冷场瞬间的平滑救场',
+    '礼物转化': '你正在推进从互动到下单的转化节奏',
+    '粉丝运维': '你正在沉淀高粘性粉丝的长期回访',
+  };
 
   const addTag = (raw: string) => {
     const t = raw.trim().replace(/[,，\s]+$/, '');
@@ -1514,7 +1548,6 @@ function ProfilePage({
   const removeTag = (t: string) => {
     setBasicSettings(prev => ({ ...prev, tags: prev.tags.filter(x => x !== t) }));
   };
-
   const handleSaveUsername = () => {
     if (tempUsername.trim()) {
       setUserProfile(prev => ({ ...prev, username: tempUsername }));
@@ -1525,11 +1558,24 @@ function ProfilePage({
     setIsEditingUsername(false);
   };
 
+  // 场次筛选
+  const filteredSessions = (trainSessions || []).filter(s => {
+    if (!dateFilter) return true;
+    return (s.date || '').startsWith(dateFilter);
+  }).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  const sessionScore = (s: any) => {
+    const sc = s.scores || {};
+    const arr = [sc.rhythm, sc.interaction, sc.topic].filter(v => typeof v === 'number');
+    if (!arr.length) return 0;
+    return Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10);
+  };
+
   return (
     <div className="flex-1 flex flex-col overflow-y-auto pb-24 animate-[fade-in_0.3s_ease-out] relative">
       {/* 氛围光晕 */}
-      <div className="pointer-events-none absolute -top-20 -left-16 w-72 h-72 rounded-full bg-[#FF4D6D]/10 blur-3xl animate-ambient" />
-      <div className="pointer-events-none absolute top-40 -right-20 w-72 h-72 rounded-full bg-[#4ECDC4]/10 blur-3xl animate-ambient" style={{ animationDelay: '-4s' }} />
+      <div className="pointer-events-none absolute -top-20 -left-16 w-72 h-72 rounded-full bg-[#FF2B55]/10 blur-3xl animate-ambient" />
+      <div className="pointer-events-none absolute top-40 -right-20 w-72 h-72 rounded-full bg-[#00F0FF]/10 blur-3xl animate-ambient" style={{ animationDelay: '-4s' }} />
 
       <header className="px-5 pt-5 pb-3 sticky top-0 z-40 bg-[#0F0F0F]/85 backdrop-blur-xl">
         <h1 className="font-display text-[22px] font-bold text-white tracking-tight">我的</h1>
@@ -1538,11 +1584,10 @@ function ProfilePage({
 
       <main className="px-4 pt-2 space-y-4 relative z-10">
         {/* 个人信息 + 基础设置 合并卡片 */}
-        <section className="relative rounded-2xl p-[1px] bg-gradient-to-br from-[#FF4D6D]/40 via-white/5 to-[#4ECDC4]/40 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+        <section className="relative rounded-2xl p-[1px] bg-gradient-to-br from-[#FF2B55]/40 via-white/5 to-[#00F0FF]/40 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
           <div className="rounded-2xl bg-[#161616]/95 backdrop-blur-xl p-4 space-y-5">
-            {/* 个人信息 */}
             <div className="flex items-center gap-3.5">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#FF4D6D] to-[#4ECDC4] p-[2px] shadow-[0_0_20px_rgba(255,77,109,0.3)]">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#FF2B55] to-[#00F0FF] p-[2px] shadow-[0_0_20px_rgba(255,43,85,0.3)]">
                 <div className="w-full h-full bg-[#161616] rounded-[14px] flex items-center justify-center font-display font-bold text-[18px] text-white">
                   {userProfile.username.charAt(0)}
                 </div>
@@ -1561,8 +1606,8 @@ function ProfilePage({
             </div>
             <div className="grid grid-cols-2 gap-2 pt-4 border-t border-white/5">
               {[
-                { val: trainSessions.length, label: '累计场次', color: '#FF4D6D' },
-                { val: userProfile.totalSkills, label: '掌握技能', color: '#4ECDC4' },
+                { val: trainSessions.length, label: '累计场次', color: '#FF2B55' },
+                { val: (skillCardLibrary || []).length, label: '掌握技能', color: '#00F0FF' },
               ].map((s, i) => (
                 <div key={i} className="text-center">
                   <p className="font-display text-[20px] font-bold tabular-nums" style={{ color: s.color }}>{s.val}</p>
@@ -1571,11 +1616,10 @@ function ProfilePage({
               ))}
             </div>
 
-            {/* 分隔 + 基础设置 */}
             <div className="pt-4 border-t border-white/5 space-y-4">
               <div className="space-y-2">
                 <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">人设设定</label>
-                <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-3 focus-within:border-[#4ECDC4]/40 transition-colors">
+                <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-3 focus-within:border-[#00F0FF]/40 transition-colors">
                   <input
                     type="text"
                     value={basicSettings.persona}
@@ -1588,12 +1632,12 @@ function ProfilePage({
 
               <div className="space-y-2">
                 <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/40 font-display">标签</label>
-                <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-2.5 focus-within:border-[#4ECDC4]/40 transition-colors">
+                <div className="bg-[#0F0F0F]/60 rounded-2xl border border-white/10 p-2.5 focus-within:border-[#00F0FF]/40 transition-colors">
                   <div className="flex flex-wrap gap-1.5 items-center">
                     {basicSettings.tags.map(tag => (
-                      <span key={tag} className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-[#4ECDC4]/10 border border-[#4ECDC4]/40 text-[#4ECDC4] text-[12px] font-medium">
+                      <span key={tag} className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-[#00F0FF]/10 border border-[#00F0FF]/40 text-[#00F0FF] text-[12px] font-medium">
                         {tag}
-                        <button onClick={() => removeTag(tag)} className="w-4 h-4 rounded-full hover:bg-[#4ECDC4]/25 flex items-center justify-center">
+                        <button onClick={() => removeTag(tag)} className="w-4 h-4 rounded-full hover:bg-[#00F0FF]/25 flex items-center justify-center">
                           <Icons.X size={10} />
                         </button>
                       </span>
@@ -1620,7 +1664,210 @@ function ProfilePage({
             </div>
           </div>
         </section>
+
+        {/* ============== 核心资产沉淀区 ============== */}
+        <section className="space-y-3">
+          {/* 视图切换 + 筛选 */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex items-center bg-[#1F2128] rounded-full p-1 border border-white/5 flex-1 max-w-[220px]">
+              <div
+                className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-gradient-to-r from-[#2D3039] to-[#1F2128] shadow-[0_2px_10px_rgba(255,43,85,0.25)] transition-all duration-300 ${viewMode === 'session' ? 'translate-x-full left-[4px]' : 'left-1'}`}
+              />
+              {[
+                { key: 'skill', label: '技能卡' },
+                { key: 'session', label: '场次' },
+              ].map(t => (
+                <button
+                  key={t.key}
+                  onClick={() => setViewMode(t.key as any)}
+                  className={`relative z-10 flex-1 py-1.5 text-[12px] font-display font-semibold tracking-wide transition-colors ${viewMode === t.key ? 'text-white' : 'text-white/40'}`}
+                >{t.label}</button>
+              ))}
+            </div>
+
+            {viewMode === 'session' && (
+              <div className="flex items-center gap-1 ml-auto animate-[fade-in_0.2s_ease-out]">
+                <div className="relative">
+                  <input
+                    type="date"
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    className="bg-[#1F2128] text-white text-[11px] font-body border border-white/10 rounded-full px-3 py-1.5 outline-none focus:border-[#FF2B55]/50 [color-scheme:dark]"
+                  />
+                </div>
+                {dateFilter && (
+                  <button onClick={() => setDateFilter('')} className="text-white/40 hover:text-white text-[11px] px-2">清除</button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {viewMode === 'skill' ? (
+            <>
+              {/* 一级能力标签 */}
+              <div className="flex gap-1 overflow-x-auto -mx-1 px-1 pb-1 scrollbar-none">
+                {ABILITIES.map(ab => {
+                  const active = activeAbility === ab.key;
+                  return (
+                    <button
+                      key={ab.key}
+                      onClick={() => { setActiveAbility(ab.key); setFocusedFootnotes(null); }}
+                      className={`relative shrink-0 px-3 py-1.5 text-[13px] font-display transition-colors ${active ? 'text-white font-bold' : 'text-white/50 font-medium hover:text-white/80'}`}
+                    >
+                      {ab.key}
+                      {active && <span className="absolute left-3 right-3 -bottom-0.5 h-[2px] rounded-full bg-gradient-to-r from-[#FF2B55] to-[#FF7A9A] shadow-[0_0_8px_rgba(255,43,85,0.7)]" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 训练路径概括盒 */}
+              <div className="rounded-2xl bg-[#1A1C20] border border-white/[0.08] p-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <span className="text-[13px]">💡</span>
+                  <span className="text-[11px] font-display font-bold tracking-[0.15em] text-white/60 uppercase">阶段能力感知</span>
+                </div>
+                {cardsInAbility.length === 0 ? (
+                  <p className="text-[12px] text-white/30 font-body py-2">这项能力还没有沉淀的技能卡，去首页添加吧。</p>
+                ) : (
+                  <button
+                    onClick={() => {
+                      const nums = cardsInAbility.map((_, i) => i + 1);
+                      setFocusedFootnotes(prev => (prev && prev.length === nums.length ? null : nums));
+                    }}
+                    className={`text-left text-[13.5px] leading-relaxed font-body transition-colors ${focusedFootnotes ? 'text-white' : 'text-white/75 hover:text-white'}`}
+                  >
+                    <span className={`decoration-dotted underline underline-offset-4 decoration-white/25 ${focusedFootnotes ? 'bg-[#FF2B55]/10 rounded px-1 -mx-1' : ''}`}>
+                      {pathSentenceByAbility[activeAbility] || '你正在积累这项能力的实战判断'}
+                    </span>
+                    <span className="inline-flex items-center gap-0.5 ml-1 align-middle">
+                      {cardsInAbility.map((_, i) => (
+                        <span key={i} className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#FF2B55]/20 text-[#FF7A9A] text-[9px] font-display font-bold shadow-[0_0_6px_rgba(255,43,85,0.4)]">
+                          {i + 1}
+                        </span>
+                      ))}
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {/* 技能卡资产流 */}
+              <div className="space-y-2.5">
+                {cardsInAbility.length === 0 && (
+                  <div className="text-center py-8 text-white/25 text-[12px] font-body">暂无该维度技能卡</div>
+                )}
+                {cardsInAbility.map((card, i) => {
+                  const num = i + 1;
+                  const dimmed = focusedFootnotes && !focusedFootnotes.includes(num);
+                  return (
+                    <button
+                      key={card.id}
+                      onClick={() => setDetailCard(card)}
+                      className={`relative w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 pl-11 hover:border-[#FF2B55]/30 hover:shadow-[0_6px_24px_rgba(255,43,85,0.15)] transition-all ${dimmed ? 'opacity-30' : 'opacity-100'}`}
+                    >
+                      <div className="absolute top-3 left-3 w-6 h-6 rounded-full bg-[#0F0F0F] border border-[#FF2B55]/50 flex items-center justify-center font-display font-bold text-[11px] text-[#FF7A9A] shadow-[0_0_8px_rgba(255,43,85,0.35)]">
+                        {num}
+                      </div>
+                      <h3 className="text-[13.5px] font-display font-semibold text-white line-clamp-1">{card.title}</h3>
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50 font-body">{card.category || '综合'}</span>
+                        {(card.dimensions || []).slice(0, 2).map((d: string) => (
+                          <span key={d} className="text-[10px] px-1.5 py-0.5 rounded bg-[#00F0FF]/10 text-[#00F0FF]/80 font-body">{d}</span>
+                        ))}
+                        <span className="ml-auto text-[10px] text-white/40 font-body tabular-nums">
+                          训练 {card.trainedSessions || 0}/{card.targetSessions || 0}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            /* 场次维度 */
+            <div className="space-y-2.5">
+              {filteredSessions.length === 0 && (
+                <div className="text-center py-10 text-white/25 text-[12px] font-body">
+                  {dateFilter ? '该时间段暂无训练记录' : '还没有训练记录，去开一场直播吧'}
+                </div>
+              )}
+              {filteredSessions.map((s) => {
+                const score = sessionScore(s);
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => triggerToast('诊断详情页正在开发中', 'info')}
+                    className="w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 hover:border-[#00F0FF]/30 hover:shadow-[0_6px_24px_rgba(0,240,255,0.12)] transition-all"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-[13px] font-display font-semibold text-white tabular-nums">{s.date}</span>
+                      <span className="text-[11px] text-white/40 font-body">时长 {s.durationStr || `${s.duration || 0}秒`}</span>
+                      <div className="ml-auto flex items-center gap-1">
+                        <span className="font-mono font-bold text-[18px] tabular-nums" style={{ color: score >= 80 ? '#00F0FF' : score >= 60 ? '#FFE380' : '#FF7A9A' }}>{score}</span>
+                        <span className="text-[10px] text-white/40">分</span>
+                        <span className="text-white/30 ml-1">›</span>
+                      </div>
+                    </div>
+                    <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-white/55 font-body">
+                      {(s.skillCards || []).map((c: string) => (
+                        <span key={c}>· {c}</span>
+                      ))}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
       </main>
+
+      {/* 技能卡详情 半屏 Modal */}
+      {detailCard && (
+        <>
+          <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s_ease-out]" onClick={() => setDetailCard(null)} />
+          <div className="fixed left-0 right-0 bottom-0 z-[61] rounded-t-3xl bg-[#161616] border-t border-white/10 max-h-[75vh] overflow-y-auto animate-[slide-up_0.3s_ease-out]">
+            <div className="sticky top-0 bg-[#161616]/95 backdrop-blur-xl px-5 pt-4 pb-3 border-b border-white/5">
+              <div className="w-10 h-1 rounded-full bg-white/15 mx-auto mb-3" />
+              <div className="flex items-start gap-3">
+                <h3 className="flex-1 font-display font-bold text-[16px] text-white leading-snug">{detailCard.title}</h3>
+                <button onClick={() => setDetailCard(null)} className="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60">
+                  <Icons.X size={14} />
+                </button>
+              </div>
+              <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#FF2B55]/15 text-[#FF7A9A] font-body">{detailCard.category || '综合'}</span>
+                {(detailCard.dimensions || []).map((d: string) => (
+                  <span key={d} className="text-[10px] px-1.5 py-0.5 rounded bg-[#00F0FF]/10 text-[#00F0FF]/80 font-body">{d}</span>
+                ))}
+              </div>
+            </div>
+            <div className="px-5 py-4 space-y-4">
+              {detailCard.sourceVideo && (
+                <div>
+                  <div className="text-[11px] font-display font-bold tracking-[0.15em] text-white/40 uppercase mb-1.5">视频标题</div>
+                  <div className="text-[13px] text-white/85 font-body">{detailCard.sourceVideo}</div>
+                </div>
+              )}
+              <div>
+                <div className="text-[11px] font-display font-bold tracking-[0.15em] text-white/40 uppercase mb-1.5">具体内容</div>
+                <div className="rounded-xl bg-[#0F0F0F]/80 border border-white/[0.06] p-3 text-[13px] leading-relaxed text-white/80 font-body space-y-1.5">
+                  {[
+                    ...(detailCard.keyPoints || []),
+                    ...(detailCard.tips || []),
+                    detailCard.trainingGoal,
+                  ].filter(Boolean).map((line: string, i: number) => (
+                    <p key={i}>· {line}</p>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-[11px] text-white/40 font-body pt-1">
+                <span>训练进度 {detailCard.trainedSessions || 0}/{detailCard.targetSessions || 0}</span>
+                <span>难度 {'★'.repeat(detailCard.difficulty || 1)}</span>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
