@@ -1672,7 +1672,7 @@ function ProfilePage({
           {/* 人设描述 + 编辑按钮 (右上角图标形式，不挤压文字) */}
           <div className="relative pr-8">
             <p className="text-[13px] text-white/70 font-body leading-relaxed">
-              <span className="text-white/45">设定人设：</span>
+              <span className="text-white/45">人设：</span>
               {basicSettings.persona || '还未设定人设，点击右上角编辑'}
             </p>
             <button
