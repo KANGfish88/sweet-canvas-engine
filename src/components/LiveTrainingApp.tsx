@@ -1857,31 +1857,24 @@ function ProfilePage({
                   {dateFilter ? '该时间段暂无训练记录' : '还没有训练记录，去开一场直播吧'}
                 </div>
               )}
-              {filteredSessions.map((s) => {
-                const score = sessionScore(s);
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => setDetailSession(s)}
-                    className="w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 hover:border-[#00F0FF]/30 hover:shadow-[0_6px_24px_rgba(0,240,255,0.12)] transition-all"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-display font-semibold text-white tabular-nums">{s.date}</span>
-                      <span className="text-[11px] text-white/40 font-body">时长 {s.durationStr || `${s.duration || 0}秒`}</span>
-                      <div className="ml-auto flex items-center gap-1">
-                        <span className="font-mono font-bold text-[18px] tabular-nums" style={{ color: score >= 80 ? '#00F0FF' : score >= 60 ? '#FFE380' : '#FF7A9A' }}>{score}</span>
-                        <span className="text-[10px] text-white/40">分</span>
-                        <span className="text-white/30 ml-1">›</span>
-                      </div>
-                    </div>
-                    <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-white/55 font-body">
-                      {(s.skillCards || []).map((c: string) => (
-                        <span key={c}>· {c}</span>
-                      ))}
-                    </div>
-                  </button>
-                );
-              })}
+              {filteredSessions.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setDetailSession(s)}
+                  className="w-full text-left rounded-xl bg-[#1F2128] border border-white/[0.06] p-3.5 hover:border-[#00F0FF]/30 hover:shadow-[0_6px_24px_rgba(0,240,255,0.12)] transition-all"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-display font-semibold text-white tabular-nums">{s.date}</span>
+                    <span className="text-[11px] text-white/40 font-body">时长 {s.durationStr || `${s.duration || 0}秒`}</span>
+                    <span className="ml-auto text-white/30">›</span>
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-white/55 font-body">
+                    {(s.skillCards || []).map((c: string) => (
+                      <span key={c}>· {c}</span>
+                    ))}
+                  </div>
+                </button>
+              ))}
             </div>
           )}
         </section>
