@@ -2060,7 +2060,18 @@ function ProfilePage({
       {/* 训练报告 半屏 Modal — 结构与直播结束训练报告一致 */}
       {detailSession && (() => {
         const s = detailSession;
-        const firstSkill = (s.skillCards || [])[0];
+        // 通过短标题反查完整技能卡对象
+        const resolveCard = (short: string) => {
+          if (!short) return null;
+          return (skillCardLibrary || []).find(c => {
+            const clean = (c.title || '').replace(/[「」]/g, '');
+            return clean.includes(short) || short.includes(clean.substring(0, 4));
+          }) || null;
+        };
+        const skills = (s.skillCards || []).map((short: string) => ({
+          card: resolveCard(short),
+          rawTitle: short,
+        }));
         return (
           <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60 backdrop-blur-sm animate-[fade-in_0.2s]">
             <div className="absolute inset-0" onClick={() => setDetailSession(null)} />
@@ -2069,50 +2080,22 @@ function ProfilePage({
                 <div className="w-12 h-1.5 bg-[#333333] rounded-full" />
               </div>
               <div className="overflow-y-auto pb-6">
-                <div className="pt-2 pb-6 px-4 text-center">
+                <div className="pt-2 pb-4 px-4 text-center">
                   <h2 className="text-[20px] font-semibold text-white">训练报告</h2>
-                  <p className="text-[12px] text-[#6B6B6B] mt-2">日期: {(s.date || '').slice(0, 10)}</p>
                 </div>
-                <div className="px-4 space-y-6">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
-                      <span className="text-[12px] text-[#6B6B6B]">训练时长</span>
-                      <p className="text-[18px] font-mono text-white mt-1">{s.durationStr || `${s.duration || 0}秒`}</p>
-                    </div>
-                    <div className="bg-[#1A1A1A] rounded-xl p-4 border border-[#333333]">
-                      <span className="text-[12px] text-[#6B6B6B]">训练技能</span>
-                      <p className="text-[14px] text-[#4ECDC4] font-medium mt-2 truncate">
-                        {firstSkill ? firstSkill.substring(1, 6) : '无'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
-                    <h3 className="text-[16px] font-semibold text-white">综合诊断</h3>
-                    <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333]">
-                      <span className="text-[12px] text-[#B3B3B3] font-medium mb-2 block">整体表现总结</span>
-                      <p className="text-[14px] text-[#FFFFFF] leading-relaxed">
-                        {s.summary || '本次训练已完成，AI 已根据你的表现生成分析。'}
-                      </p>
-                    </div>
-                  </div>
-                  {(s.suggestions || []).length > 0 && (
-                    <div className="bg-[#1A1A1A] rounded-xl p-5 border border-[#333333] space-y-4">
-                      <h3 className="text-[16px] font-semibold text-white">改进建议</h3>
-                      <div className="bg-[#0F0F0F] rounded-lg p-4 border border-[#333333] space-y-3">
-                        {s.suggestions.map((sg: string, i: number) => (
-                          <p key={i} className="text-[14px] text-[#FFFFFF] leading-relaxed flex items-start gap-2">
-                            <span className="text-[#FFD166]">•</span>{sg}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <TrainingReport
+                  dateStr={(s.date || '').slice(0, 10)}
+                  durationStr={s.durationStr || `${s.duration || 0}秒`}
+                  summary={s.summary}
+                  suggestions={s.suggestions || []}
+                  skills={skills}
+                />
               </div>
             </div>
           </div>
         );
       })()}
+
 
       {/* 人设修改确认弹窗 */}
       {pendingPersona !== null && (
