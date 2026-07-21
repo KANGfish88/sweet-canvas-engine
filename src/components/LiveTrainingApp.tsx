@@ -1820,39 +1820,32 @@ function ProfilePage({
                     <div
                       key={card.id}
                       onClick={() => setDetailCard(card)}
-                      className={`relative p-[1px] rounded-3xl overflow-hidden cursor-pointer transition-all active:scale-[0.98] ${dimmed ? 'opacity-30' : 'opacity-100'}`}
-                      style={{ backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.12), transparent)` }}
+                      className={`relative rounded-3xl cursor-pointer transition-all active:scale-[0.98] ${dimmed ? 'opacity-30' : 'opacity-100'}`}
                     >
-                      {/* 左上角上浮编号 */}
+                      {/* 左上角上浮编号 (不被卡片形状裁切) */}
                       <div
-                        className="absolute -top-1.5 -left-1.5 z-10 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px] text-white shadow-[0_4px_12px_rgba(255,43,85,0.5)]"
+                        className="absolute -top-2 -left-2 z-20 w-6 h-6 rounded-full flex items-center justify-center font-display font-bold text-[11px] text-white shadow-[0_4px_12px_rgba(255,43,85,0.5)]"
                         style={{ background: accent, border: '2px solid #0F0F0F' }}
                       >
                         {num}
                       </div>
-                      <div className="bg-[#161616] p-4 rounded-[23px] h-full flex flex-col">
-                        <div className="flex items-start justify-between mb-3">
-                          <span
-                            className="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider"
-                            style={{ background: `${accent}22`, color: accent }}
-                          >
-                            {card.category || '综合技巧'}
-                          </span>
-                          <div className="flex gap-0.5">
-                            {Array.from({ length: 5 }).map((_, k) => (
-                              <span key={k} className="w-1 h-1 rounded-full" style={{ background: k < (card.difficulty || 0) ? accent : 'rgba(255,255,255,0.12)' }} />
-                            ))}
+                      <div
+                        className="p-[1px] rounded-3xl"
+                        style={{ backgroundImage: `linear-gradient(135deg, rgba(255,255,255,0.12), transparent)` }}
+                      >
+                        <div className="bg-[#161616] p-4 rounded-[23px] h-full flex flex-col">
+                          <div className="flex items-start justify-between mb-3">
+                            <span
+                              className="text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider"
+                              style={{ background: `${accent}22`, color: accent }}
+                            >
+                              {card.category || '综合技巧'}
+                            </span>
                           </div>
-                        </div>
-                        <h3 className="text-[13px] font-bold text-white mb-2 leading-tight line-clamp-2">{card.title}</h3>
-                        <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 mb-3 min-h-[32px]">
-                          {(card.keyPoints && card.keyPoints[0]) || ''}
-                        </p>
-                        <div className="border-t border-white/5 pt-2.5 flex items-center justify-between">
-                          <span className="text-[10px] text-white/30 italic">难度: {(card.difficulty || 0) > 3 ? '困难' : '简单'}</span>
-                          <span className="text-[10.5px] text-white/70 font-body tabular-nums">
-                            训练 <span className="font-semibold" style={{ color: accent }}>{card.trainedSessions || 0}</span>/{card.targetSessions || 0}
-                          </span>
+                          <h3 className="text-[13px] font-bold text-white mb-2 leading-tight line-clamp-2">{card.title}</h3>
+                          <p className="text-[11px] text-white/50 line-clamp-2 leading-relaxed flex-1 min-h-[32px]">
+                            {(card.keyPoints && card.keyPoints[0]) || ''}
+                          </p>
                         </div>
                       </div>
                     </div>
