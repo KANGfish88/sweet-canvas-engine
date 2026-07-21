@@ -1745,7 +1745,8 @@ function ProfilePage({
                   return (
                     <button
                       key={tag}
-                      onClick={() => setSelectedTag(isSel ? null : tag)}
+                      onClick={() => { if (!isSel) setSelectedTag(tag); }}
+                      onDoubleClick={() => { if (isSel) { removeTag(tag); setSelectedTag(null); } }}
                       className="inline-flex items-center h-[22px] px-2.5 rounded-full text-[11px] leading-none transition-all"
                       style={{
                         background: 'rgba(255,255,255,0.05)',
