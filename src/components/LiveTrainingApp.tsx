@@ -1498,17 +1498,12 @@ function ProfilePage({
   userProfile, 
   setUserProfile, 
   trainSessions, 
-  setTrainSessions, 
-  favoriteSessions, 
-  setFavoriteSessions, 
   basicSettings,
   setBasicSettings,
   triggerToast 
 }) {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [tempUsername, setTempUsername] = useState(userProfile.username);
-  const [calendarOffset, setCalendarOffset] = useState(0);
-  const [selectedArchiveId, setSelectedArchiveId] = useState(null);
   const [tagInput, setTagInput] = useState('');
 
   const addTag = (raw: string) => {
@@ -1530,70 +1525,6 @@ function ProfilePage({
       setTempUsername(userProfile.username);
     }
     setIsEditingUsername(false);
-  };
-
-  // 真实月份计算（基于 calendarOffset 与今天）
-  const today = new Date();
-  const viewDate = new Date(today.getFullYear(), today.getMonth() + calendarOffset, 1);
-  const viewYear = viewDate.getFullYear();
-  const viewMonth = viewDate.getMonth();
-
-  // 训练密度热力图：根据 trainSessions 按日期聚合
-  const densityMap = React.useMemo(() => {
-    const map: Record<string, number> = {};
-    trainSessions.forEach(s => {
-      // 兼容 session.date 形如 "2026年5月23日 14:30"，否则尝试 Date.parse
-      let key: string | null = null;
-      if (typeof s.date === 'string') {
-        const m = s.date.match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
-        if (m) key = `${m[1]}-${parseInt(m[2], 10)}-${parseInt(m[3], 10)}`;
-      }
-      if (!key && s.timestamp) {
-        const d = new Date(s.timestamp);
-        if (!isNaN(d.getTime())) key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-      }
-      if (key) map[key] = (map[key] || 0) + 1;
-    });
-    // demo 默认数据（仅当前月无任何训练时显示，便于预览热力图效果）
-    if (Object.keys(map).length === 0 && calendarOffset === 0) {
-      const y = today.getFullYear(), m = today.getMonth() + 1;
-      [[10,1],[13,1],[14,2],[15,3],[20,1],[23,1],[24,2]].forEach(([d,c]) => { map[`${y}-${m}-${d}`] = c; });
-    }
-    return map;
-  }, [trainSessions, calendarOffset]);
-
-  const getCalendarDays = () => {
-    const days: Array<{ blank?: boolean; dayNum?: number; density?: number; isToday?: boolean }> = [];
-    // 周一为一周起点：JS getDay() 周日=0，转换：(getDay()+6)%7
-    const firstWeekday = (new Date(viewYear, viewMonth, 1).getDay() + 6) % 7;
-    for (let i = 0; i < firstWeekday; i++) days.push({ blank: true });
-    const lastDay = new Date(viewYear, viewMonth + 1, 0).getDate();
-    for (let d = 1; d <= lastDay; d++) {
-      const density = densityMap[`${viewYear}-${viewMonth + 1}-${d}`] || 0;
-      const isToday = d === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear();
-      days.push({ dayNum: d, density, isToday });
-    }
-    return days;
-  };
-
-  const monthLabel = `${viewYear}年${viewMonth + 1}月`;
-
-  const toggleFavorite = (id) => {
-    if (favoriteSessions.includes(id)) {
-      setFavoriteSessions(prev => prev.filter(fid => fid !== id));
-      triggerToast("已取消收藏", "info");
-    } else {
-      setFavoriteSessions(prev => [...prev, id]);
-      triggerToast("已收藏记录", "success");
-    }
-  };
-
-  const deleteSession = (id) => {
-    if (window.confirm("确定删除这场训练记录吗？删除后无法恢复。")) {
-      setTrainSessions(prev => prev.filter(s => s.id !== id));
-      setFavoriteSessions(prev => prev.filter(fid => fid !== id));
-      triggerToast("已删除记录", "success");
-    }
   };
 
   return (
