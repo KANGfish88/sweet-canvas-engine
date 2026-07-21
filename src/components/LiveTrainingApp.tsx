@@ -1787,17 +1787,25 @@ function ProfilePage({
                     }}
                     className={`text-left text-[13.5px] leading-relaxed font-body transition-colors ${focusedFootnotes ? 'text-white' : 'text-white/75 hover:text-white'}`}
                   >
-                    <span className={`decoration-dotted underline underline-offset-4 decoration-white/25 ${focusedFootnotes ? 'bg-[#FF2B55]/10 rounded px-1 -mx-1' : ''}`}>
+                    <span
+                      className={`${focusedFootnotes ? 'bg-[#FF2B55]/10 rounded px-1 -mx-1' : ''}`}
+                      style={{
+                        textDecoration: 'underline dotted',
+                        textDecorationColor: 'rgba(255,255,255,0.18)',
+                        textUnderlineOffset: '4px',
+                      }}
+                    >
                       {pathSentenceByAbility[activeAbility] || '你正在积累这项能力的实战判断'}
                     </span>
-                    <span className="inline-flex items-center gap-0.5 ml-1 align-middle">
+                    <span className="inline-flex items-center gap-1 ml-1.5 align-super">
                       {cardsInAbility.map((_, i) => (
-                        <span key={i} className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#FF2B55]/20 text-[#FF7A9A] text-[9px] font-display font-bold shadow-[0_0_6px_rgba(255,43,85,0.4)]">
+                        <sup key={i} className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-[#FF2B55]/18 text-[#FF7A9A] text-[8px] font-display font-bold">
                           {i + 1}
-                        </span>
+                        </sup>
                       ))}
                     </span>
                   </button>
+
                 )}
               </div>
 
