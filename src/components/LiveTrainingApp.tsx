@@ -1644,20 +1644,13 @@ function ProfilePage({
               </div>
 
               {/* 动态标签气泡组 */}
-              <div className="flex flex-wrap gap-1.5 items-center mt-2">
+              <div ref={tagsRef} className="flex flex-wrap gap-1.5 items-center mt-2">
                 {basicSettings.tags.map(tag => {
                   const isSel = selectedTag === tag;
                   return (
                     <button
                       key={tag}
-                      onClick={() => {
-                        if (isSel) {
-                          removeTag(tag);
-                          setSelectedTag(null);
-                        } else {
-                          setSelectedTag(tag);
-                        }
-                      }}
+                      onClick={() => setSelectedTag(isSel ? null : tag)}
                       className="inline-flex items-center h-[22px] px-2.5 rounded-full text-[11px] leading-none transition-all"
                       style={{
                         background: 'rgba(255,255,255,0.05)',
@@ -1678,8 +1671,9 @@ function ProfilePage({
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') { e.preventDefault(); addTag(tagInput); }
-                    else if (e.key === 'Backspace' && !tagInput && basicSettings.tags.length) {
-                      removeTag(basicSettings.tags[basicSettings.tags.length - 1]);
+                    else if (e.key === 'Backspace' && !tagInput) {
+                      if (selectedTag) { removeTag(selectedTag); setSelectedTag(null); }
+                      else if (basicSettings.tags.length) removeTag(basicSettings.tags[basicSettings.tags.length - 1]);
                     }
                   }}
                   onBlur={() => tagInput && addTag(tagInput)}
@@ -1690,22 +1684,44 @@ function ProfilePage({
             </div>
           </div>
 
-          {/* 人设描述 + 编辑按钮 (右上角图标形式，不挤压文字) */}
-          <div className="relative pr-8">
-            <p className="text-[13px] text-white/70 font-body leading-relaxed">
-              <span className="text-white/45">人设：</span>
-              {basicSettings.persona || '还未设定人设，点击右上角编辑'}
-            </p>
-            <button
-              onClick={() => {
-                const next = window.prompt('编辑人设描述', basicSettings.persona || '');
-                if (next !== null) setBasicSettings(prev => ({ ...prev, persona: next }));
-              }}
-              aria-label="编辑人设"
-              className="absolute top-0 right-0 w-7 h-7 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/8 transition-colors"
-            >
-              <span className="text-[13px]">✏️</span>
-            </button>
+          {/* 人设描述 — 双击"人设："后的文字进入行内编辑 */}
+          <div className="relative">
+            {isEditingPersona ? (
+              <div className="flex items-start gap-2">
+                <span className="text-[13px] text-white/45 font-body leading-relaxed pt-[6px] shrink-0">人设：</span>
+                <input
+                  autoFocus
+                  type="text"
+                  value={tempPersona}
+                  onChange={(e) => setTempPersona(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { (e.currentTarget as HTMLInputElement).blur(); }
+                    else if (e.key === 'Escape') { setTempPersona(basicSettings.persona || ''); setIsEditingPersona(false); }
+                  }}
+                  onBlur={() => {
+                    const changed = tempPersona !== (basicSettings.persona || '');
+                    if (changed) {
+                      setPendingPersona(tempPersona);
+                    } else {
+                      setIsEditingPersona(false);
+                    }
+                  }}
+                  placeholder="输入你的直播人设描述"
+                  className="flex-1 min-w-0 bg-[#0F0F0F] border border-[#00F0FF]/40 rounded-lg px-2 py-1 text-[13px] text-white outline-none font-body focus:border-[#00F0FF]/70"
+                />
+              </div>
+            ) : (
+              <p
+                onDoubleClick={() => { setTempPersona(basicSettings.persona || ''); setIsEditingPersona(true); }}
+                className="text-[13px] text-white/70 font-body leading-relaxed cursor-text select-none"
+                title="双击编辑"
+              >
+                <span className="text-white/45">人设：</span>
+                <span className="hover:text-white transition-colors">
+                  {basicSettings.persona || '还未设定人设，双击此处编辑'}
+                </span>
+              </p>
+            )}
           </div>
 
           {/* 下：三列训练数据 */}
