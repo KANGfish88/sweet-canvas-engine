@@ -1689,12 +1689,8 @@ function ProfilePage({
       <div className="pointer-events-none absolute -top-20 -left-16 w-72 h-72 rounded-full bg-[#FF2B55]/10 blur-3xl animate-ambient" />
       <div className="pointer-events-none absolute top-40 -right-20 w-72 h-72 rounded-full bg-[#00F0FF]/10 blur-3xl animate-ambient" style={{ animationDelay: '-4s' }} />
 
-      <header className="px-5 pt-5 pb-3 sticky top-0 z-40 bg-[#0F0F0F]/85 backdrop-blur-xl">
-        <h1 className="font-display text-[22px] font-bold text-white tracking-tight">我的</h1>
-        <p className="text-[11px] text-white/40 font-body mt-0.5">Personal Archive</p>
-      </header>
+      <main className="px-4 pt-6 space-y-4 relative z-10">
 
-      <main className="px-4 pt-2 space-y-4 relative z-10">
         {/* 主播个人信息头部卡片 */}
         <section
           className="rounded-2xl p-4 bg-[#1A1C20] border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.45)] space-y-4"
