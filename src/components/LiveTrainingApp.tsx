@@ -1116,10 +1116,11 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
           <div className="w-3.5 h-3.5 bg-white rounded-sm mb-0.5" />
           <span className="text-[8px] font-bold uppercase tracking-wide font-display">结束</span>
         </button>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* 左一：切换摄像头 */}
-          <button aria-label="切换摄像头" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <button aria-label="切换摄像头" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
+            style={{ background: 'rgba(0,0,0,0.35)' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" />
               <path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5" />
               <circle cx="12" cy="12" r="3" />
@@ -1127,9 +1128,24 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
               <path d="m6 2 3 3-3 3" />
             </svg>
           </button>
-          {/* 右二：礼物 */}
-          <button onClick={() => setShowGiftSheet(true)} aria-label="礼物" className="h-12 w-12 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 text-white/80 flex items-center justify-center active:scale-95 hover:bg-white/10 transition-all">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+
+          {/* 分享 */}
+          <button aria-label="分享" className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
+            style={{ background: 'rgba(0,0,0,0.35)' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+          </button>
+
+          {/* 礼物 — 视觉焦点 */}
+          <button onClick={() => setShowGiftSheet(true)} aria-label="礼物"
+            className="h-[38px] w-[38px] rounded-full flex items-center justify-center active:scale-95 transition-transform"
+            style={{ background: 'linear-gradient(135deg,#FF007A 0%,#FF7200 100%)', boxShadow: '0 2px 8px rgba(255,0,122,0.4)' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="8" width="18" height="4" rx="1" />
               <path d="M12 8v13" />
               <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
@@ -1137,24 +1153,19 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
             </svg>
           </button>
 
+          {/* 点赞 */}
           <button
             onClick={() => spawnHearts(1)}
             onDoubleClick={() => spawnHearts(6)}
             aria-label="点赞"
-            className="relative h-12 w-12 rounded-full bg-black/55 backdrop-blur-xl border border-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.45)] active:scale-90 transition-transform"
+            className="relative h-[38px] w-[38px] rounded-full flex items-center justify-center transition-transform active:scale-[1.2]"
+            style={{ background: 'rgba(255,44,85,0.2)' }}
           >
             <svg width="22" height="22" viewBox="0 0 24 24">
-              <defs>
-                <radialGradient id="heart-btn-grad" cx="50%" cy="40%" r="60%">
-                  <stop offset="0%" stopColor="#FF9CB4" />
-                  <stop offset="60%" stopColor="#FF4D6D" />
-                  <stop offset="100%" stopColor="#D6265A" />
-                </radialGradient>
-              </defs>
-              <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" fill="url(#heart-btn-grad)" className="drop-shadow-[0_0_8px_rgba(255,77,109,0.7)]" />
+              <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21z" fill="#FF2C55" />
             </svg>
             {likeBurst > 0 && (
-              <span key={likeBurst} className="absolute inset-0 rounded-full border border-[#FF4D6D]/60 animate-[fade-in_0.5s_ease-out]" />
+              <span key={likeBurst} className="absolute inset-0 rounded-full border border-[#FF2C55]/60 animate-[fade-in_0.5s_ease-out]" />
             )}
           </button>
         </div>
