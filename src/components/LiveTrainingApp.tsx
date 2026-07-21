@@ -590,7 +590,7 @@ function HomePage({
                       <button
                         onClick={(e) => { e.stopPropagation(); setSelectedDetailCard(card); }}
                         aria-label="查看详情"
-                        className="text-white/45 hover:text-white text-[13px] font-display font-bold leading-none tracking-tighter transition-colors px-1"
+                        className="text-white/60 hover:text-white text-[20px] font-display font-bold leading-none tracking-tighter transition-colors -mr-1 -mt-1 px-2 py-1"
                       >
                         &raquo;
                       </button>
