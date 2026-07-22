@@ -902,12 +902,31 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
     return () => clearInterval(t);
   }, [isLivePaused, showReportOverlay]);
 
+  // 送礼横幅（左上方浮动 3s）
+  const [giftBanner, setGiftBanner] = useState<{ key: number; name: string; giftName: string; count: number; avatar: string } | null>(null);
+  const giftBannerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showGiftBanner = (payload: { name: string; giftName: string; count: number; avatar: string }) => {
+    setGiftBanner({ key: Date.now() + Math.random(), ...payload });
+    if (giftBannerTimerRef.current) clearTimeout(giftBannerTimerRef.current);
+    giftBannerTimerRef.current = setTimeout(() => setGiftBanner(null), 3000);
+  };
+
   // 评论流：订阅后端推送（mock 模式下按当前激活技能卡生成）
   useEffect(() => {
     return liveApi.subscribeComments({
       getActiveSkillId: () => activeSkillCard?.id ?? null,
       isPaused: () => isLivePaused || showReportOverlay,
-      onComment: (c) => setComments(prev => [...prev.slice(-39), c]),
+      onComment: (c) => {
+        setComments(prev => [...prev.slice(-39), c]);
+        if (c.type === 'gift') {
+          showGiftBanner({
+            name: c.agent.name,
+            giftName: c.giftName || c.text,
+            count: c.giftCount || 1,
+            avatar: c.agent.avatar,
+          });
+        }
+      },
     });
   }, [isLivePaused, showReportOverlay, activeSkillCard]);
 
