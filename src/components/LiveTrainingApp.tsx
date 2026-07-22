@@ -1209,8 +1209,6 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
       <div className="absolute bottom-[80px] inset-x-4 h-[30vh] z-30 flex flex-col justify-end pointer-events-none">
         <div className="overflow-y-auto pr-2 pb-2 scrollbar-none pointer-events-auto mask-image-bottom max-h-full" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {comments.map(c => {
-            const isBuy = c.type === 'buy';
-            const isGift = c.type === 'gift';
             const lvNum = parseInt(String(c.agent.level).replace(/[^0-9]/g, ''), 10) || 1;
             const badgeGradient =
               lvNum >= 60 ? 'linear-gradient(90deg,#FFD700 0%,#FF1493 50%,#8A2BE2 100%)'
@@ -1220,41 +1218,72 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
               : 'linear-gradient(90deg,#8A9EA7,#607D8B)';
             const nameColor = lvNum >= 30 ? '#FFE380' : '#8CE2FF';
 
-            // 礼物横幅广播
-            if (isGift) {
+            // ① 送礼消息 —— 金黄/霓虹粉双色渐变强调卡片
+            if (c.type === 'gift') {
+              const giftName = c.giftName || c.text;
+              const count = c.giftCount || 1;
               return (
                 <div key={c.id} className="flex items-center justify-between max-w-[92%] rounded-xl animate-[slide-in-left_0.2s_ease-out]"
-                  style={{ background: 'linear-gradient(90deg, rgba(255,107,0,0.7) 0%, rgba(255,0,128,0.4) 100%)', padding: '6px 10px' }}>
+                  style={{
+                    background: 'linear-gradient(90deg, rgba(255,196,50,0.75) 0%, rgba(255,44,120,0.55) 100%)',
+                    padding: '6px 10px',
+                    border: '1px solid rgba(255,215,120,0.55)',
+                    boxShadow: '0 0 12px rgba(255,120,60,0.35)',
+                  }}>
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <span className="inline-flex items-center justify-center shrink-0"
-                      style={{ height: 14, borderRadius: 7, padding: '0 5px', background: badgeGradient, color: '#fff', fontWeight: 800, fontSize: 9, fontFamily: 'DIN Alternate, Roboto, sans-serif', letterSpacing: 0.3 }}
-                    >LV.{lvNum}</span>
-                    <span className="text-[12px] font-semibold truncate" style={{ color: nameColor }}>{c.agent.name}</span>
-                    <span className="text-[12px] text-white/95 shrink-0">送出 {c.text}</span>
+                    <span className="text-[14px] leading-none shrink-0">🎁</span>
+                    <span className="text-[12px] font-semibold truncate" style={{ color: '#FFF7D6' }}>{c.agent.name}</span>
+                    <span className="text-[12px] text-white/95 shrink-0">送出了</span>
+                    <span className="text-[12px] font-semibold text-white shrink-0">{giftName}</span>
                   </div>
                   <div className="flex items-center gap-1 shrink-0 ml-2">
-                    <span className="text-[18px] leading-none">{c.agent.avatar}</span>
-                    <span style={{ color: '#FFE600', fontWeight: 800, fontStyle: 'italic', fontSize: 16, textShadow: '0 0 4px #FF0000', lineHeight: 1 }}>x{((c.id as number) % 88) + 6}</span>
+                    <span className="text-[16px] leading-none">{c.agent.avatar}</span>
+                    <span style={{ color: '#FFE600', fontWeight: 800, fontStyle: 'italic', fontSize: 15, textShadow: '0 0 4px #FF3B00', lineHeight: 1 }}>x{count}</span>
                   </div>
                 </div>
               );
             }
 
-            // 进房广播（借用 buy 类型作为系统广播示例）
-            if (isBuy) {
+            // ② 新增关注消息 —— 粉色高亮边框卡片
+            if (c.type === 'follow') {
               return (
-                <div key={c.id} className="flex items-center gap-1.5 max-w-[85%] rounded-xl animate-[slide-in-left_0.2s_ease-out]"
-                  style={{ background: 'rgba(0,0,0,0.25)', padding: '4px 10px' }}>
+                <div key={c.id} className="flex items-center gap-1.5 max-w-[90%] rounded-xl animate-[slide-in-left_0.2s_ease-out]"
+                  style={{
+                    background: 'linear-gradient(90deg, rgba(254,44,85,0.28) 0%, rgba(254,44,85,0.10) 100%)',
+                    padding: '4px 10px',
+                    border: '1px solid rgba(254,44,85,0.75)',
+                    boxShadow: '0 0 8px rgba(254,44,85,0.35)',
+                  }}>
                   <span className="inline-flex items-center justify-center shrink-0"
-                    style={{ height: 14, borderRadius: 7, padding: '0 5px', background: badgeGradient, color: '#fff', fontWeight: 800, fontSize: 9, fontFamily: 'DIN Alternate, Roboto, sans-serif', letterSpacing: 0.3 }}
-                  >LV.{lvNum}</span>
-                  <span style={{ color: '#8CE2FF', fontWeight: 600, fontSize: 13, lineHeight: 1.4 }}>{c.agent.name}</span>
-                  <span style={{ color: '#70E8A3', fontWeight: 500, fontSize: 13, lineHeight: 1.4 }}>进入了直播间</span>
+                    style={{ height: 14, borderRadius: 7, padding: '0 5px', background: 'linear-gradient(90deg,#FE2C55,#FF6BA1)', color: '#fff', fontWeight: 800, fontSize: 9, letterSpacing: 0.3 }}
+                  >新粉丝</span>
+                  <span style={{ color: '#FFFFFF', fontWeight: 600, fontSize: 13, lineHeight: 1.4 }}>{c.agent.name}</span>
+                  <span style={{ color: '#FFD1DC', fontWeight: 500, fontSize: 13, lineHeight: 1.4 }}>关注了主播</span>
                 </div>
               );
             }
 
-            // 普通弹幕
+            // ③ 入场消息 —— 胶囊型微光底色卡片
+            if (c.type === 'entrance' || c.type === 'buy') {
+              const effect = c.entranceEffect;
+              return (
+                <div key={c.id} className="flex items-center gap-1.5 max-w-[88%] rounded-full animate-[slide-in-left_0.2s_ease-out]"
+                  style={{
+                    background: 'linear-gradient(90deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 100%)',
+                    padding: '3px 10px',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}>
+                  <span className="text-[11px] leading-none shrink-0" style={{ color: '#FFD166' }}>⚡</span>
+                  <span style={{ color: '#B0B4BC', fontWeight: 600, fontSize: 12, lineHeight: 1.4 }}>{c.agent.name}</span>
+                  {effect && (
+                    <span style={{ color: '#8E93A0', fontWeight: 400, fontSize: 12, lineHeight: 1.4 }}>{effect}</span>
+                  )}
+                  <span style={{ color: '#909399', fontWeight: 400, fontSize: 12, lineHeight: 1.4 }}>进入了直播间</span>
+                </div>
+              );
+            }
+
+            // ④ 普通弹幕
             return (
               <div key={c.id} className="flex max-w-[88%] animate-[slide-in-left_0.2s_ease-out]">
                 <div className="inline-flex items-baseline gap-1.5 rounded-xl"
