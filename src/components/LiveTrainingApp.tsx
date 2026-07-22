@@ -653,7 +653,7 @@ function HomePage({
             <div className="px-5 pb-8 overflow-y-auto space-y-6">
               <div>
                 <h2 className="text-[16px] font-semibold text-white mb-1">{selectedDetailCard.title}</h2>
-                <p className="text-[12px] text-[#B3B3B3]">维度：{selectedDetailCard.dimensions.join(' · ')}</p>
+                <p className="text-[12px] text-[#B3B3B3]">分类：{selectedDetailCard.category}</p>
                 <p className="text-[12px] text-[#B3B3B3]">视频标题：{selectedDetailCard.sourceVideo}</p>
               </div>
 
