@@ -1915,7 +1915,7 @@ function TrainingReport({ dateStr, durationStr, summary, suggestions, skills }) 
                   <div>
                     <p className="text-[10px] font-display font-bold tracking-[0.2em] text-white/40 mb-1">SKILL CARD DETAIL</p>
                     <h5 className="text-[14px] font-semibold text-white">{card.title}</h5>
-                    <p className="text-[11px] text-white/45 mt-0.5">维度：{(card.dimensions || []).join(' · ')}</p>
+                    <p className="text-[11px] text-white/45 mt-0.5">分类：{card.category}</p>
                     {card.sourceVideo && <p className="text-[11px] text-white/45">视频标题：{card.sourceVideo}</p>}
                   </div>
                   <div className="space-y-2">
