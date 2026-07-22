@@ -280,4 +280,19 @@
   20% { opacity: 1; }
   100% { opacity: 0; transform: translate(var(--sx,0), var(--sy,0)) scale(1.2); }
 }
+@keyframes gift-banner {
+  0% { opacity: 0; transform: translateX(-120%); }
+  15% { opacity: 1; transform: translateX(6%); }
+  22% { transform: translateX(0); }
+  80% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateY(-24px); }
+}
+@keyframes gift-icon-bob {
+  0% { transform: scale(1) rotate(-4deg); }
+  100% { transform: scale(1.18) rotate(4deg); }
+}
+@keyframes gift-combo {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.25); }
+}
 
