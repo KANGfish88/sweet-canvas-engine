@@ -750,7 +750,19 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
     const dur = id === 'carnival' ? 5000 : id === 'car' ? 4500 : 4000;
     setActiveGift({ id, key: Date.now() });
     setTimeout(() => setActiveGift((g) => (g && g.id === id ? null : g)), dur);
-    triggerToast(id === 'bunny' ? '送出「比心兔兔」' : id === 'car' ? '送出「跑车」' : '送出「嘉年华」');
+    const label = id === 'bunny' ? '比心兔兔' : id === 'car' ? '跑车' : '嘉年华';
+    triggerToast(`送出「${label}」`);
+    // 同步注入送礼消息 + 横幅
+    const giftComment = {
+      id: Date.now() + Math.random(),
+      agent: { name: '我', level: 'Lv.99', avatar: id === 'bunny' ? '🐰' : id === 'car' ? '🏎️' : '🎡', character: '主播本人' },
+      text: `${label} x1`,
+      type: 'gift' as const,
+      giftName: label,
+      giftCount: 1,
+    };
+    setComments(prev => [...prev.slice(-39), giftComment]);
+    showGiftBanner({ name: '我', giftName: label, count: 1, avatar: giftComment.agent.avatar });
   };
 
   const videoRef = useRef(null);
