@@ -7,7 +7,7 @@
 // 当前用 mock 本地生成器模拟，组件无感切换。
 // ==========================================
 import { USE_MOCK } from './client';
-import { AI_AGENTS_POOL, COMMENT_TEMPLATES } from './mock-data';
+import { AI_AGENTS_POOL, COMMENT_TEMPLATES, ENTRANCE_EFFECTS, GIFT_POOL } from './mock-data';
 import type { LiveComment, TopicPrompt } from './types';
 
 export interface SubscribeCommentsOptions {
@@ -25,10 +25,7 @@ export const liveApi = {
   /** 订阅评论流。返回 unsubscribe。 */
   subscribeComments({ getActiveSkillId, isPaused, onComment }: SubscribeCommentsOptions) {
     if (!USE_MOCK) {
-      // TODO: 接入 WebSocket
-      // const ws = new WebSocket(`${WS_URL}/live/comments`);
-      // ws.onmessage = e => onComment(JSON.parse(e.data));
-      // return () => ws.close();
+      // TODO: WebSocket
       return () => {};
     }
 
@@ -39,18 +36,57 @@ export const liveApi = {
         return;
       }
       const agent = AI_AGENTS_POOL[Math.floor(Math.random() * AI_AGENTS_POOL.length)];
-      const skillId = getActiveSkillId();
-      let templates = [...COMMENT_TEMPLATES.general];
-      if (skillId && COMMENT_TEMPLATES[skillId] && Math.random() > 0.5) {
-        templates = [...COMMENT_TEMPLATES[skillId], ...templates];
-      }
-      const text = templates[Math.floor(Math.random() * templates.length)];
-      let type: LiveComment['type'] = 'normal';
-      if (text.includes('下单') || text.includes('抢')) type = 'buy';
-      else if (Math.random() < 0.1) type = 'gift';
+      const r = Math.random();
+      let comment: LiveComment;
 
-      onComment({ id: Date.now() + Math.random(), agent, text, type });
-      timer = setTimeout(tick, Math.random() * 2000 + 1500);
+      if (r < 0.14) {
+        // 入场
+        const effect = ENTRANCE_EFFECTS[Math.floor(Math.random() * ENTRANCE_EFFECTS.length)];
+        comment = {
+          id: Date.now() + Math.random(),
+          agent,
+          text: `${effect}进入了直播间`,
+          type: 'entrance',
+          entranceEffect: effect,
+        };
+      } else if (r < 0.22) {
+        // 新增关注
+        comment = {
+          id: Date.now() + Math.random(),
+          agent,
+          text: '关注了主播',
+          type: 'follow',
+        };
+      } else if (r < 0.30) {
+        // 送礼
+        const g = GIFT_POOL[Math.floor(Math.random() * GIFT_POOL.length)];
+        const count = g.counts[Math.floor(Math.random() * g.counts.length)];
+        comment = {
+          id: Date.now() + Math.random(),
+          agent,
+          text: `${g.name} x${count}`,
+          type: 'gift',
+          giftName: g.name,
+          giftCount: count,
+        };
+      } else {
+        // 普通弹幕
+        const skillId = getActiveSkillId();
+        let templates = [...COMMENT_TEMPLATES.general];
+        if (skillId && COMMENT_TEMPLATES[skillId] && Math.random() > 0.5) {
+          templates = [...COMMENT_TEMPLATES[skillId], ...templates];
+        }
+        const text = templates[Math.floor(Math.random() * templates.length)];
+        comment = {
+          id: Date.now() + Math.random(),
+          agent,
+          text,
+          type: 'normal',
+        };
+      }
+
+      onComment(comment);
+      timer = setTimeout(tick, Math.random() * 1800 + 1200);
     };
     timer = setTimeout(tick, 1500);
     return () => { if (timer) clearTimeout(timer); };

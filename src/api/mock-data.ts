@@ -116,6 +116,27 @@ export const COMMENT_TEMPLATES: Record<string, string[]> = {
   ],
 };
 
+/** 入场坐骑/特效描述 */
+export const ENTRANCE_EFFECTS: string[] = [
+  '骑着小野马',
+  '踩着七彩祥云',
+  '开着法拉利',
+  '乘着热气球',
+  '披着星光斗篷',
+  '带着 VIP 光环',
+  '踏着滑板',
+];
+
+/** 礼物池：名称 + 常见连击数量 */
+export const GIFT_POOL: Array<{ name: string; counts: number[] }> = [
+  { name: '小心心', counts: [1, 6, 10] },
+  { name: '玫瑰', counts: [1, 9, 66] },
+  { name: '墨镜', counts: [1, 10, 66] },
+  { name: '跑车', counts: [1] },
+  { name: '嘉年华', counts: [1] },
+  { name: '告白气球', counts: [1, 52, 520] },
+];
+
 export const MOCK_INITIAL_ARCHIVE: TrainSession[] = [
   {
     id: 'session-001',
