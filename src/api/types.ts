@@ -48,13 +48,19 @@ export interface AIAgent {
   character: string;
 }
 
-export type CommentType = 'normal' | 'buy' | 'gift';
+export type CommentType = 'normal' | 'buy' | 'gift' | 'entrance' | 'follow';
 
 export interface LiveComment {
   id: number | string;
   agent: AIAgent;
   text: string;
   type: CommentType;
+  /** entrance 类型下的入场坐骑/特效描述，如 "骑着小野马" */
+  entranceEffect?: string;
+  /** gift 类型下的礼物名称 */
+  giftName?: string;
+  /** gift 类型下的连击数量 */
+  giftCount?: number;
 }
 
 export interface TopicPrompt {
