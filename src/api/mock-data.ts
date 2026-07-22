@@ -136,6 +136,8 @@ export const GIFT_POOL: Array<{ name: string; counts: number[] }> = [
   { name: '嘉年华', counts: [1] },
   { name: '告白气球', counts: [1, 52, 520] },
 ];
+
+export const MOCK_INITIAL_ARCHIVE: TrainSession[] = [
   {
     id: 'session-001',
     date: '2024-01-15 20:30',
