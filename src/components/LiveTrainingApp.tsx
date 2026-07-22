@@ -1525,6 +1525,54 @@ function VirtualLiveRoom({ selectedSkills, setSelectedSkills, basicSettings, ski
         </div>
       )}
 
+      {/* 送礼浮动横幅 —— 屏幕左侧偏上 */}
+      {giftBanner && (
+        <div
+          key={giftBanner.key}
+          className="absolute left-3 top-[22%] z-[85] pointer-events-none"
+          style={{ animation: 'gift-banner 3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards' }}
+        >
+          <div className="flex items-center gap-2 rounded-full pr-3 pl-1 py-1"
+            style={{
+              background: 'linear-gradient(90deg, rgba(255,44,120,0.85) 0%, rgba(255,180,60,0.75) 100%)',
+              border: '1px solid rgba(255,235,180,0.6)',
+              boxShadow: '0 6px 24px rgba(255,80,60,0.45), 0 0 18px rgba(255,215,120,0.5)',
+            }}
+          >
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-[18px] shrink-0"
+              style={{
+                background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,220,150,0.4) 100%)',
+                boxShadow: '0 0 10px rgba(255,220,150,0.9)',
+              }}>
+              {giftBanner.avatar || '🎁'}
+            </div>
+            <div className="flex flex-col leading-tight min-w-0">
+              <span className="text-[11px] font-semibold text-white/95 truncate max-w-[140px]">{giftBanner.name}</span>
+              <span className="text-[10px] text-white/85">赠送 {giftBanner.giftName}</span>
+            </div>
+            <span
+              className="text-[18px] leading-none ml-1 shrink-0"
+              style={{ animation: 'gift-icon-bob 0.6s ease-in-out infinite alternate' }}
+            >
+              {giftBanner.avatar || '🎁'}
+            </span>
+            <span
+              style={{
+                color: '#FFE600',
+                fontWeight: 900,
+                fontStyle: 'italic',
+                fontSize: 18,
+                textShadow: '0 0 6px #FF3B00',
+                lineHeight: 1,
+                animation: 'gift-combo 0.5s ease-in-out infinite alternate',
+              }}
+            >
+              x{giftBanner.count}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* 礼物动效层 */}
       {activeGift && (
         <div key={activeGift.key} className="pointer-events-none absolute inset-0 z-[90] overflow-hidden">
