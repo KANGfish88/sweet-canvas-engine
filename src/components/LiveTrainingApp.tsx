@@ -2388,7 +2388,7 @@ function ProfilePage({
             <div className="px-5 pb-8 overflow-y-auto space-y-6">
               <div>
                 <h2 className="text-[16px] font-semibold text-white mb-1">{detailCard.title}</h2>
-                <p className="text-[12px] text-[#B3B3B3]">维度：{(detailCard.dimensions || []).join(' · ')}</p>
+                <p className="text-[12px] text-[#B3B3B3]">分类：{detailCard.category}</p>
                 <p className="text-[12px] text-[#B3B3B3]">视频标题：{detailCard.sourceVideo}</p>
               </div>
               <div className="space-y-3">
